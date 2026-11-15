@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base64 编解码 - zqf.ltd</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand"><span class="brand-text">zqf<span class="accent">.ltd</span></span></a>
+    <ul class="navbar-nav">
+      <li><a href="/">首页</a></li>
+      <li><a href="/tools/utility.html">实用工具</a></li>
+      <li><a href="/tools/fun.html">趣味工具</a></li>
+      <li><a href="/tools/text.html" class="active">文本工具</a></li>
+      <li><a href="/tools/storage.html">文件存储</a></li>
+      <li><a href="/deploy.html">部署教程</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container tool-page">
+  <div class="tool-header">
+    <a href="/" class="back">&larr; 返回首页</a>
+    <h1>Base64 编解码</h1>
+    <p>文本与 Base64 互转，支持 UTF-8</p>
+  </div>
+
+  <div class="tool-content">
+    <div style="margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <label style="font-size:14px; font-weight:600;">原始文本</label>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" onclick="encode()">编码 &darr;</button>
+          <button class="btn btn-secondary" onclick="copy('input')">复制</button>
+        </div>
+      </div>
+      <textarea id="input" placeholder="输入要编码的文本..." style="min-height:140px;">Hello, zqf.ltd!</textarea>
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <label style="font-size:14px; font-weight:600;">Base64 结果</label>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" onclick="decode()">解码 &uarr;</button>
+          <button class="btn btn-secondary" onclick="copy('output')">复制</button>
+        </div>
+      </div>
+      <textarea id="output" placeholder="Base64 编码结果..." style="min-height:140px;"></textarea>
+    </div>
+
+    <div id="status" style="margin-top:16px; padding:12px 16px; border-radius:8px; font-size:14px; display:none;"></div>
+  </div>
+</div>
+
+<script>
+function showStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'error' ? 'var(--danger-light)' : 'var(--success-light)';
+  el.style.color = type === 'error' ? 'var(--danger)' : 'var(--success)';
+}
+
+function encode() {
+  const text = document.getElementById('input').value;
+  try {
+    const encoded = btoa(unescape(encodeURIComponent(text)));
+    document.getElementById('output').value = encoded;
+    showStatus('编码成功', 'success');
+  } catch(e) {
+    showStatus('编码失败: ' + e.message, 'error');
+  }
+}
+
+function decode() {
+  const text = document.getElementById('output').value.trim();
+  try {
+    const decoded = decodeURIComponent(escape(atob(text)));
+    document.getElementById('input').value = decoded;
+    showStatus('解码成功', 'success');
+  } catch(e) {
+    showStatus('解码失败: 不是有效的 Base64', 'error');
+  }
+}
+
+function copy(field) {
+  const val = document.getElementById(field).value;
+  if (!val) { showToast('没有可复制的内容'); return; }
+  navigator.clipboard.writeText(val);
+  showToast('已复制');
+}
+
+encode();
+</script>
+
+</body>
+</html>

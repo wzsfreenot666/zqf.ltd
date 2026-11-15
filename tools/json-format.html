@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON 格式化 - zqf.ltd</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .json-container { display:flex; gap:16px; }
+    .json-input, .json-output { flex:1; }
+    .json-output pre {
+      background:var(--bg-secondary); border:1px solid var(--border);
+      border-radius:8px; padding:16px; overflow:auto; min-height:300px; max-height:500px;
+      font-family:monospace; font-size:13px; line-height:1.6; white-space:pre-wrap; word-break:break-all;
+    }
+    .json-toolbar { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+    @media (max-width:768px) { .json-container { flex-direction:column; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand"><span class="brand-text">zqf<span class="accent">.ltd</span></span></a>
+    <ul class="navbar-nav">
+      <li><a href="/">首页</a></li>
+      <li><a href="/tools/utility.html">实用工具</a></li>
+      <li><a href="/tools/fun.html">趣味工具</a></li>
+      <li><a href="/tools/text.html" class="active">文本工具</a></li>
+      <li><a href="/tools/storage.html">文件存储</a></li>
+      <li><a href="/deploy.html">部署教程</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container tool-page">
+  <div class="tool-header">
+    <a href="/" class="back">&larr; 返回首页</a>
+    <h1>JSON 格式化</h1>
+    <p>美化/压缩 JSON，校验语法错误</p>
+  </div>
+
+  <div class="tool-content">
+    <div class="json-toolbar">
+      <button class="btn btn-primary" onclick="beautify()">美化</button>
+      <button class="btn btn-secondary" onclick="minify()">压缩</button>
+      <button class="btn btn-secondary" onclick="validate()">校验</button>
+      <button class="btn btn-secondary" onclick="copyOutput()">复制结果</button>
+      <button class="btn btn-secondary" onclick="clearAll()">清空</button>
+    </div>
+
+    <div class="json-container">
+      <div class="json-input">
+        <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:6px;">输入 JSON</label>
+        <textarea id="input" placeholder='{"name":"zqf","tools":["compress","qrcode"],"version":1}' style="min-height:300px;">{"name":"zqf.ltd","type":"工具站","modules":["实用工具","趣味工具","文本工具","文件存储"],"version":1.0}</textarea>
+      </div>
+      <div class="json-output">
+        <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:6px;">输出结果</label>
+        <pre id="output"></pre>
+      </div>
+    </div>
+
+    <div id="status" style="margin-top:16px; padding:12px 16px; border-radius:8px; font-size:14px; display:none;"></div>
+  </div>
+</div>
+
+<script>
+function showStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = type === 'error' ? 'var(--danger-light)' : 'var(--success-light)';
+  el.style.color = type === 'error' ? 'var(--danger)' : 'var(--success)';
+}
+
+function parseInput() {
+  const text = document.getElementById('input').value.trim();
+  if (!text) { showStatus('请输入 JSON', 'error'); return null; }
+  try {
+    return JSON.parse(text);
+  } catch(e) {
+    showStatus('JSON 语法错误: ' + e.message, 'error');
+    return null;
+  }
+}
+
+function beautify() {
+  const obj = parseInput();
+  if (obj === null) return;
+  const formatted = JSON.stringify(obj, null, 2);
+  document.getElementById('output').textContent = formatted;
+  showStatus('格式化成功', 'success');
+}
+
+function minify() {
+  const obj = parseInput();
+  if (obj === null) return;
+  const minified = JSON.stringify(obj);
+  document.getElementById('output').textContent = minified;
+  showStatus('压缩成功', 'success');
+}
+
+function validate() {
+  const obj = parseInput();
+  if (obj !== null) {
+    document.getElementById('output').textContent = JSON.stringify(obj, null, 2);
+    showStatus('JSON 格式正确', 'success');
+  }
+}
+
+function copyOutput() {
+  const text = document.getElementById('output').textContent;
+  if (!text) { showToast('没有可复制的内容'); return; }
+  navigator.clipboard.writeText(text);
+  showToast('已复制');
+}
+
+function clearAll() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').textContent = '';
+  document.getElementById('status').style.display = 'none';
+}
+
+beautify();
+</script>
+
+</body>
+</html>

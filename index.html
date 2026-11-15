@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>zqf.ltd - 在线工具箱</title>
+  <meta name="description" content="zqf.ltd - 一站式在线工具集合：实用工具、趣味小工具、效率文本工具、文件存储">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand">
+      <span class="brand-text">zqf<span class="accent">.ltd</span></span>
+    </a>
+    <ul class="navbar-nav">
+      <li><a href="/" class="active">首页</a></li>
+      <li><a href="/tools/utility.html">实用工具</a></li>
+      <li><a href="/tools/fun.html">趣味工具</a></li>
+      <li><a href="/tools/text.html">文本工具</a></li>
+      <li><a href="/tools/storage.html">文件存储</a></li>
+      <li><a href="/deploy.html">部署教程</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      14+ 在线工具，全部免费
+    </div>
+    <h1>你的在线<span class="accent">瑞士军刀</span></h1>
+    <p>一站式工具集合 —— 实用工具、趣味小工具、效率文本工具、文件存储，全部在浏览器中运行，无需安装，数据不离开你的设备。</p>
+    <div class="hero-search">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="搜索工具名称..." oninput="filterTools()">
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">14</div><div class="label">在线工具</div></div>
+      <div class="hero-stat"><div class="num">4</div><div class="label">功能模块</div></div>
+      <div class="hero-stat"><div class="num">0</div><div class="label">需要安装</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- 实用工具箱 -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="dot"></span> 实用工具箱</h2>
+      </div>
+      <span class="section-desc">日常高频使用的小工具</span>
+    </div>
+    <div class="tool-grid cat-utility" id="cat-utility">
+      <a href="/tools/image-compress.html" class="tool-card" data-name="图片压缩 image compress">
+        <div class="tool-icon">&#128247;</div>
+        <div class="tool-name">图片压缩</div>
+        <div class="tool-desc">在线压缩 JPG/PNG 图片，减小文件体积</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/qrcode.html" class="tool-card" data-name="二维码生成 qrcode">
+        <div class="tool-icon">&#128274;</div>
+        <div class="tool-name">二维码生成</div>
+        <div class="tool-desc">输入文本或链接，生成二维码图片</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/color-picker.html" class="tool-card" data-name="颜色选择器 color picker">
+        <div class="tool-icon">&#127912;</div>
+        <div class="tool-name">颜色选择器</div>
+        <div class="tool-desc">取色、HEX/RGB/HSL 互转</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/unit-convert.html" class="tool-card" data-name="单位换算 unit convert">
+        <div class="tool-icon">&#128208;</div>
+        <div class="tool-name">单位换算</div>
+        <div class="tool-desc">长度、重量、温度等单位互转</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 趣味小工具 -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="dot"></span> 趣味小工具</h2>
+      </div>
+      <span class="section-desc">轻松一刻的互动小工具</span>
+    </div>
+    <div class="tool-grid cat-fun" id="cat-fun">
+      <a href="/tools/dice.html" class="tool-card" data-name="掷骰子 dice">
+        <div class="tool-icon">&#127922;</div>
+        <div class="tool-name">掷骰子</div>
+        <div class="tool-desc">1-6 面骰子随机掷出，支持多骰</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/lottery.html" class="tool-card" data-name="抽奖 lottery random">
+        <div class="tool-icon">&#127873;</div>
+        <div class="tool-name">随机抽奖</div>
+        <div class="tool-desc">输入名单，随机抽取幸运者</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/coin-flip.html" class="tool-card" data-name="抛硬币 coin flip">
+        <div class="tool-icon">&#129689;</div>
+        <div class="tool-name">抛硬币</div>
+        <div class="tool-desc">正反面随机，帮你做决定</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/countdown.html" class="tool-card" data-name="倒计时 countdown timer">
+        <div class="tool-icon">&#9201;</div>
+        <div class="tool-name">倒计时器</div>
+        <div class="tool-desc">设定时间，全屏倒计时</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 效率文本工具 -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="dot"></span> 效率文本工具</h2>
+      </div>
+      <span class="section-desc">文本处理和效率提升工具</span>
+    </div>
+    <div class="tool-grid cat-text" id="cat-text">
+      <a href="/tools/markdown.html" class="tool-card" data-name="markdown 编辑器 editor">
+        <div class="tool-icon">&#9998;</div>
+        <div class="tool-name">Markdown 编辑器</div>
+        <div class="tool-desc">实时预览 Markdown 渲染效果</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/word-count.html" class="tool-card" data-name="字数统计 word count">
+        <div class="tool-icon">&#128202;</div>
+        <div class="tool-name">字数统计</div>
+        <div class="tool-desc">统计字符、单词、行数</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/json-format.html" class="tool-card" data-name="json 格式化 format">
+        <div class="tool-icon">&#123; &#125;</div>
+        <div class="tool-name">JSON 格式化</div>
+        <div class="tool-desc">美化/压缩 JSON，校验语法</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/base64.html" class="tool-card" data-name="base64 编码解码 encode decode">
+        <div class="tool-icon">&#128279;</div>
+        <div class="tool-name">Base64 编解码</div>
+        <div class="tool-desc">文本与 Base64 互转</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- 文件存储 -->
+  <section class="section fade-in">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title"><span class="dot"></span> 文件存储</h2>
+      </div>
+      <span class="section-desc">上传、管理、分享你的文件</span>
+    </div>
+    <div class="tool-grid cat-storage" id="cat-storage">
+      <a href="/tools/storage.html" class="tool-card" data-name="文件存储 storage upload">
+        <div class="tool-icon">&#128229;</div>
+        <div class="tool-name">文件上传</div>
+        <div class="tool-desc">拖拽上传文件，本地浏览器存储</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+      <a href="/tools/storage.html#list" class="tool-card" data-name="文件管理 file manager">
+        <div class="tool-icon">&#128193;</div>
+        <div class="tool-name">文件管理</div>
+        <div class="tool-desc">查看、下载、删除已存储的文件</div>
+        <span class="tool-arrow">&#8594;</span>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-brand">
+      zqf.ltd
+    </div>
+    <div class="footer-links">
+      <a href="/tools/utility.html">实用工具</a>
+      <a href="/tools/fun.html">趣味工具</a>
+      <a href="/tools/text.html">文本工具</a>
+      <a href="/tools/storage.html">文件存储</a>
+    </div>
+    <p>zqf.ltd &copy; 2026 &middot; 纯前端工具站，数据不离开你的浏览器</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function filterTools() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    card.style.display = (!q || name.includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.section').forEach(sec => {
+    const visible = sec.querySelectorAll('.tool-card:not([style*="none"])').length;
+    sec.style.display = visible ? '' : 'none';
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Navbar scroll shadow
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 8);
+});
+</script>
+
+</body>
+</html>

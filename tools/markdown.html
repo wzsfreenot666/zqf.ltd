@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown 编辑器 - zqf.ltd</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .md-container { display:flex; gap:16px; height:500px; }
+    .md-editor, .md-preview { flex:1; display:flex; flex-direction:column; }
+    .md-editor textarea { flex:1; min-height:0; border-radius:8px; padding:16px; font-size:14px; line-height:1.6; }
+    .md-preview { background:var(--bg-secondary); border-radius:8px; padding:20px; overflow-y:auto; border:1px solid var(--border); }
+    .md-preview h1 { font-size:24px; font-weight:700; margin:16px 0 12px; }
+    .md-preview h2 { font-size:20px; font-weight:600; margin:14px 0 10px; }
+    .md-preview h3 { font-size:17px; font-weight:600; margin:12px 0 8px; }
+    .md-preview p { margin:8px 0; line-height:1.7; }
+    .md-preview ul, .md-preview ol { margin:8px 0; padding-left:24px; }
+    .md-preview li { margin:4px 0; }
+    .md-preview code { background:var(--bg-tertiary); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:13px; }
+    .md-preview pre { background:var(--bg-tertiary); padding:16px; border-radius:8px; overflow-x:auto; margin:12px 0; }
+    .md-preview pre code { background:none; padding:0; }
+    .md-preview blockquote { border-left:3px solid var(--primary); padding-left:16px; color:var(--text-secondary); margin:12px 0; }
+    .md-preview a { color:var(--primary); }
+    .md-preview table { border-collapse:collapse; width:100%; margin:12px 0; }
+    .md-preview th, .md-preview td { border:1px solid var(--border); padding:8px 12px; text-align:left; }
+    .md-preview th { background:var(--bg-tertiary); font-weight:600; }
+    .md-toolbar { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; }
+    .md-toolbar button { padding:6px 10px; border:1px solid var(--border); border-radius:6px; background:white; cursor:pointer; font-size:13px; }
+    .md-toolbar button:hover { border-color:var(--primary); color:var(--primary); }
+    @media (max-width:768px) { .md-container { flex-direction:column; height:auto; } .md-editor textarea { min-height:240px; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand"><span class="brand-text">zqf<span class="accent">.ltd</span></span></a>
+    <ul class="navbar-nav">
+      <li><a href="/">首页</a></li>
+      <li><a href="/tools/utility.html">实用工具</a></li>
+      <li><a href="/tools/fun.html">趣味工具</a></li>
+      <li><a href="/tools/text.html" class="active">文本工具</a></li>
+      <li><a href="/tools/storage.html">文件存储</a></li>
+      <li><a href="/deploy.html">部署教程</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container tool-page">
+  <div class="tool-header">
+    <a href="/" class="back">&larr; 返回首页</a>
+    <h1>Markdown 编辑器</h1>
+    <p>实时预览 Markdown 渲染效果，支持导出 HTML</p>
+  </div>
+
+  <div class="tool-content">
+    <div class="md-toolbar">
+      <button onclick="insert('# ')">H1</button>
+      <button onclick="insert('## ')">H2</button>
+      <button onclick="insert('**','**')">粗体</button>
+      <button onclick="insert('*','*')">斜体</button>
+      <button onclick="insert('`','`')">代码</button>
+      <button onclick="insert('- ')">列表</button>
+      <button onclick="insert('> ')">引用</button>
+      <button onclick="insert('[','](https://)')">链接</button>
+      <button onclick="insert('\n```\n','\n```\n')">代码块</button>
+      <button onclick="download()" style="margin-left:auto;">导出 HTML</button>
+    </div>
+
+    <div class="md-container">
+      <div class="md-editor">
+        <textarea id="editor" oninput="render()"># 欢迎使用 Markdown 编辑器
+
+在这里输入 **Markdown** 格式的文本，右侧会*实时*显示渲染效果。
+
+## 功能列表
+
+- 标题、列表、引用
+- 代码块、行内代码
+- 链接、表格
+- 导出 HTML
+
+> 试试修改这段文字看看效果！
+
+```javascript
+function hello() {
+  console.log("Hello, zqf.ltd!");
+}
+```
+</textarea>
+      </div>
+      <div class="md-preview" id="preview"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function parseMd(md) {
+  let html = escapeHtml(md);
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  html = html.replace(/^\> (.+)$/gm, '<blockquote>$1</blockquote>');
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  const lines = html.split('\n');
+  let result = [], inList = false;
+  for (let line of lines) {
+    if (/^- (.+)/.test(line)) {
+      if (!inList) { result.push('<ul>'); inList = true; }
+      result.push('<li>' + line.replace(/^- /, '') + '</li>');
+    } else if (/^\d+\. (.+)/.test(line)) {
+      if (!inList) { result.push('<ol>'); inList = true; }
+      result.push('<li>' + line.replace(/^\d+\. /, '') + '</li>');
+    } else {
+      if (inList) { result.push(inList === true ? '</ul>' : '</ol>'); inList = false; }
+      if (line.trim() && !/^<h\d|^<pre|^<blockquote/.test(line.trim())) {
+        result.push('<p>' + line + '</p>');
+      } else if (line.trim()) {
+        result.push(line);
+      }
+    }
+  }
+  if (inList) result.push('</ul>');
+  return result.join('\n');
+}
+
+function render() {
+  document.getElementById('preview').innerHTML = parseMd(document.getElementById('editor').value);
+}
+
+function insert(prefix, suffix) {
+  suffix = suffix || '';
+  const ta = document.getElementById('editor');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  const newText = prefix + (selected || '文本') + suffix;
+  ta.value = ta.value.substring(0, start) + newText + ta.value.substring(end);
+  ta.focus();
+  ta.setSelectionRange(start + prefix.length, start + prefix.length + (selected || '文本').length);
+  render();
+}
+
+function download() {
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Markdown 导出</title><style>body{max-width:720px;margin:40px auto;padding:0 20px;font-family:sans-serif;line-height:1.7}pre{background:#f4f4f4;padding:16px;border-radius:8px;overflow-x:auto}code{background:#f4f4f4;padding:2px 6px;border-radius:4px}blockquote{border-left:3px solid #4263eb;padding-left:16px;color:#666}</style></head><body>' + document.getElementById('preview').innerHTML + '</body></html>';
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'export.html';
+  a.click();
+  showToast('导出成功');
+}
+
+render();
+</script>
+
+</body>
+</html>

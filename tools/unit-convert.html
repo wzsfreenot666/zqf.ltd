@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单位换算 - zqf.ltd</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="navbar-brand"><span class="brand-text">zqf<span class="accent">.ltd</span></span></a>
+    <ul class="navbar-nav">
+      <li><a href="/">首页</a></li>
+      <li><a href="/tools/utility.html" class="active">实用工具</a></li>
+      <li><a href="/tools/fun.html">趣味工具</a></li>
+      <li><a href="/tools/text.html">文本工具</a></li>
+      <li><a href="/tools/storage.html">文件存储</a></li>
+      <li><a href="/deploy.html">部署教程</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container tool-page">
+  <div class="tool-header">
+    <a href="/" class="back">&larr; 返回首页</a>
+    <h1>单位换算</h1>
+    <p>长度、重量、温度等单位互转</p>
+  </div>
+
+  <div class="tool-content">
+    <div style="margin-bottom:24px;">
+      <label style="font-size:14px; font-weight:600; display:block; margin-bottom:8px;">类别：</label>
+      <select id="category" style="width:auto;" onchange="switchCategory()">
+        <option value="length">长度</option>
+        <option value="weight">重量</option>
+        <option value="temperature">温度</option>
+        <option value="area">面积</option>
+        <option value="speed">速度</option>
+        <option value="data">数据大小</option>
+      </select>
+    </div>
+
+    <div style="display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap;">
+      <div style="flex:1; min-width:180px;">
+        <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:6px;">输入值</label>
+        <input type="number" id="inputVal" value="1" oninput="convert()" style="font-family:monospace;">
+        <select id="fromUnit" style="width:100%; margin-top:8px;" onchange="convert()"></select>
+      </div>
+
+      <div style="font-size:24px; padding-bottom:32px;">&rarr;</div>
+
+      <div style="flex:1; min-width:180px;">
+        <label style="font-size:13px; color:var(--text-secondary); display:block; margin-bottom:6px;">输出值</label>
+        <input type="text" id="outputVal" readonly style="font-family:monospace;">
+        <select id="toUnit" style="width:100%; margin-top:8px;" onchange="convert()"></select>
+      </div>
+    </div>
+
+    <div class="result-box show" style="margin-top:24px;">
+      <div class="result-label">换算结果</div>
+      <div id="resultText" style="font-size:18px; font-weight:600;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const units = {
+  length: { base: 'm', items: { 'mm':0.001, 'cm':0.01, 'm':1, 'km':1000, 'in':0.0254, 'ft':0.3048, 'mi':1609.34 } },
+  weight: { base: 'kg', items: { 'g':0.001, 'kg':1, 't':1000, 'lb':0.453592, 'oz':0.0283495 } },
+  temperature: { base: 'C', items: { 'C':'C', 'F':'F', 'K':'K' } },
+  area: { base: 'm2', items: { 'cm2':0.0001, 'm2':1, 'km2':1000000, 'acre':4046.86, 'ft2':0.092903 } },
+  speed: { base: 'm/s', items: { 'm/s':1, 'km/h':0.277778, 'mph':0.44704, 'knot':0.514444 } },
+  data: { base: 'B', items: { 'B':1, 'KB':1024, 'MB':1048576, 'GB':1073741824, 'TB':1099511627776 } }
+};
+
+const labels = {
+  length: { 'mm':'毫米 mm', 'cm':'厘米 cm', 'm':'米 m', 'km':'千米 km', 'in':'英寸 in', 'ft':'英尺 ft', 'mi':'英里 mi' },
+  weight: { 'g':'克 g', 'kg':'千克 kg', 't':'吨 t', 'lb':'磅 lb', 'oz':'盎司 oz' },
+  temperature: { 'C':'摄氏度 C', 'F':'华氏度 F', 'K':'开尔文 K' },
+  area: { 'cm2':'平方厘米', 'm2':'平方米', 'km2':'平方千米', 'acre':'英亩', 'ft2':'平方英尺' },
+  speed: { 'm/s':'米/秒', 'km/h':'千米/时', 'mph':'英里/时', 'knot':'节' },
+  data: { 'B':'字节 B', 'KB':'KB', 'MB':'MB', 'GB':'GB', 'TB':'TB' }
+};
+
+function switchCategory() {
+  const cat = document.getElementById('category').value;
+  const items = Object.keys(units[cat].items);
+  const fromSel = document.getElementById('fromUnit');
+  const toSel = document.getElementById('toUnit');
+  fromSel.innerHTML = items.map(u => `<option value="${u}">${labels[cat][u]}</option>`).join('');
+  toSel.innerHTML = items.map((u,i) => `<option value="${u}" ${i===1?'selected':''}>${labels[cat][u]}</option>`).join('');
+  convert();
+}
+
+function convert() {
+  const cat = document.getElementById('category').value;
+  const val = parseFloat(document.getElementById('inputVal').value) || 0;
+  const from = document.getElementById('fromUnit').value;
+  const to = document.getElementById('toUnit').value;
+
+  let result;
+  if (cat === 'temperature') {
+    let c;
+    if (from === 'C') c = val;
+    else if (from === 'F') c = (val - 32) * 5/9;
+    else c = val - 273.15;
+    if (to === 'C') result = c;
+    else if (to === 'F') result = c * 9/5 + 32;
+    else result = c + 273.15;
+  } else {
+    const baseVal = val * units[cat].items[from];
+    result = baseVal / units[cat].items[to];
+  }
+
+  result = Math.round(result * 100000) / 100000;
+  document.getElementById('outputVal').value = result;
+  document.getElementById('resultText').textContent =
+    `${val} ${from} = ${result} ${to}`;
+}
+
+switchCategory();
+</script>
+
+</body>
+</html>
