@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>zqf.ltd 项目创意库 · 17 个拿得出手的网站点子</title>
+<style>
+:root{
+  --bg:#0a0a14;
+  --card:rgba(255,255,255,0.045);
+  --card-hover:rgba(255,255,255,0.08);
+  --line:rgba(255,255,255,0.10);
+  --txt:#e8e9f3;
+  --muted:#9a9cb5;
+  --p1:#7c5cff;
+  --p2:#ff5ca8;
+  --p3:#3ad6ff;
+  --ok:#4ade80;
+  --warn:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  line-height:1.75;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.bg-orbs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.28;animation:float 18s ease-in-out infinite}
+.orb.a{width:520px;height:520px;background:var(--p1);top:-180px;left:-120px}
+.orb.b{width:460px;height:460px;background:var(--p2);top:30%;right:-160px;animation-delay:-6s}
+.orb.c{width:420px;height:420px;background:var(--p3);bottom:-160px;left:35%;animation-delay:-11s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+/* Hero */
+.hero{padding:86px 0 46px;text-align:center;position:relative}
+.hero .kicker{
+  display:inline-block;font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--p3);border:1px solid var(--line);border-radius:999px;
+  padding:6px 16px;margin-bottom:22px;background:rgba(58,214,255,.06)
+}
+.hero h1{
+  font-size:clamp(34px,6vw,60px);line-height:1.15;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(100deg,#fff 10%,#c9b8ff 45%,#ff9ecb 80%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p.sub{color:var(--muted);max-width:640px;margin:20px auto 0;font-size:16px}
+.hero-stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 22px;min-width:120px}
+.stat .n{font-size:26px;font-weight:800;background:linear-gradient(90deg,var(--p1),var(--p2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* Section */
+section{padding:44px 0}
+.sec-title{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+.sec-title .idx{font-size:13px;color:var(--p3);font-weight:700;letter-spacing:.1em}
+h2.big{font-size:clamp(24px,4vw,34px);font-weight:800;letter-spacing:-.01em}
+.sec-desc{color:var(--muted);font-size:15px;margin:10px 0 26px;max-width:760px}
+
+/* Framework */
+.framework{background:linear-gradient(135deg,rgba(124,92,255,.10),rgba(255,92,168,.05));border:1px solid var(--line);border-radius:22px;padding:32px}
+.q-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:18px}
+.q{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.q .qn{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:9px;background:linear-gradient(135deg,var(--p1),var(--p2));font-weight:800;font-size:14px;margin-bottom:12px}
+.q h3{font-size:16px;margin-bottom:8px}
+.q p{font-size:14px;color:var(--muted)}
+.q .hint{display:block;margin-top:12px;font-size:12px;color:var(--p3)}
+
+/* Category nav */
+.catnav{position:sticky;top:0;z-index:20;background:rgba(10,10,20,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:12px 0}
+.catnav .wrap{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.catnav .wrap::-webkit-scrollbar{display:none}
+.catnav a{flex-shrink:0;font-size:13px;color:var(--muted);text-decoration:none;padding:7px 14px;border:1px solid var(--line);border-radius:999px;transition:.2s}
+.catnav a:hover{color:#fff;border-color:var(--p1);background:rgba(124,92,255,.12)}
+
+/* Category */
+.cat{margin-top:18px}
+.cat-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.cat-head .emoji{font-size:30px}
+.cat-head h2{font-size:26px;font-weight:800}
+.cat-tag{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:3px 10px;border-radius:999px}
+
+/* Project card */
+.proj{
+  background:var(--card);border:1px solid var(--line);border-radius:20px;
+  padding:28px;margin:18px 0;transition:transform .25s,border-color .25s,background .25s;
+  opacity:0;transform:translateY(18px);
+}
+.proj.in{opacity:1;transform:none}
+.proj:hover{background:var(--card-hover);border-color:rgba(124,92,255,.5);transform:translateY(-3px)}
+.proj-top{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;justify-content:space-between;margin-bottom:14px}
+.proj-title{display:flex;align-items:center;gap:14px}
+.proj-num{font-size:34px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--p1),var(--p2));-webkit-background-clip:text;background-clip:text;color:transparent;min-width:46px}
+.proj-title h3{font-size:21px;font-weight:800}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.badge{font-size:11px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.badge.vis{border-color:rgba(255,92,168,.4);color:#ff9ecb;background:rgba(255,92,168,.07)}
+.badge.use{border-color:rgba(58,214,255,.4);color:#7fe3ff;background:rgba(58,214,255,.07)}
+.badge.cloud{border-color:rgba(124,92,255,.4);color:#b9a6ff;background:rgba(124,92,255,.07)}
+.stars{text-align:right;font-size:12px;color:var(--muted);white-space:nowrap}
+.stars .s{color:var(--warn);letter-spacing:1px;font-size:13px}
+.stars div{margin:2px 0}
+.position{font-size:15px;color:#d7d8ea;background:rgba(255,255,255,.03);border-left:3px solid var(--p1);padding:10px 16px;border-radius:0 10px 10px 0;margin-bottom:18px}
+.block{margin:14px 0}
+.block .bt{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#cfd0e6;margin-bottom:6px}
+.block .bt::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--p3);box-shadow:0 0 8px var(--p3)}
+.block ul{margin:0;padding-left:20px}
+.block li{font-size:14px;color:var(--muted);margin:3px 0}
+.block li b{color:#d7d8ea;font-weight:600}
+.tech{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:#a9e6ff;background:rgba(58,214,255,.06);border:1px solid rgba(58,214,255,.15);border-radius:8px;padding:8px 12px;display:inline-block;margin-top:2px}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.meta span{font-size:12px;color:var(--muted);background:rgba(255,255,255,.04);padding:5px 12px;border-radius:8px}
+.meta span b{color:var(--ok)}
+.tier{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px}
+.tier.easy{background:rgba(74,222,128,.14);color:var(--ok)}
+.tier.mid{background:rgba(251,191,36,.14);color:var(--warn)}
+.tier.hard{background:rgba(255,92,168,.14);color:#ff9ecb}
+
+/* Top3 */
+.top3{background:linear-gradient(135deg,rgba(124,92,255,.14),rgba(58,214,255,.08));border:1px solid rgba(124,92,255,.35);border-radius:24px;padding:34px}
+.top3 h2{font-size:28px;font-weight:800;margin-bottom:6px}
+.top3 .lead{color:var(--muted);font-size:14px;margin-bottom:22px}
+.podium{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.pod{background:rgba(10,10,20,.5);border:1px solid var(--line);border-radius:16px;padding:22px;position:relative;overflow:hidden}
+.pod .medal{font-size:30px}
+.pod h3{font-size:18px;margin:8px 0}
+.pod p{font-size:13px;color:var(--muted)}
+.pod .why{margin-top:12px;font-size:13px;color:#d7d8ea;border-top:1px solid var(--line);padding-top:10px}
+
+/* Caveats */
+.caveat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:10px}
+.cbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.cbox h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.cbox p{font-size:13.5px;color:var(--muted)}
+.cbox .ic{font-size:20px}
+
+footer{text-align:center;color:var(--muted);font-size:13px;padding:50px 0 70px;border-top:1px solid var(--line);margin-top:40px}
+footer b{color:#d7d8ea}
+@media(max-width:640px){.proj{padding:20px}.proj-num{font-size:28px}.hero{padding-top:60px}}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div></div>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="kicker">For zqf.ltd · 定制创意库</span>
+    <h1>你的网站，下一步做什么？</h1>
+    <p class="sub">你已经有了一块地（域名 + Cloudflare 部署）和一个在线工具箱的雏形。下面 17 个方向，从"纯展示炫技"到"能落地的完整应用"都有，每个都写清了怎么做。不用现在就定，先挑让你眼睛亮的那一个。</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="n">17</div><div class="l">个项目创意</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">大类方向</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">个优先推荐</div></div>
+      <div class="stat"><div class="n">0</div><div class="l">服务器成本</div></div>
+    </div>
+  </header>
+</div>
+
+<nav class="catnav">
+  <div class="wrap">
+    <a href="#framework">先读这个</a>
+    <a href="#cat1">① 视觉炸裂</a>
+    <a href="#cat2">② 实用工具</a>
+    <a href="#cat3">③ 完整应用</a>
+    <a href="#cat4">④ 内容展示</a>
+    <a href="#cat5">⑤ 趣味互动</a>
+    <a href="#top3">我的 Top 3</a>
+    <a href="#caveat">务实提醒</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section id="framework">
+  <div class="framework">
+    <div class="sec-title"><span class="idx">00 / 选择框架</span></div>
+    <h2 class="big">先花 1 分钟，回答 3 个问题</h2>
+    <p class="sec-desc">这 3 个答案会直接帮你从下面 17 个里筛出适合你的。不用写下来，心里有数就行。</p>
+    <div class="q-grid">
+      <div class="q">
+        <span class="qn">1</span>
+        <h3>展示给谁看？</h3>
+        <p>给朋友炫技、放简历加分、还是纯粹自己开心？决定你要"视觉优先"还是"实用优先"。</p>
+        <span class="hint">→ 炫技看类别①，实用看类别②</span>
+      </div>
+      <div class="q">
+        <span class="qn">2</span>
+        <h3>愿意投入多少时间？</h3>
+        <p>一个周末（1–2 天）还是一两周？决定你选"轻量单页"还是"完整应用"。</p>
+        <span class="hint">→ 时间少选低难度，时间多选③</span>
+      </div>
+      <div class="q">
+        <span class="qn">3</span>
+        <h3>要不要云端存数据？</h3>
+        <p>只是展示内容，还是要让用户留言、上传、登录？后者才需要动用 KV / D1 / R2。</p>
+        <span class="hint">→ 要存储看类别③</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 类别 1 ============ -->
+<section class="cat" id="cat1">
+  <div class="cat-head"><span class="emoji">✨</span><h2>类别一 · 视觉炸裂型</h2><span class="cat-tag">纯前端 · 最适合"展示一下"</span></div>
+  <p class="sec-desc">这类项目几乎不需要后端，全靠 HTML/CSS/JS 的表现力。重点在"第一眼的震撼"，是你向别人展示技术审美的最直接方式。注意：视觉越重、资源越大，在国内慢速网络下体验越打折，做好权衡。</p>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">01</span><div><h3>交互式 3D 个人主页 / 数字名片</h3>
+        <div class="badges"><span class="badge vis">视觉冲击 ★★★</span><span class="badge">纯前端</span><span class="badge">展示型</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★★★</span></div><div>实用度 <span class="s">★★★☆☆</span></div></div>
+    </div>
+    <div class="position">把"关于我"做成一个可以探索的 3D 空间：访客像玩游戏一样移动镜头，逐个发现你的技能、经历和联系方式。这是"展示一下"这个需求的最强答案。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>3D 场景</b>：一个悬浮的星球 / 方块城市 / 画廊，每个元素代表一块内容</li>
+      <li><b>鼠标视差 + 滚动镜头</b>：移动鼠标场景轻微摆动，滚动触发镜头推进切换章节</li>
+      <li><b>交互热点</b>：点某个元素弹出技能详情、项目卡片、社交链接</li>
+      <li><b>彩蛋</b>：隐藏一个小动画或玩笑，让人愿意反复探索</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>深色霓虹配色（紫 / 青 / 粉），元素带发光描边和呼吸动画</li>
+      <li>文字逐字浮现、粒子背景缓慢流动、镜头切换用缓动过渡</li>
+      <li>首屏放一个"加载进度条"，本身就是一个炫技动画</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Three.js / react-three-fiber 建场景 · GSAP 做镜头动画 · 模型压缩后放 R2 或直接内联 · 纯静态托管即可</div></div>
+    <div class="meta"><span>难度 <b><span class="tier hard">高</span></b></span><span>预计 <b>3–5 天</b></span><span>演进：2.5D 视差 → 加 3D 模型 → 加交互热点与彩蛋</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">02</span><div><h3>滚动叙事故事页（Scroll Storytelling）</h3>
+        <div class="badges"><span class="badge vis">视觉冲击 ★★★</span><span class="badge">纯前端</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★★☆</span></div><div>实用度 <span class="s">★★★☆☆</span></div></div>
+    </div>
+    <div class="position">用"滚动"当遥控器讲一个故事——可以是你的成长经历、一个产品的诞生、甚至一个虚构小故事。每滚一屏，画面和文字跟着分镜切换，像在看一部交互电影。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>分镜切换</b>：多个全屏章节，滚动时固定镜头、内容滑入</li>
+      <li><b>视差图层</b>：前景、中景、背景以不同速度移动，营造纵深</li>
+      <li><b>进度指示</b>：侧边或顶部一条随滚动填充的进度条</li>
+      <li><b>数据驱动动画</b>：滚到某处数字从 0 滚动到目标值、图表生长</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>每个章节一个主题色，滚动时背景平滑渐变过渡</li>
+      <li>关键文字用"遮罩揭示"效果（像 curtains 拉开）</li>
+      <li>可加音效开关，增强沉浸感</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">GSAP ScrollTrigger / 原生 CSS scroll-timeline · 图片序列或 CSS 图形 · 纯静态</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>2–3 天</b></span><span>演进：先做 4–5 屏线性叙事 → 加横向滚动 → 加分支选择</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">03</span><div><h3>生成艺术 / 创意代码画廊</h3>
+        <div class="badges"><span class="badge vis">视觉冲击 ★★★</span><span class="badge">纯前端</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★★★</span></div><div>实用度 <span class="s">★★☆☆☆</span></div></div>
+    </div>
+    <div class="position">一组用算法"画"出来的视觉作品：粒子风暴、分形树、流体色彩、几何律动。每次刷新都不一样，是纯粹展示编程之美的地方。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>多个作品</b>：网格展示 6–12 个不同的生成艺术效果</li>
+      <li><b>参数交互</b>：滑杆调节颜色 / 密度 / 速度，实时看变化</li>
+      <li><b>导出图片</b>：一键把当前画面存成 PNG</li>
+      <li><b>随机种子</b>：显示当前 seed，可复现同一作品</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>全屏沉浸式画布，作品本身就是要展示的东西</li>
+      <li>鼠标悬停加速 / 扰动效果，让人忍不住玩</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Canvas 2D / WebGL · p5.js 或原生 · 每个作品一个独立 JS 模块 · 纯静态</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>2–4 天</b></span><span>演进：先做 3 个效果 → 加参数面板 → 加导出与画廊分类</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">04</span><div><h3>数据可视化大屏</h3>
+        <div class="badges"><span class="badge vis">视觉冲击 ★★☆</span><span class="badge use">实用 ★★☆</span><span class="badge">可接数据</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★★☆</span></div><div>实用度 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">把某类数据做成会动的仪表盘：可以是你工具的访问统计、某个公开数据、甚至模拟的实时数据。科技感强，也确实有用。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>多种图表</b>：折线、柱状、饼图、地图、词云</li>
+      <li><b>数字滚动动画</b>：关键指标加载时从 0 递增</li>
+      <li><b>自动轮播</b>：每隔几秒切换聚焦的图表</li>
+      <li><b>实时感</b>：用定时器模拟数据流入（或用真实 API）</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>深色科技风 + 发光图表 + 网格背景</li>
+      <li>图表入场动画、数字跳动、警示色高亮异常值</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">ECharts（上手快）或 D3.js（更灵活）· 数据源先用静态 JSON，后续可接 D1 / Workers</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>2–3 天</b></span><span>演进：静态假数据 → 接真实数据源 → 加定时刷新</span></div>
+  </article>
+</section>
+
+<!-- ============ 类别 2 ============ -->
+<section class="cat" id="cat2">
+  <div class="cat-head"><span class="emoji">🛠️</span><h2>类别二 · 实用工具型</h2><span class="cat-tag">延续你现有工具箱 · 最容易做</span></div>
+  <p class="sec-desc">你已经有一个"在线工具箱"的雏形了，这条线最顺势。关键是：这类工具<b>全部能在浏览器本地计算，不依赖服务器</b>——所以在你国内访问偏慢的现状下，反而体验最好（文件不用上传下载）。</p>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">05</span><div><h3>全能在线工具箱 2.0</h3>
+        <div class="badges"><span class="badge use">实用 ★★★</span><span class="badge">纯前端</span><span class="badge">延续现有</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★☆☆☆</span></div><div>实用度 <span class="s">★★★★★</span></div></div>
+    </div>
+    <div class="position">把现有工具箱做深做全，做成"遇到小问题就打开它"的那种站点。工具越多、越顺手，用户越会回来——这是少数能自然积累访问量的方向。</div>
+    <div class="block"><div class="bt">核心功能（挑 15–25 个）</div><ul>
+      <li><b>开发类</b>：JSON 格式化 / 校验、Base64 编解码、URL 编解码、哈希计算、正则测试、JWT 解析</li>
+      <li><b>图片类</b>：压缩、格式转换（WebP/PNG/JPG）、裁剪、二维码生成 / 识别</li>
+      <li><b>文本类</b>：字数统计、大小写转换、文本去重、Diff 对比、中文转拼音</li>
+      <li><b>生活类</b>：时间戳转换、倒计时、颜色选择器 / 配色方案、密码生成器</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与交互设计</div><ul>
+      <li>卡片网格 + 分类标签 + 搜索框，找工具要快</li>
+      <li>即时响应：输入即出结果，不点按钮；成功状态给个轻微动效反馈</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">全部浏览器 API + 开源库（如 jsQR、crypto-js）· 纯静态 · 零后端 · 加载极快</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>逐个加，1–3 天起</b></span><span>演进：先打磨 5 个常用工具 → 加搜索 → 加"最近使用" → 慢慢扩到 25 个</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">06</span><div><h3>在线图片工作台</h3>
+        <div class="badges"><span class="badge use">实用 ★★★</span><span class="badge">纯前端</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>实用度 <span class="s">★★★★★</span></div></div>
+    </div>
+    <div class="position">浏览器里的轻量 PS：拖拽图片进去，裁剪、加滤镜、加文字水印、转格式，全程不上传——隐私好、速度快，用户很吃这一套。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>基础编辑</b>：裁剪、旋转、翻转、缩放</li>
+      <li><b>滤镜</b>：黑白、复古、锐化、亮度对比度，一键预设</li>
+      <li><b>叠加</b>：加文字、加图片水印、加边框</li>
+      <li><b>输出</b>：格式转换、质量调节、批量处理</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与交互设计</div><ul>
+      <li>大拖拽区 + 实时预览画布 + "前后对比"滑块（左右拖动看效果）</li>
+      <li>操作按钮带悬停微动效，让工具也有手感</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Canvas API 或 fabric.js（功能全、交互好）· 纯前端 · 图片不离开用户设备</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>3–4 天</b></span><span>演进：基础裁剪 → 加滤镜 → 加文字水印 → 加批量</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">07</span><div><h3>Markdown 写作台</h3>
+        <div class="badges"><span class="badge use">实用 ★★★</span><span class="badge">可本地 / 可云端</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>实用度 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">一个让人想写东西的编辑器：左边写 Markdown，右边实时预览，自动保存到本地；想更进一步就加云端同步，变成自己的笔记库。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>分屏预览</b>：实时渲染，滚动同步</li>
+      <li><b>写作辅助</b>：大纲导航、字数统计、夜间 / 专注模式</li>
+      <li><b>导出</b>：HTML、PDF、带样式的 MD</li>
+      <li><b>存储</b>：本地自动保存（localStorage / IndexedDB）；进阶版同步到 D1</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与交互设计</div><ul>
+      <li>极简排版、舒服的行距和字体、柔和的主题色</li>
+      <li>输入时轻微的打字反馈、保存状态的小提示</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">marked / markdown-it 渲染 · CodeMirror 编辑器 · 本地存储起步，进阶用 D1 云同步</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低–中</span></b></span><span>预计 <b>2–3 天</b></span><span>演进：本地编辑器 → 加多文档管理 → 加 D1 云端同步和登录</span></div>
+  </article>
+</section>
+
+<!-- ============ 类别 3 ============ -->
+<section class="cat" id="cat3">
+  <div class="cat-head"><span class="emoji">☁️</span><h2>类别三 · 完整应用层</h2><span class="cat-tag">用上 KV / D1 / R2 · 体现全栈能力</span></div>
+  <p class="sec-desc">这类项目有真正的"后端"——但它不是传统服务器，而是 Cloudflare 的无服务器产品。你之前问过"没有服务器怎么云端存储"，下面这些就是答案的实战版。注意：这类应用每次交互都要走网络，在你国内访问偏慢的现状下，体验会受影响；想做好建议配合备案 + 国内 CDN。</p>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">08</span><div><h3>短链接生成器</h3>
+        <div class="badges"><span class="badge cloud">云端存储 ★★☆</span><span class="badge">Workers + KV</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★☆☆☆</span></div><div>技术展示 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">输入长链接，生成一个短链接；别人访问时瞬间跳转。经典的全栈入门项目，代码量不大，但能把"计算 + 存储 + 边缘分发"完整跑通。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>缩短</b>：生成 6 位短码，自定义后缀</li>
+      <li><b>跳转</b>：访问短链时 301 跳到原地址</li>
+      <li><b>统计</b>：点击次数、时间、来源（存 D1）</li>
+      <li><b>管理</b>：二维码生成、有效期、删除</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉设计</div><ul>
+      <li>一个输入框 + 结果卡片 + 统计面板，干净利落</li>
+      <li>生成成功时短链和二维码一起弹出，带个 scaling 动效</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Worker 处理跳转与 API · KV 存"短码→长链"映射（全球低延迟读取）· D1 存点击日志 · 免费额度完全够用</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>2–3 天</b></span><span>演进：缩短+跳转 → 加统计 → 加自定义后缀与登录</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">09</span><div><h3>匿名留言墙 / 时光胶囊</h3>
+        <div class="badges"><span class="badge cloud">云端存储 ★★★</span><span class="badge vis">视觉 ★★☆</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>技术展示 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">访客可以匿名留下文字或图片，贴在一面会动的墙上；"时光胶囊"模式则设定一个开启日期，到期前谁都看不到内容。互动性强，适合朋友间传播。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>留言</b>：昵称（可选）、文字、图片附件</li>
+      <li><b>展示</b>：便利贴 / 漂流瓶式的卡片墙，新留言有飘入动画</li>
+      <li><b>时光胶囊</b>：设定开启时间，到期才显示</li>
+      <li><b> moderation</b>：简单的内容过滤 / 管理员删除</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>便利贴错落排布、hover 轻微旋转放大、新留言掉落动画</li>
+      <li>时光卡片未解锁时显示倒计时和模糊遮罩</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Worker 提供 API · D1 存留言文本 · R2 存图片（免费 10GB）· 前端瀑布流展示</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>3–4 天</b></span><span>演进：文字墙 → 加图片 → 加时光胶囊 → 加简单审核</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">10</span><div><h3>临时文件传输 / 私密网盘</h3>
+        <div class="badges"><span class="badge cloud">云端存储 ★★★</span><span class="badge">Workers + R2</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★☆☆☆</span></div><div>实用度 <span class="s">★★★★★</span></div></div>
+    </div>
+    <div class="position">上传文件后生成一个提取码和链接，对方凭码下载；可设有效期和下载次数，到期自动删除。比发微信文件更清爽，也是展示对象存储的绝佳例子。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>上传</b>：拖拽上传、进度条、大小限制</li>
+      <li><b>分享</b>：生成提取码和链接，可设密码</li>
+      <li><b>控制</b>：有效期、最大下载次数、到期自动删除</li>
+      <li><b>下载</b>：凭码取件，显示剩余次数</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉设计</div><ul>
+      <li>大拖拽区 + 上传进度环 + 结果卡片（链接一键复制）</li>
+      <li>复制成功的小动画反馈</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Worker 处理上传下载逻辑 · R2 存文件（零出站流量费，这点很香）· KV / D1 存提取码元数据 · 定时任务清理过期文件</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>3–5 天</b></span><span>演进：单文件上传 → 加提取码控制 → 加批量与过期清理</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">11</span><div><h3>网址导航 / 书签收藏夹</h3>
+        <div class="badges"><span class="badge use">实用 ★★★</span><span class="badge cloud">可云端</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>实用度 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">把自己常用的网址整理成一个漂亮的个人导航站，分类、搜索、点一点就打开。可以纯本地，也可以做成带云端同步的多人书签服务。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>分类管理</b>：分组、标签、搜索、排序</li>
+      <li><b>自动信息</b>：自动抓取网站图标（favicon）和标题</li>
+      <li><b>点击统计</b>：记录热门网址</li>
+      <li><b>导入导出</b>：从浏览器书签导入</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉设计</div><ul>
+      <li>卡片墙 + 彩色图标 + 简洁分类侧栏</li>
+      <li>卡片 hover 浮起、图标轻微旋转的 delight 细节</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">纯前端 localStorage 起步（零后端）· 进阶用 D1 存书签 + Worker 同步 · favicon 用 Google/第三方 favicon 服务或代理</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低–中</span></b></span><span>预计 <b>1–2 天（本地版）</b></span><span>演进：静态导航 → 加搜索分类 → 加 D1 云同步</span></div>
+  </article>
+</section>
+
+<!-- ============ 类别 4 ============ -->
+<section class="cat" id="cat4">
+  <div class="cat-head"><span class="emoji">📚</span><h2>类别四 · 内容展示型</h2><span class="cat-tag">安静但耐看 · 纯静态最友好</span></div>
+  <p class="sec-desc">如果你更想"表达"而不是"炫技"，这类合适。它们大多是静态内容，加载快、对国内访问最友好，也是长期经营个人品牌的好载体。</p>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">12</span><div><h3>技术博客 / 个人作品集</h3>
+        <div class="badges"><span class="badge use">实用 ★★★</span><span class="badge">纯静态</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>长期价值 <span class="s">★★★★★</span></div></div>
+    </div>
+    <div class="position">把你的思考、学习记录、做过的项目沉淀成一个站。它不会一夜爆红，但半年后回头看，是最有积累价值的东西——也是简历上最硬的链接。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>文章</b>：列表、标签、搜索、归档、阅读时间估算</li>
+      <li><b>写作</b>：用 Markdown / MDX 写，代码高亮、目录自动生成</li>
+      <li><b>体验</b>：深色模式、阅读进度条、相关文章推荐</li>
+      <li><b>作品集</b>：单独一页展示你做过的项目卡片</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉设计</div><ul>
+      <li>留白充足、字体讲究、配色克制——"安静的高级感"</li>
+      <li>文章卡片入场淡入、页面切换平滑过渡</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Astro / Hugo / Next.js 静态导出 · Markdown 内容 · 全静态托管，国内访问配合 CDN 极快</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低</span></b></span><span>预计 <b>1–2 天搭好，持续写</b></span><span>演进：先发 3 篇 → 加标签搜索 → 加评论（可用第三方）</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">13</span><div><h3>摄影相册 / 瀑布流画廊</h3>
+        <div class="badges"><span class="badge vis">视觉 ★★☆</span><span class="badge cloud">R2 存图</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★★☆</span></div><div>实用度 <span class="s">★★★☆☆</span></div></div>
+    </div>
+    <div class="position">如果你的手机里存了不少照片，做个自己的画廊：瀑布流排布、点开大图、按主题分类。图片放 R2，流量费为零，展示效果拉满。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>瀑布流</b>：图片自适应排布，懒加载</li>
+      <li><b>灯箱</b>：点击放大、左右切换、键盘操作</li>
+      <li><b>分类</b>：按主题 / 地点 / 时间筛选</li>
+      <li><b>信息</b>：显示拍摄参数（EXIF）、图片说明</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>图片加载前用高斯模糊占位图，加载完淡入</li>
+      <li>瀑布流入场错落淡入、灯箱切换的滑动动效</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">图片存 R2（零出站费）· 前端瀑布流库（如 masonry）· 缩略图用 Cloudflare Images 或本地生成</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低–中</span></b></span><span>预计 <b>2–3 天</b></span><span>演进：静态画廊 → 加分类筛选 → 加灯箱与 EXIF</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">14</span><div><h3>书影音 / 游戏清单站</h3>
+        <div class="badges"><span class="badge use">实用 ★★☆</span><span class="badge">静态 / 可云端</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>长期价值 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">做一个豆瓣式的个人清单：看过的书、电影、玩过的游戏，带评分和短评。既是自我记录，也是和同好交流的入口。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>条目卡片</b>：封面、标题、评分、短评、状态（想看/在看/看完）</li>
+      <li><b>分类筛选</b>：按类型、评分、年份、状态</li>
+      <li><b>统计</b>：年度清单、评分分布、数量统计</li>
+      <li><b>搜索</b>：快速找到某部作品</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉设计</div><ul>
+      <li>海报墙式网格、星级评分、卡片 hover 显示简介</li>
+      <li>分类切换时的网格重排动画</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">数据先用静态 JSON / MDX（纯静态最快）· 进阶用 D1 存条目 · 封面图可放 R2 或外链</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低</span></b></span><span>预计 <b>1–2 天</b></span><span>演进：静态清单 → 加筛选搜索 → 加 D1 动态管理</span></div>
+  </article>
+</section>
+
+<!-- ============ 类别 5 ============ -->
+<section class="cat" id="cat5">
+  <div class="cat-head"><span class="emoji">🎮</span><h2>类别五 · 趣味互动型</h2><span class="cat-tag">轻量 · 易传播 · 让人愿意分享</span></div>
+  <p class="sec-desc">这类项目不做"大工程"，胜在有趣和易传播。适合你想要一个"别人玩了会转发给朋友"的轻应用。</p>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">15</span><div><h3>互动小游戏合集</h3>
+        <div class="badges"><span class="badge">纯前端</span><span class="badge vis">视觉 ★★☆</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>传播性 <span class="s">★★★★☆</span></div></div>
+    </div>
+    <div class="position">把 3–5 个经典小游戏做成一个合集站：2048、贪吃蛇、记忆翻牌、扫雷、俄罗斯方块。每个都是独立小项目，凑在一起就是"游戏厅"。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>游戏列表</b>：首页选游戏，统一风格</li>
+      <li><b>分数记录</b>：本地最高分（localStorage）</li>
+      <li><b>体验细节</b>：音效开关、难度选择、重开按钮</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉设计</div><ul>
+      <li>统一复古像素风或霓虹风，游戏卡片带小动图预览</li>
+      <li>得分弹出、胜负动画、粒子庆祝效果</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">Canvas 或 DOM 实现游戏逻辑 · 纯前端 · 每个游戏一个模块，便于逐个添加</div></div>
+    <div class="meta"><span>难度 <b><span class="tier mid">中</span></b></span><span>预计 <b>每个 1–2 天</b></span><span>演进：先做 1 个（2048 最简单）→ 慢慢加 → 加最高分榜</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">16</span><div><h3>趣味测试 + 结果卡片分享</h3>
+        <div class="badges"><span class="badge">纯前端</span><span class="badge vis">视觉 ★★★</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★★☆</span></div><div>传播性 <span class="s">★★★★★</span></div></div>
+    </div>
+    <div class="position">做个 8–12 题的趣味测试（人格、口味、"你是哪种 XX"），答完生成一张漂亮的结果卡片，用户会忍不住截图发朋友圈——这是传播性最强的类型。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>答题流程</b>：一题一屏、进度条、动画过渡</li>
+      <li><b>结果计算</b>：按选项加权算出类型</li>
+      <li><b>结果卡片</b>：Canvas 生成精美图片，含类型名、描述、标签</li>
+      <li><b>分享</b>：长按保存 / 下载图片</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>题目切换的滑入动画、选项点击反馈、结果揭晓的"开箱"感</li>
+      <li>结果卡片设计要足够好看——这是用户分享的动力</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">纯前端逻辑 · html2canvas / 原生 Canvas 生成分享图 · 静态托管，零成本</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低–中</span></b></span><span>预计 <b>2–3 天</b></span><span>演进：一套测试 → 结果图优化 → 做成一个题库支持多套测试</span></div>
+  </article>
+
+  <article class="proj">
+    <div class="proj-top">
+      <div class="proj-title"><span class="proj-num">17</span><div><h3>每日一言 / 运势签</h3>
+        <div class="badges"><span class="badge">纯前端</span><span class="badge vis">视觉 ★★☆</span></div></div></div>
+      <div class="stars"><div>视觉冲击 <span class="s">★★★☆☆</span></div><div>制作难度 <span class="s">★☆☆☆☆</span></div></div>
+    </div>
+    <div class="position">最小可执行的项目：每天一句随机名言 / 抽一支运势签，配一张好看的渐变卡片。一天就能上线，适合"先做个东西出来"破除拖延。</div>
+    <div class="block"><div class="bt">核心功能</div><ul>
+      <li><b>每日内容</b>：从文案池里按日期取一句（保证同一天一致）</li>
+      <li><b>抽签</b>：点击抽签，卡片翻转动画揭晓结果</li>
+      <li><b>打卡</b>：本地记录连续访问天数</li>
+      <li><b>分享</b>：生成图片卡片</li>
+    </ul></div>
+    <div class="block"><div class="bt">视觉与动画设计</div><ul>
+      <li>渐变背景随时间/天气变化、签筒摇晃动画、卡片 3D 翻转</li>
+      <li>文字淡入 + 轻微粒子背景</li>
+    </ul></div>
+    <div class="block"><div class="bt">技术实现</div><div class="tech">静态 JSON 文案池 + 前端日期算法 · 纯静态 · 进阶可用 Workers AI 实时生成文案</div></div>
+    <div class="meta"><span>难度 <b><span class="tier easy">低</span></b></span><span>预计 <b>半天–1 天</b></span><span>演进：每日一言 → 加抽签动画 → 加分享图 → 接 AI 生成</span></div>
+  </article>
+</section>
+
+<!-- ============ Top3 ============ -->
+<section id="top3">
+  <div class="top3">
+    <h2>🎯 如果是我，会先做这 3 个</h2>
+    <p class="lead">结合你的现状：已有工具箱底子、喜欢华丽效果、国内访问偏慢、域名未备案（待确认）。</p>
+    <div class="podium">
+      <div class="pod">
+        <div class="medal">🥇</div>
+        <h3>全能工具箱 2.0 <span style="font-size:13px;color:var(--muted)">#05</span></h3>
+        <p>顺着你已有的基础做，全部本地计算、加载极快，完美绕开国内访问慢的短板。</p>
+        <div class="why">→ 风险最低、最顺势、能真正积累访问量。先打磨 5 个常用工具就能上线。</div>
+      </div>
+      <div class="pod">
+        <div class="medal">🥈</div>
+        <h3>3D 个人主页 <span style="font-size:13px;color:var(--muted)">#01</span></h3>
+        <p>最能满足你"想做点东西展示一下"的诉求，技术审美双展示，纯静态也能跑。</p>
+        <div class="why">→ 视觉 payoff 最大。但注意 3D 资源较大，建议控制体积，做好加载态。</div>
+      </div>
+      <div class="pod">
+        <div class="medal">🥉</div>
+        <h3>匿名留言墙 <span style="font-size:13px;color:var(--muted)">#09</span></h3>
+        <p>真正用上 KV / D1 / R2，把"无服务器云端存储"从概念变成能演示的作品。</p>
+        <div class="why">→ 互动性强、易传播，也是你之前那个"云端存储"问题的完整答案。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 务实提醒 ============ -->
+<section id="caveat">
+  <div class="sec-title"><span class="idx">∞ / 务实提醒</span></div>
+  <h2 class="big">动手前，先看这几条</h2>
+  <p class="sec-desc">这些是从你前面那个站点实测里得出的、针对你实际情况的建议。</p>
+  <div class="caveat">
+    <div class="cbox"><h3><span class="ic">🐢</span>你的站点现在慢在哪</h3><p>实测 `zqf.ltd` 国内访问绕到欧洲节点（阿姆斯特丹/伦敦），延迟约 205ms。所以<b>纯静态、本地计算</b>的项目（类别①②⑤）体验最好；需要频繁请求后端的项目（类别③）会放大这个短板。</p></div>
+    <div class="cbox"><h3><span class="ic">📄</span>备案决定上限</h3><p>想让国内访问变快，最终要靠"域名备案 + 国内 CDN"。如果 `zqf.ltd` 没备案，就优先做不依赖网络的展示型项目；备案后可考虑迁国内 CDN，延迟能从 205ms 降到 20–30ms。</p></div>
+    <div class="cbox"><h3><span class="ic">🔤</span>立刻能改的一点</h3><p>你页面里有 <code>preconnect fonts.googleapis.com</code>，国内会拖慢。无论做哪个项目，先把它去掉、字体本地化——这是投入产出比最高的优化。</p></div>
+    <div class="cbox"><h3><span class="ic">🎯</span>一个项目做精 &gt; 十个半成品</h3><p>别同时开五个坑。挑一个，做到"能发给朋友看且不掉链子"的程度，再开下一个。完成感比完美主义重要。</p></div>
+    <div class="cbox"><h3><span class="ic">🆓</span>成本几乎为零</h3><p>Cloudflare 免费额度：Workers 每天 10 万次请求、R2 10GB、D1 5GB、KV 1GB。上面所有项目在个人用量下都能白嫖，不用买服务器。</p></div>
+    <div class="cbox"><h3><span class="ic">🚀</span>不知道选哪个？</h3><p>用"半天上线"的 <b>#17 每日一言</b> 破除拖延，做完你会更有感觉；再决定长期做哪个。或者把上面任何一项告诉我，我直接帮你出详细方案。</p></div>
+  </div>
+</section>
+
+<footer>
+  为 <b>zqf.ltd</b> 定制 · 17 个项目创意 · 生成于 2026-11-20<br>
+  选定方向后，把编号发我，我可以继续帮你出功能清单、页面结构和技术方案。
+</footer>
+
+</div>
+
+<script>
+const obs=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}})
+},{threshold:.08});
+document.querySelectorAll('.proj').forEach((el,i)=>{
+  el.style.transitionDelay=(Math.min(i%4,3)*40)+'ms';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>

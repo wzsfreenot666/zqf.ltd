@@ -1,229 +1,126 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>zqf.ltd - 在线工具箱</title>
-  <meta name="description" content="zqf.ltd - 一站式在线工具集合：实用工具、趣味小工具、效率文本工具、文件存储">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="/css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>zqf.ltd · 数字作品集</title>
+<style>
+:root{--bg:#05060f;--a:#7c5cff;--b:#ff5ca8;--c:#3ad6ff;--txt:#eef0ff;--muted:#8b8fae;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(100px);opacity:.25;animation:fl 16s ease-in-out infinite}
+.bg i:nth-child(1){width:600px;height:600px;background:var(--a);top:-200px;left:-150px}
+.bg i:nth-child(2){width:500px;height:500px;background:var(--b);bottom:-180px;right:-120px;animation-delay:-6s}
+.bg i:nth-child(3){width:420px;height:420px;background:var(--c);top:45%;left:55%;opacity:.13;animation-delay:-11s}
+@keyframes fl{0%,100%{transform:translate(0,0)}50%{transform:translate(45px,-35px)}}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+header{padding:34px 0;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:900;font-size:20px;letter-spacing:.05em}
+.logo b{background:linear-gradient(100deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.live{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.live i{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80;animation:bl 2s infinite}
+@keyframes bl{50%{opacity:.3}}
+
+.hero{text-align:center;padding:70px 0 40px}
+.hero .kick{display:inline-block;font-size:12px;letter-spacing:.3em;color:var(--c);border:1px solid rgba(58,214,255,.25);border-radius:999px;padding:7px 18px;margin-bottom:26px}
+.hero h1{font-size:clamp(46px,8vw,86px);font-weight:900;line-height:1.05;letter-spacing:-.03em}
+.hero h1 span{background:linear-gradient(110deg,var(--a),var(--b) 50%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:17px;line-height:1.8;max-width:600px;margin:24px auto 0}
+.hero .note{margin-top:20px;font-size:12px;color:#5f6280}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;padding:30px 0 50px}
+.card{
+  position:relative;border-radius:24px;padding:32px;min-height:330px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.1);text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;transition:transform .35s,border-color .35s,box-shadow .35s;
+}
+.card::before{content:"";position:absolute;inset:0;opacity:.55;transition:opacity .35s;z-index:0}
+.card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.3);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.card:hover::before{opacity:.8}
+.card.c1{background:linear-gradient(145deg,#1a1145,#0d0a24)}
+.card.c1::before{background:radial-gradient(circle at 80% 15%,rgba(124,92,255,.5),transparent 55%)}
+.card.c2{background:linear-gradient(145deg,#3d1030,#160a1c)}
+.card.c2::before{background:radial-gradient(circle at 80% 15%,rgba(255,92,168,.45),transparent 55%)}
+.card.c3{background:linear-gradient(145deg,#0a2f3a,#07161f)}
+.card.c3::before{background:radial-gradient(circle at 80% 15%,rgba(58,214,255,.4),transparent 55%)}
+.card > *{position:relative;z-index:1}
+.card .num{font-size:13px;font-weight:800;letter-spacing:.2em;opacity:.7}
+.card .emoji{font-size:52px;margin:26px 0 18px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))}
+.card h2{font-size:27px;font-weight:900;margin-bottom:6px}
+.card .en{font-size:11px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase}
+.card p{font-size:14px;line-height:1.7;color:#c9cbe0;margin-top:18px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
+.tags span{font-size:11px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.card .go{margin-top:auto;padding-top:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
+.card .go .ar{transition:transform .3s}
+.card:hover .go .ar{transform:translateX(6px)}
+
+.chip-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:10px 0 40px}
+.chip-row a{text-decoration:none;color:var(--muted);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:8px 16px;transition:.25s}
+.chip-row a:hover{color:#fff;border-color:var(--a)}
+
+footer{text-align:center;color:var(--muted);font-size:12px;padding:40px 24px 70px;border-top:1px solid rgba(255,255,255,.07);line-height:1.9}
+footer b{color:var(--txt)}
+@media(max-width:640px){.hero{padding-top:40px}.card{min-height:auto}.live{display:none}}
+</style>
 </head>
 <body>
+<div class="bg"><i></i><i></i><i></i></div>
+<div class="wrap">
+  <header>
+    <div class="logo"><b>zqf.ltd</b></div>
+    <div class="live"><i></i> 三个项目 · 已上线</div>
+  </header>
 
-<nav class="navbar" id="navbar">
-  <div class="container">
-    <a href="/" class="navbar-brand">
-      <span class="brand-text">zqf<span class="accent">.ltd</span></span>
+  <div class="hero">
+    <span class="kick">DIGITAL PORTFOLIO · 2026</span>
+    <h1>把想法<br><span>做成能触摸的体验</span></h1>
+    <p>这里陈列着三个不同方向的项目：3D 交互、滚动叙事与实用工具。点开任意一个，开始探索。</p>
+    <div class="note">纯静态页面 · 直接部署到 Cloudflare Pages / Workers 静态资源即可访问</div>
+  </div>
+
+  <div class="grid">
+    <a class="card c1" href="./01-dimensional/index.html">
+      <div class="num">PROJECT 01</div>
+      <div class="emoji">🪐</div>
+      <h2>DIMENSION</h2>
+      <div class="en">交互式 3D 个人名片</div>
+      <p>用粒子星球、轨道环与霓虹光效构建的沉浸式主页。鼠标视差、滚动切镜、技能节点与逐字动画，一应俱全。</p>
+      <div class="tags"><span>Three.js</span><span>粒子系统</span><span>滚动镜头</span></div>
+      <div class="go">进入探索 <span class="ar">→</span></div>
     </a>
-    <ul class="navbar-nav">
-      <li><a href="/" class="active">首页</a></li>
-      <li><a href="/tools/utility.html">实用工具</a></li>
-      <li><a href="/tools/fun.html">趣味工具</a></li>
-      <li><a href="/tools/text.html">文本工具</a></li>
-      <li><a href="/tools/storage.html">文件存储</a></li>
-      <li><a href="/deploy.html">部署教程</a></li>
-    </ul>
+
+    <a class="card c2" href="./02-narrative/index.html">
+      <div class="num">PROJECT 02</div>
+      <div class="emoji">🎬</div>
+      <h2>起源 ORIGIN</h2>
+      <div class="en">滚动叙事故事页</div>
+      <p>从虚空到火花、从成形到生长。用滚动驱动的电影式分镜，配合视差、遮罩揭示、数字滚动与横向叙事。</p>
+      <div class="tags"><span>GSAP</span><span>ScrollTrigger</span><span>横向滚动</span></div>
+      <div class="go">开始故事 <span class="ar">→</span></div>
+    </a>
+
+    <a class="card c3" href="./05-toolkit/index.html">
+      <div class="num">PROJECT 05</div>
+      <div class="emoji">🧰</div>
+      <h2>TOOLKIT</h2>
+      <div class="en">全能在线工具箱</div>
+      <p>24 个常用工具集于一身：JSON、哈希、正则、二维码、图片压缩、人民币大写……全部本地运行，不上传数据。</p>
+      <div class="tags"><span>24 个工具</span><span>本地计算</span><span>即开即用</span></div>
+      <div class="go">打开工具箱 <span class="ar">→</span></div>
+    </a>
   </div>
-</nav>
 
-<section class="hero">
-  <div class="container">
-    <div class="hero-badge">
-      <span class="pulse"></span>
-      14+ 在线工具，全部免费
-    </div>
-    <h1>你的在线<span class="accent">瑞士军刀</span></h1>
-    <p>一站式工具集合 —— 实用工具、趣味小工具、效率文本工具、文件存储，全部在浏览器中运行，无需安装，数据不离开你的设备。</p>
-    <div class="hero-search">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input type="text" id="searchInput" placeholder="搜索工具名称..." oninput="filterTools()">
-    </div>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="num">14</div><div class="label">在线工具</div></div>
-      <div class="hero-stat"><div class="num">4</div><div class="label">功能模块</div></div>
-      <div class="hero-stat"><div class="num">0</div><div class="label">需要安装</div></div>
-    </div>
+  <div class="chip-row">
+    <a href="./zqf-website-ideas.html">📋 查看完整创意库（17 个项目）</a>
   </div>
-</section>
 
-<div class="container">
-
-  <!-- 实用工具箱 -->
-  <section class="section fade-in">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title"><span class="dot"></span> 实用工具箱</h2>
-      </div>
-      <span class="section-desc">日常高频使用的小工具</span>
-    </div>
-    <div class="tool-grid cat-utility" id="cat-utility">
-      <a href="/tools/image-compress.html" class="tool-card" data-name="图片压缩 image compress">
-        <div class="tool-icon">&#128247;</div>
-        <div class="tool-name">图片压缩</div>
-        <div class="tool-desc">在线压缩 JPG/PNG 图片，减小文件体积</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/qrcode.html" class="tool-card" data-name="二维码生成 qrcode">
-        <div class="tool-icon">&#128274;</div>
-        <div class="tool-name">二维码生成</div>
-        <div class="tool-desc">输入文本或链接，生成二维码图片</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/color-picker.html" class="tool-card" data-name="颜色选择器 color picker">
-        <div class="tool-icon">&#127912;</div>
-        <div class="tool-name">颜色选择器</div>
-        <div class="tool-desc">取色、HEX/RGB/HSL 互转</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/unit-convert.html" class="tool-card" data-name="单位换算 unit convert">
-        <div class="tool-icon">&#128208;</div>
-        <div class="tool-name">单位换算</div>
-        <div class="tool-desc">长度、重量、温度等单位互转</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- 趣味小工具 -->
-  <section class="section fade-in">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title"><span class="dot"></span> 趣味小工具</h2>
-      </div>
-      <span class="section-desc">轻松一刻的互动小工具</span>
-    </div>
-    <div class="tool-grid cat-fun" id="cat-fun">
-      <a href="/tools/dice.html" class="tool-card" data-name="掷骰子 dice">
-        <div class="tool-icon">&#127922;</div>
-        <div class="tool-name">掷骰子</div>
-        <div class="tool-desc">1-6 面骰子随机掷出，支持多骰</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/lottery.html" class="tool-card" data-name="抽奖 lottery random">
-        <div class="tool-icon">&#127873;</div>
-        <div class="tool-name">随机抽奖</div>
-        <div class="tool-desc">输入名单，随机抽取幸运者</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/coin-flip.html" class="tool-card" data-name="抛硬币 coin flip">
-        <div class="tool-icon">&#129689;</div>
-        <div class="tool-name">抛硬币</div>
-        <div class="tool-desc">正反面随机，帮你做决定</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/countdown.html" class="tool-card" data-name="倒计时 countdown timer">
-        <div class="tool-icon">&#9201;</div>
-        <div class="tool-name">倒计时器</div>
-        <div class="tool-desc">设定时间，全屏倒计时</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- 效率文本工具 -->
-  <section class="section fade-in">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title"><span class="dot"></span> 效率文本工具</h2>
-      </div>
-      <span class="section-desc">文本处理和效率提升工具</span>
-    </div>
-    <div class="tool-grid cat-text" id="cat-text">
-      <a href="/tools/markdown.html" class="tool-card" data-name="markdown 编辑器 editor">
-        <div class="tool-icon">&#9998;</div>
-        <div class="tool-name">Markdown 编辑器</div>
-        <div class="tool-desc">实时预览 Markdown 渲染效果</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/word-count.html" class="tool-card" data-name="字数统计 word count">
-        <div class="tool-icon">&#128202;</div>
-        <div class="tool-name">字数统计</div>
-        <div class="tool-desc">统计字符、单词、行数</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/json-format.html" class="tool-card" data-name="json 格式化 format">
-        <div class="tool-icon">&#123; &#125;</div>
-        <div class="tool-name">JSON 格式化</div>
-        <div class="tool-desc">美化/压缩 JSON，校验语法</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/base64.html" class="tool-card" data-name="base64 编码解码 encode decode">
-        <div class="tool-icon">&#128279;</div>
-        <div class="tool-name">Base64 编解码</div>
-        <div class="tool-desc">文本与 Base64 互转</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- 文件存储 -->
-  <section class="section fade-in">
-    <div class="section-header">
-      <div>
-        <h2 class="section-title"><span class="dot"></span> 文件存储</h2>
-      </div>
-      <span class="section-desc">上传、管理、分享你的文件</span>
-    </div>
-    <div class="tool-grid cat-storage" id="cat-storage">
-      <a href="/tools/storage.html" class="tool-card" data-name="文件存储 storage upload">
-        <div class="tool-icon">&#128229;</div>
-        <div class="tool-name">文件上传</div>
-        <div class="tool-desc">拖拽上传文件，本地浏览器存储</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-      <a href="/tools/storage.html#list" class="tool-card" data-name="文件管理 file manager">
-        <div class="tool-icon">&#128193;</div>
-        <div class="tool-name">文件管理</div>
-        <div class="tool-desc">查看、下载、删除已存储的文件</div>
-        <span class="tool-arrow">&#8594;</span>
-      </a>
-    </div>
-  </section>
-
+  <footer>
+    为 <b>zqf.ltd</b> 构建 · 视觉优先版本<br>
+    所有依赖库已本地化，离线也能展示 · 无需服务器、零运行成本
+  </footer>
 </div>
-
-<footer class="footer">
-  <div class="container">
-    <div class="footer-brand">
-      zqf.ltd
-    </div>
-    <div class="footer-links">
-      <a href="/tools/utility.html">实用工具</a>
-      <a href="/tools/fun.html">趣味工具</a>
-      <a href="/tools/text.html">文本工具</a>
-      <a href="/tools/storage.html">文件存储</a>
-    </div>
-    <p>zqf.ltd &copy; 2026 &middot; 纯前端工具站，数据不离开你的浏览器</p>
-  </div>
-</footer>
-
-<div class="toast" id="toast"></div>
-
-<script>
-function filterTools() {
-  const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  document.querySelectorAll('.tool-card').forEach(card => {
-    const name = card.dataset.name.toLowerCase();
-    card.style.display = (!q || name.includes(q)) ? '' : 'none';
-  });
-  document.querySelectorAll('.section').forEach(sec => {
-    const visible = sec.querySelectorAll('.tool-card:not([style*="none"])').length;
-    sec.style.display = visible ? '' : 'none';
-  });
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// Navbar scroll shadow
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 8);
-});
-</script>
-
 </body>
 </html>
