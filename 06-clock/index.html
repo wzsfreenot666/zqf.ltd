@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHRONO · 精密时钟</title>
+<style>
+:root{
+  --bg:#070a16;--bg2:#0d1226;--panel:rgba(255,255,255,.045);--line:rgba(255,255,255,.1);
+  --txt:#eef1ff;--muted:#8b91b5;--a:#7c5cff;--b:#ff5ca8;--c:#3ad6ff;
+  --flip:rgba(255,255,255,.055);--flip-line:rgba(255,255,255,.12);--accent:#7c5cff;
+  --shadow:rgba(0,0,0,.5);--font:"SF Mono",ui-monospace,"Segoe UI Mono",Menlo,Consolas,monospace;
+  --digit-font:var(--font);
+}
+/* ========== THEMES ========== */
+[data-theme="nebula"]{--bg:#070a16;--bg2:#0d1226;--a:#7c5cff;--b:#ff5ca8;--c:#3ad6ff;--accent:#8b6cff;--txt:#eef1ff}
+[data-theme="aurora"]{--bg:#04110f;--bg2:#08201c;--a:#00e5a8;--b:#00b3ff;--c:#7dff9b;--accent:#00e5a8;--txt:#e6fff6}
+[data-theme="sunset"]{--bg:#160a0a;--bg2:#26110f;--a:#ff7a45;--b:#ff3d6e;--c:#ffc04d;--accent:#ff7a45;--txt:#fff0e8}
+[data-theme="ocean"]{--bg:#050c1c;--bg2:#0a1830;--a:#3b82f6;--b:#22d3ee;--c:#60a5fa;--accent:#3b82f6;--txt:#e8f2ff}
+[data-theme="mono"]{--bg:#080808;--bg2:#111;--a:#e8e8e8;--b:#9a9a9a;--c:#fff;--accent:#e8e8e8;--txt:#f5f5f5;--panel:rgba(255,255,255,.03)}
+[data-theme="paper"]{--bg:#f2f0ea;--bg2:#e9e6dd;--a:#2b2b2b;--b:#7a6a55;--c:#a89b82;--accent:#2b2b2b;--txt:#1a1a1a;--muted:#6b6559;--flip:rgba(0,0,0,.045);--flip-line:rgba(0,0,0,.1);--panel:rgba(0,0,0,.03);--line:rgba(0,0,0,.12);--shadow:rgba(0,0,0,.12)}
+/* ========== FONTS ========== */
+[data-font="mono"]{--digit-font:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+[data-font="sans"]{--digit-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif}
+[data-font="serif"]{--digit-font:"Georgia","Times New Roman",serif}
+[data-font="thin"]{--digit-font:"Helvetica Neue",ultralight,"Segoe UI",sans-serif}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  min-height:100vh;overflow-x:hidden;transition:background .5s,color .5s;
+}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(ellipse at 50% -10%,var(--bg2),var(--bg) 65%)}
+.bg i{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:fl 18s ease-in-out infinite}
+.bg i:nth-child(1){width:620px;height:620px;background:var(--a);top:-220px;left:-180px}
+.bg i:nth-child(2){width:560px;height:560px;background:var(--b);bottom:-200px;right:-160px;animation-delay:-7s}
+.bg i:nth-child(3){width:480px;height:480px;background:var(--c);top:50%;left:50%;opacity:.1;animation-delay:-12s}
+@keyframes fl{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px) scale(1.1)}}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px;min-height:100vh;display:flex;flex-direction:column}
+header{padding:26px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-weight:900;font-size:19px;letter-spacing:.06em;display:flex;align-items:center;gap:10px}
+.logo b{background:linear-gradient(100deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo .ic{width:26px;height:26px}
+.tools{display:flex;gap:8px;align-items:center}
+.iconbtn{
+  width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--txt);
+  display:grid;place-items:center;cursor:pointer;transition:.2s;font-size:17px;backdrop-filter:blur(10px)
+}
+.iconbtn:hover{border-color:var(--accent);transform:translateY(-2px);background:rgba(255,255,255,.09)}
+.iconbtn.active{color:var(--accent);border-color:var(--accent)}
+.iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* TABS */
+.tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:5px;margin:6px auto 30px;width:max-content;backdrop-filter:blur(10px)}
+.tab{padding:10px 22px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);transition:.25s;border:none;background:none;white-space:nowrap}
+.tab:hover{color:var(--txt)}
+.tab.active{background:linear-gradient(135deg,var(--a),var(--b));color:#fff;box-shadow:0 8px 24px rgba(124,92,255,.3)}
+
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:40px}
+.panel{display:none;width:100%;flex-direction:column;align-items:center;animation:fadeIn .5s}
+.panel.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ========== FLIP CLOCK ========== */
+.clock-date{font-size:16px;color:var(--muted);letter-spacing:.05em;margin-bottom:22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.clock-date .wd{color:var(--accent);font-weight:700}
+.clock-date .tz{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.flipclock{display:flex;gap:12px;align-items:flex-start;perspective:1200px}
+.flipgroup{display:flex;flex-direction:column;align-items:center;gap:8px}
+.digits{display:flex;gap:6px}
+.flip{
+  position:relative;width:clamp(52px,10vw,86px);height:clamp(80px,15vw,128px);
+  font-family:var(--digit-font);font-size:clamp(50px,9.5vw,88px);font-weight:700;
+  perspective:600px;transform-style:preserve-3d;
+}
+.flip .digit{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,var(--flip),rgba(255,255,255,.015));
+  border:1px solid var(--flip-line);border-radius:12px;
+  box-shadow:0 8px 24px var(--shadow),inset 0 1px 0 rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.flip .digit::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--flip-line);transform:translateY(-.5px)}
+/* top / bottom halves via clip */
+.dig-top{clip-path:inset(0 0 50% 0)}
+.dig-bot{clip-path:inset(50% 0 0 0)}
+.flip .digit.up{background:linear-gradient(180deg,rgba(255,255,255,.07),var(--flip))}
+.flip .digit.down{background:linear-gradient(180deg,var(--flip),rgba(255,255,255,.01))}
+/* animated leaves */
+.leaf{position:absolute;inset:0;z-index:5;pointer-events:none;backface-visibility:hidden}
+.leaf.up{clip-path:inset(0 0 50% 0);transform-origin:bottom center}
+.leaf.down{clip-path:inset(50% 0 0 0);transform-origin:top center}
+.cell{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),var(--flip));
+  border:1px solid var(--flip-line);border-radius:12px;color:var(--txt);
+}
+.leaf.down .cell{background:linear-gradient(180deg,var(--flip),rgba(255,255,255,.01))}
+.leaf.anim-up{animation:flipTop .3s ease-in forwards}
+.leaf.anim-down{animation:flipBot .3s .3s ease-out forwards}
+@keyframes flipTop{0%{transform:rotateX(0)}100%{transform:rotateX(-90deg)}}
+@keyframes flipBot{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+.colon{font-family:var(--digit-font);font-size:clamp(40px,8vw,72px);font-weight:700;color:var(--accent);line-height:clamp(80px,15vw,128px);opacity:.75;padding:0 2px}
+.ms{
+  font-family:var(--digit-font);font-size:clamp(20px,3.5vw,32px);font-weight:700;color:var(--b);
+  align-self:flex-end;margin-bottom:10px;padding-left:6px;min-width:68px;opacity:.9;
+}
+.glabel{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+
+/* digital (non-flip) mode */
+.digital{font-family:var(--digit-font);font-size:clamp(56px,14vw,148px);font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.digital .sec-ms{font-size:.4em;color:var(--b);vertical-align:baseline;margin-left:6px}
+.digital .ampm{font-size:.22em;color:var(--accent);margin-left:10px;letter-spacing:.05em}
+.blink{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:.25}}
+
+/* ========== STOPWATCH ========== */
+.sw-time{font-family:var(--digit-font);font-size:clamp(58px,15vw,150px);font-weight:700;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.03em}
+.sw-time .cs{font-size:.42em;color:var(--accent)}
+.sw-main{min-height:170px;display:flex;align-items:center;justify-content:center}
+.laps{width:100%;max-width:460px;margin-top:20px;max-height:190px;overflow-y:auto;border-top:1px solid var(--line)}
+.laps::-webkit-scrollbar{width:6px}.laps::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
+.lap{display:flex;justify-content:space-between;padding:9px 6px;font-family:var(--digit-font);font-size:14px;color:var(--muted);border-bottom:1px solid var(--line)}
+.lap.fast{color:#4ade80}.lap.slow{color:#fb7185}
+.lap b{color:var(--txt);font-weight:600}
+
+/* ========== POMODORO ========== */
+.pomo-wrap{display:flex;flex-direction:column;align-items:center;gap:26px}
+.pomo-modes{display:flex;gap:8px}
+.pmode{padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;transition:.25s}
+.pmode:hover{color:var(--txt)}
+.pmode.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.ring{position:relative;width:clamp(250px,60vw,330px);height:clamp(250px,60vw,330px)}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{fill:none;stroke:var(--line);stroke-width:9}
+.ring .prog{fill:none;stroke:url(#pg);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .4s linear;filter:drop-shadow(0 0 8px var(--accent))}
+.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.ring-time{font-family:var(--digit-font);font-size:clamp(46px,11vw,68px);font-weight:700;font-variant-numeric:tabular-nums}
+.ring-label{font-size:12px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase}
+.ring-rounds{display:flex;gap:6px;margin-top:10px}
+.ring-rounds i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.ring-rounds i.done{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+
+/* buttons */
+.controls{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;justify-content:center}
+.btn{
+  padding:13px 30px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--txt);
+  font-size:14px;font-weight:700;cursor:pointer;transition:.22s;backdrop-filter:blur(10px);min-width:112px
+}
+.btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.btn.primary{background:linear-gradient(135deg,var(--a),var(--b));color:#fff;border-color:transparent;box-shadow:0 10px 28px rgba(124,92,255,.3)}
+.btn.primary:hover{box-shadow:0 14px 36px rgba(124,92,255,.45)}
+.btn svg{width:15px;height:15px;vertical-align:-2px;margin-right:6px;fill:currentColor}
+.hint{font-size:12px;color:var(--muted);margin-top:22px;text-align:center;line-height:1.8}
+.hint kbd{font-family:var(--font);font-size:11px;border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--txt);background:var(--panel)}
+
+/* settings drawer */
+.drawer{position:fixed;top:0;right:0;width:min(360px,90vw);height:100%;background:var(--bg2);border-left:1px solid var(--line);z-index:50;padding:26px;overflow-y:auto;transform:translateX(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);box-shadow:-20px 0 60px var(--shadow)}
+.drawer.open{transform:none}
+.drawer h3{font-size:16px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.drawer .close{cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
+.sec{margin-top:26px}
+.sec>.lbl{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;font-size:13px;transition:.2s}
+.opt:hover{color:var(--txt)}
+.opt.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.sw{width:38px;height:38px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.2s;position:relative}
+.sw:hover{transform:scale(1.12)}
+.sw.active{border-color:var(--txt);box-shadow:0 0 0 3px var(--bg2),0 0 0 5px var(--accent)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border:none}
+.toggle{width:44px;height:24px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:.25s;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.toggle.on::after{left:23px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--txt);cursor:pointer;font-size:16px}
+.stepper button:hover{border-color:var(--accent)}
+.stepper span{font-family:var(--digit-font);min-width:42px;text-align:center;font-size:15px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(2px)}
+.overlay.show{opacity:1;pointer-events:auto}
+
+.back{margin-top:26px;text-decoration:none;color:var(--muted);font-size:13px;display:inline-flex;gap:8px;align-items:center;transition:.2s}
+.back:hover{color:var(--accent)}
+@media(max-width:640px){
+  .flipclock{gap:6px}.digits{gap:4px}.colon{font-size:34px}
+  .controls .btn{padding:12px 20px;min-width:100px}
+  header{padding:18px 0}
+  .clock-date{font-size:14px}
+}
+</style>
+</head>
+<body data-theme="nebula" data-font="mono">
+<div class="bg"><i></i><i></i><i></i></div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer">
+  <h3><span>⚙️ 设置</span><span class="close" id="dClose">×</span></h3>
+
+  <div class="sec">
+    <div class="lbl">主题配色</div>
+    <div class="swatches" id="themes"></div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">数字字体</div>
+    <div class="opts" id="fonts">
+      <div class="opt active" data-font="mono">等宽</div>
+      <div class="opt" data-font="sans">无衬线</div>
+      <div class="opt" data-font="serif">衬线</div>
+      <div class="opt" data-font="thin">纤细</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">时钟显示</div>
+    <div class="row"><span>翻页动画</span><div class="toggle on" id="tFlip"></div></div>
+    <div class="row"><span>显示毫秒</span><div class="toggle on" id="tMs"></div></div>
+    <div class="row"><span>24 小时制</span><div class="toggle on" id="t24"></div></div>
+    <div class="row"><span>显示日期/时区</span><div class="toggle on" id="tDate"></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="lbl">番茄钟时长（分钟）</div>
+    <div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div>
+    <div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div>
+    <div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div>
+    <div class="row"><span>自动开始下一轮</span><div class="toggle" id="tAuto"></div></div>
+    <div class="row"><span>结束提示音</span><div class="toggle on" id="tSound"></div></div>
+  </div>
+</aside>
+
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="url(#lg)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7c5cff"/><stop offset="1" stop-color="#ff5ca8"/></linearGradient></defs></svg>
+      <b>CHRONO</b>
+    </div>
+    <div class="tools">
+      <button class="iconbtn" id="fsBtn" title="全屏">
+        <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+      </button>
+      <button class="iconbtn" id="setBtn" title="设置">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-panel="clock">🕐 时钟</button>
+    <button class="tab" data-panel="stopwatch">⏱️ 秒表</button>
+    <button class="tab" data-panel="pomo">🍅 番茄钟</button>
+  </div>
+
+  <main>
+    <!-- CLOCK -->
+    <section class="panel active" id="clock">
+      <div class="clock-date" id="dateLine">
+        <span class="wd" id="weekday">星期一</span>
+        <span id="fullDate">2026年1月1日</span>
+        <span class="tz" id="tz">UTC+8</span>
+      </div>
+      <div id="flipWrap" class="flipclock">
+        <div class="flipgroup">
+          <div class="digits" id="hDig"></div>
+          <div class="glabel">时</div>
+        </div>
+        <div class="colon">:</div>
+        <div class="flipgroup">
+          <div class="digits" id="mDig"></div>
+          <div class="glabel">分</div>
+        </div>
+        <div class="colon">:</div>
+        <div class="flipgroup">
+          <div class="digits" id="sDig"></div>
+          <div class="glabel">秒</div>
+        </div>
+        <div class="flipgroup">
+          <div class="ms" id="msVal">.000</div>
+          <div class="glabel">毫秒</div>
+        </div>
+      </div>
+      <div id="digitalWrap" class="digital" style="display:none">
+        <span id="digitalTime">00:00:00</span><span class="sec-ms" id="digitalMs">.000</span><span class="ampm" id="ampm"></span>
+      </div>
+      <div class="hint">时间实时同步自系统时钟 · 精确到毫秒<br>按 <kbd>F</kbd> 切换翻页 / 数字 · <kbd>Space</kbd> 暂停走时</div>
+    </section>
+
+    <!-- STOPWATCH -->
+    <section class="panel" id="stopwatch">
+      <div class="sw-main"><div class="sw-time"><span id="swTime">00:00</span><span class="cs" id="swCs">.00</span></div></div>
+      <div class="controls">
+        <button class="btn primary" id="swStart"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始</button>
+        <button class="btn" id="swLap" disabled><svg viewBox="0 0 24 24"><path d="M6 5h12v14H6z"/></svg>计次</button>
+        <button class="btn" id="swReset" disabled><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>重置</button>
+      </div>
+      <div class="laps" id="laps"></div>
+      <div class="hint">精确到 1/100 秒 · <kbd>Space</kbd> 开始/暂停 · <kbd>L</kbd> 计次 · <kbd>R</kbd> 重置</div>
+    </section>
+
+    <!-- POMODORO -->
+    <section class="panel" id="pomo">
+      <div class="pomo-wrap">
+        <div class="pomo-modes">
+          <button class="pmode active" data-mode="work">专注</button>
+          <button class="pmode" data-mode="short">短休息</button>
+          <button class="pmode" data-mode="long">长休息</button>
+        </div>
+        <div class="ring">
+          <svg viewBox="0 0 300 300">
+            <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--a)"/><stop offset="1" stop-color="var(--b)"/></linearGradient></defs>
+            <circle class="track" cx="150" cy="150" r="136"/>
+            <circle class="prog" id="pomoProg" cx="150" cy="150" r="136"/>
+          </svg>
+          <div class="ring-inner">
+            <div class="ring-time" id="pomoTime">25:00</div>
+            <div class="ring-label" id="pomoLabel">专注时间</div>
+            <div class="ring-rounds" id="rounds"></div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="btn primary" id="pomoStart"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始专注</button>
+          <button class="btn" id="pomoReset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>重置</button>
+        </div>
+        <div class="hint">每完成 4 个专注自动进入长休息 · <kbd>Space</kbd> 开始/暂停</div>
+      </div>
+    </section>
+  </main>
+
+  <a class="back" href="../index.html">← 返回作品集</a>
+</div>
+
+<script>
+/* ================= STATE ================= */
+const LS='chrono_v1';
+let S={
+  theme:'nebula',font:'mono',flip:true,showMs:true,h24:true,showDate:true,
+  work:25,short:5,long:15,auto:false,sound:true
+};
+try{const s=localStorage.getItem(LS);if(s)Object.assign(S,JSON.parse(s))}catch(e){}
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
+const $=id=>document.getElementById(id);
+const applyState=()=>{
+  document.body.dataset.theme=S.theme;
+  document.body.dataset.font=S.font;
+  $('tFlip').classList.toggle('on',S.flip);
+  $('tMs').classList.toggle('on',S.showMs);
+  $('t24').classList.toggle('on',S.h24);
+  $('tDate').classList.toggle('on',S.showDate);
+  $('tAuto').classList.toggle('on',S.auto);
+  $('tSound').classList.toggle('on',S.sound);
+  $('workVal').textContent=S.work;$('shortVal').textContent=S.short;$('longVal').textContent=S.long;
+  document.querySelectorAll('#fonts .opt').forEach(o=>o.classList.toggle('active',o.dataset.font===S.font));
+  document.querySelectorAll('#themes .sw').forEach(o=>o.classList.toggle('active',o.dataset.theme===S.theme));
+  $('flipWrap').style.display=S.flip?'flex':'none';
+  $('digitalWrap').style.display=S.flip?'none':'block';
+  $('dateLine').style.display=S.showDate?'flex':'none';
+  $('msVal').style.display=S.showMs?'flex':'none';
+  $('digitalMs').style.display=S.showMs?'inline':'none';
+};
+
+/* ================= THEME SWATCHES ================= */
+const themeMap={nebula:['#7c5cff','#ff5ca8'],aurora:['#00e5a8','#00b3ff'],sunset:['#ff7a45','#ff3d6e'],ocean:['#3b82f6','#22d3ee'],mono:['#e8e8e8','#9a9a9a'],paper:['#2b2b2b','#a89b82']};
+const themeNames={nebula:'星云',aurora:'极光',sunset:'落日',ocean:'深海',mono:'黑白',paper:'纸张'};
+$('themes').innerHTML=Object.keys(themeMap).map(k=>
+  `<div class="sw ${k===S.theme?'active':''}" data-theme="${k}" title="${themeNames[k]}" style="background:linear-gradient(135deg,${themeMap[k][0]},${themeMap[k][1]})"></div>`
+).join('');
+$('themes').addEventListener('click',e=>{const sw=e.target.closest('.sw');if(!sw)return;S.theme=sw.dataset.theme;save();applyState()});
+$('fonts').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o)return;S.font=o.dataset.font;save();applyState()});
+
+/* toggles */
+const bindToggle=(id,key,after)=>$(id).addEventListener('click',()=>{S[key]=!S[key];save();applyState();after&&after()});
+bindToggle('tFlip','flip');bindToggle('tMs','showMs');bindToggle('t24','h24');
+bindToggle('tDate','showDate');bindToggle('tAuto','auto');bindToggle('tSound','sound');
+document.querySelectorAll('[data-pomo]').forEach(b=>b.addEventListener('click',()=>{
+  const k=b.dataset.pomo,d=+b.dataset.d;
+  S[k]=Math.max(1,Math.min(120,S[k]+d));save();applyState();
+  if(!pomo.running){pomo.mode=k==='work'?'work':k;resetPomo();}
+}));
+
+/* drawer */
+const drawer=$('drawer'),overlay=$('overlay');
+const openDrawer=()=>{drawer.classList.add('open');overlay.classList.add('show')};
+const closeDrawer=()=>{drawer.classList.remove('open');overlay.classList.remove('show')};
+$('setBtn').addEventListener('click',openDrawer);
+$('dClose').addEventListener('click',closeDrawer);
+overlay.addEventListener('click',closeDrawer);
+$('fsBtn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()});
+
+/* ================= TABS ================= */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');$(t.dataset.panel).classList.add('active');
+}));
+
+/* ================= FLIP DIGITS ================= */
+function makeFlip(container){
+  const digit=document.createElement('div');digit.className='flip';
+  digit.innerHTML=`
+    <div class="digit up dig-top"><span>0</span></div>
+    <div class="digit down dig-bot"><span>0</span></div>
+    <div class="leaf up"><div class="cell"><span>0</span></div></div>
+    <div class="leaf down"><div class="cell"><span>0</span></div></div>`;
+  container.appendChild(digit);
+  const top=digit.querySelector('.up span'),bot=digit.querySelector('.down span');
+  const lu=digit.querySelector('.leaf.up'),ld=digit.querySelector('.leaf.down');
+  const lus=lu.querySelector('span'),lds=ld.querySelector('span');
+  let cur='0',timer=null;
+  return function set(v){
+    v=String(v);
+    if(v===cur)return;
+    const old=cur;cur=v;
+    top.textContent=v;bot.textContent=v;lus.textContent=old;lds.textContent=v;
+    lu.classList.remove('anim-up');ld.classList.remove('anim-down');
+    void digit.offsetWidth;
+    lu.classList.add('anim-up');ld.classList.add('anim-down');
+  };
+}
+let setters={};
+function buildDigits(){
+  $('hDig').innerHTML='';$('mDig').innerHTML='';$('sDig').innerHTML='';
+  setters.h=[makeFlip($('hDig')),makeFlip($('hDig'))];
+  setters.m=[makeFlip($('mDig')),makeFlip($('mDig'))];
+  setters.s=[makeFlip($('sDig')),makeFlip($('sDig'))];
+}
+buildDigits();
+
+const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+let clockPaused=false,clockOffset=0;
+function updateClock(){
+  if(!clockPaused){
+    const now=new Date();
+    let h=now.getHours();
+    const ampm=h>=12?'PM':'AM';
+    if(!S.h24)h=h%12||12;
+    const hh=String(h).padStart(2,'0');
+    const mm=String(now.getMinutes()).padStart(2,'0');
+    const ss=String(now.getSeconds()).padStart(2,'0');
+    const mss=String(now.getMilliseconds()).padStart(3,'0');
+    if(S.flip){
+      setters.h.forEach((f,i)=>f(hh[i]));
+      setters.m.forEach((f,i)=>f(mm[i]));
+      setters.s.forEach((f,i)=>f(ss[i]));
+      $('msVal').textContent='.'+mss;
+    }else{
+      const base=`${hh}:${mm}:${ss}`;
+      $('digitalTime').textContent=base;
+      $('digitalMs').textContent='.'+mss;
+      $('ampm').textContent=S.h24?'':ampm;
+    }
+    $('weekday').textContent=WDS[now.getDay()];
+    $('fullDate').textContent=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+    const tz=-now.getTimezoneOffset()/60;
+    $('tz').textContent='UTC'+(tz>=0?'+':'')+tz;
+    const secs=$('sDig');if(secs)secs.style.opacity=1;
+  }
+  requestAnimationFrame(updateClock);
+}
+requestAnimationFrame(updateClock);
+
+/* ================= STOPWATCH ================= */
+const sw={running:false,elapsed:0,start:0,laps:[],last:0};
+function fmt(t,cs=true){
+  const m=Math.floor(t/60000).toString().padStart(2,'0');
+  const s=Math.floor(t/1000%60).toString().padStart(2,'0');
+  if(cs){const c=Math.floor(t/10%100).toString().padStart(2,'0');return {m,s,sub:c}}
+  const ms=Math.floor(t%1000).toString().padStart(3,'0');return {m,s,sub:ms};
+}
+function renderSw(){
+  const f=fmt(sw.elapsed,true);
+  $('swTime').textContent=f.m+':'+f.s;
+  $('swCs').textContent='.'+f.sub;
+}
+function tickSw(ts){
+  if(sw.running){sw.elapsed=sw.last+(ts-sw.start);renderSw()}
+  requestAnimationFrame(tickSw);
+}
+requestAnimationFrame(tickSw);
+$('swStart').addEventListener('click',()=>{
+  sw.running=!sw.running;
+  if(sw.running){sw.start=performance.now();sw.last=sw.elapsed;$('swStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>暂停'}
+  else{$('swStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>继续'}
+  $('swLap').disabled=!sw.running;
+  $('swReset').disabled=sw.elapsed===0&&!sw.running;
+});
+$('swLap').addEventListener('click',()=>{
+  if(!sw.running)return;
+  const f=fmt(sw.elapsed,true);const str=f.m+':'+f.s+'.'+f.sub;
+  const prev=sw.laps.length?sw.laps[sw.laps.length-1].t:0;
+  const diff=sw.elapsed-prev;
+  sw.laps.unshift({n:sw.laps.length+1,t:sw.elapsed,str,diff});
+  renderLaps();
+});
+function renderLaps(){
+  const fastest=sw.laps.length>1?Math.min(...sw.laps.map(l=>l.diff)):null;
+  const slowest=sw.laps.length>1?Math.max(...sw.laps.map(l=>l.diff)):null;
+  $('laps').innerHTML=sw.laps.map(l=>{
+    const cls=l.diff===fastest?'fast':l.diff===slowest?'slow':'';
+    const d=fmt(l.diff,true);const ds=d.m+':'+d.s+'.'+d.sub;
+    return `<div class="lap ${cls}"><span>计次 ${String(l.n).padStart(2,'0')}</span><span>${ds}</span><b>${l.str}</b></div>`;
+  }).join('');
+}
+$('swReset').addEventListener('click',()=>{
+  sw.running=false;sw.elapsed=0;sw.laps=[];sw.start=0;sw.last=0;
+  $('swStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始';
+  $('swLap').disabled=true;$('swReset').disabled=true;renderSw();renderLaps();
+});
+
+/* ================= POMODORO ================= */
+const pomo={mode:'work',running:false,remain:S.work*60,total:S.work*60,round:0,ts:0,raf:null};
+const CIRC=2*Math.PI*136;
+$('pomoProg').style.strokeDasharray=CIRC;
+const modeCfg={work:{label:'专注时间',key:'work'},short:{label:'短休息',key:'short'},long:{label:'长休息',key:'long'}};
+function resetPomo(){
+  pomo.total=S[pomo.mode]*60;pomo.remain=pomo.total;
+  renderPomo();renderRounds();
+}
+function renderPomo(){
+  const m=Math.floor(pomo.remain/60).toString().padStart(2,'0');
+  const s=Math.ceil(pomo.remain%60).toString().padStart(2,'0');
+  $('pomoTime').textContent=m+':'+s;
+  $('pomoLabel').textContent=modeCfg[pomo.mode].label;
+  const ratio=pomo.total?pomo.remain/pomo.total:1;
+  $('pomoProg').style.strokeDashoffset=CIRC*(1-ratio);
+}
+function renderRounds(){
+  $('rounds').innerHTML=Array.from({length:4},(_,i)=>`<i class="${i<pomo.round%4?'done':''}"></i>`).join('');
+}
+function tickPomo(){
+  if(!pomo.running)return;
+  const now=performance.now();
+  pomo.remain-=(now-pomo.ts)/1000;pomo.ts=now;
+  if(pomo.remain<=0){pomo.remain=0;renderPomo();pomoDone();return}
+  renderPomo();pomo.raf=requestAnimationFrame(tickPomo);
+}
+function chime(){
+  if(!S.sound)return;
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    [0,.18,.36].forEach((d,i)=>{
+      const o=ac.createOscillator(),g=ac.createGain();
+      o.connect(g);g.connect(ac.destination);
+      o.frequency.value=[523.25,659.25,783.99][i];o.type='sine';
+      g.gain.setValueAtTime(0,ac.currentTime+d);
+      g.gain.linearRampToValueAtTime(.3,ac.currentTime+d+.02);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d+.5);
+      o.start(ac.currentTime+d);o.stop(ac.currentTime+d+.55);
+    });
+  }catch(e){}
+}
+function pomoDone(){
+  pomo.running=false;chime();
+  if(pomo.mode==='work'){
+    pomo.round++;renderRounds();
+    pomo.mode=pomo.round%4===0?'long':'short';
+    $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始休息';
+  }else{
+    pomo.mode='work';
+    $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始专注';
+  }
+  document.querySelectorAll('.pmode').forEach(b=>b.classList.toggle('active',b.dataset.mode===pomo.mode));
+  resetPomo();
+  if(S.auto)startPomo();
+}
+function startPomo(){
+  if(pomo.running){pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>继续';return}
+  pomo.running=true;pomo.ts=performance.now();pomo.raf=requestAnimationFrame(tickPomo);
+  $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>暂停';
+}
+$('pomoStart').addEventListener('click',startPomo);
+$('pomoReset').addEventListener('click',()=>{pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始专注';resetPomo()});
+document.querySelectorAll('.pmode').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.pmode').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');pomo.mode=b.dataset.mode;pomo.running=false;
+  cancelAnimationFrame(pomo.raf);
+  $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始'+(pomo.mode==='work'?'专注':'休息');
+  resetPomo();
+}));
+
+/* ================= KEYBOARD ================= */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  const active=document.querySelector('.panel.active')?.id;
+  if(e.code==='Space'){e.preventDefault();
+    if(active==='stopwatch')$('swStart').click();
+    else if(active==='pomo')startPomo();
+    else clockPaused=!clockPaused;
+  }
+  if(active==='stopwatch'){
+    if(e.key.toLowerCase()==='l')$('swLap').click();
+    if(e.key.toLowerCase()==='r')$('swReset').click();
+  }
+  if(active==='clock'&&e.key.toLowerCase()==='f'){S.flip=!S.flip;save();applyState()}
+  if(e.key==='Escape')closeDrawer();
+});
+
+/* init */
+applyState();resetPomo();
+</script>
+</body>
+</html>

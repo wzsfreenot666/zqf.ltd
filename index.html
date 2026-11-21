@@ -45,6 +45,8 @@ header{padding:34px 0;display:flex;align-items:center;justify-content:space-betw
 .card.c2::before{background:radial-gradient(circle at 80% 15%,rgba(255,92,168,.45),transparent 55%)}
 .card.c3{background:linear-gradient(145deg,#0a2f3a,#07161f)}
 .card.c3::before{background:radial-gradient(circle at 80% 15%,rgba(58,214,255,.4),transparent 55%)}
+.card.c4{background:linear-gradient(145deg,#1a1038,#0b0a20)}
+.card.c4::before{background:radial-gradient(circle at 80% 15%,rgba(124,92,255,.45),transparent 55%)}
 .card > *{position:relative;z-index:1}
 .card .num{font-size:13px;font-weight:800;letter-spacing:.2em;opacity:.7}
 .card .emoji{font-size:52px;margin:26px 0 18px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))}
@@ -71,13 +73,13 @@ footer b{color:var(--txt)}
 <div class="wrap">
   <header>
     <div class="logo"><b>zqf.ltd</b></div>
-    <div class="live"><i></i> 三个项目 · 已上线</div>
+    <div class="live"><i></i> 四个项目 · 已上线</div>
   </header>
 
   <div class="hero">
     <span class="kick">DIGITAL PORTFOLIO · 2026</span>
     <h1>把想法<br><span>做成能触摸的体验</span></h1>
-    <p>这里陈列着三个不同方向的项目：3D 交互、滚动叙事与实用工具。点开任意一个，开始探索。</p>
+    <p>这里陈列着四个不同方向的项目：3D 交互、滚动叙事、精密时钟与实用工具。点开任意一个，开始探索。</p>
     <div class="note">纯静态页面 · 直接部署到 Cloudflare Pages / Workers 静态资源即可访问</div>
   </div>
 
@@ -110,6 +112,16 @@ footer b{color:var(--txt)}
       <p>24 个常用工具集于一身：JSON、哈希、正则、二维码、图片压缩、人民币大写……全部本地运行，不上传数据。</p>
       <div class="tags"><span>24 个工具</span><span>本地计算</span><span>即开即用</span></div>
       <div class="go">打开工具箱 <span class="ar">→</span></div>
+    </a>
+
+    <a class="card c4" href="./06-clock/index.html">
+      <div class="num">PROJECT 06</div>
+      <div class="emoji">🕐</div>
+      <h2>CHRONO</h2>
+      <div class="en">精密时钟 · 计时 · 番茄钟</div>
+      <p>毫秒级实时时钟配翻页动画，多主题与字体随心切换。秒表支持计次，番茄钟带进度环、提示音与自动循环。</p>
+      <div class="tags"><span>翻页时钟</span><span>毫秒计时</span><span>番茄钟</span></div>
+      <div class="go">打开时钟 <span class="ar">→</span></div>
     </a>
   </div>
 
