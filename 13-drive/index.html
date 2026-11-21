@@ -86,10 +86,17 @@ async function api(action, opts={}) {
 }
 
 async function init() {
-  const s = await api('state', { auth:false });
+  let s;
+  try { s = await api('state', { auth:false }); } catch(e) { s = {}; }
+  if (!s || s.ok !== true) {
+    $('gateHint').innerHTML = '网盘后端服务尚未开通。请联系站点所有者完成云端存储配置后再使用。';
+    $('loginBtn').disabled = true; $('passInput').disabled = true;
+    return;
+  }
   if (s.configured === false) {
-    $('gateHint').innerHTML = '当前站点尚未配置管理员密码，网站所有者需在 Cloudflare 面板添加环境变量 <b>DRIVE_PASS</b> 并绑定 R2 桶 <b>DRIVE_BUCKET</b>。';
-    $('loginBtn').disabled = true;
+    $('gateHint').innerHTML = '当前站点尚未配置管理员密码，网站所有者需在 Cloudflare 完成配置后再使用。';
+    $('loginBtn').disabled = true; $('passInput').disabled = true;
+    return;
   }
   if (s.maxFile) { maxFile = s.maxFile; $('maxHint').textContent = '单文件上限 ' + Math.round(maxFile/1048576) + 'MB'; }
   if (token && Date.now() < expired) { showApp(); }
