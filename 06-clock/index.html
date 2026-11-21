@@ -58,7 +58,7 @@ header{padding:26px 0;display:flex;align-items:center;justify-content:space-betw
 .tab:hover{color:var(--txt)}
 .tab.active{background:linear-gradient(135deg,var(--a),var(--b));color:#fff;box-shadow:0 8px 24px rgba(124,92,255,.3)}
 
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:40px}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(12px,7vh,64px) 0 40px}
 .panel{display:none;width:100%;flex-direction:column;align-items:center;animation:fadeIn .5s}
 .panel.active{display:flex}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
@@ -69,23 +69,26 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .clock-date .tz{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
 .flipclock{
   --cw:min(84px,calc((100vw - 90px)/7.15));
+  --ch:calc(var(--cw)*1.46);
   display:flex;gap:clamp(4px,1vw,12px);align-items:flex-start;perspective:1200px
 }
 .flipgroup{display:flex;flex-direction:column;align-items:center;gap:8px}
 .digits{display:flex;gap:clamp(3px,.6vw,6px)}
 .flip{
-  position:relative;width:var(--cw);height:calc(var(--cw)*1.46);
+  position:relative;width:var(--cw);height:var(--ch);
   font-family:var(--digit-font);font-size:calc(var(--cw)*.86);font-weight:700;
   perspective:calc(var(--cw)*5);transform-style:preserve-3d;
-  border-radius:12px;box-shadow:0 10px 28px var(--shadow),inset 0 1px 0 rgba(255,255,255,.06);
+  border-radius:12px;box-shadow:0 10px 28px var(--shadow);
 }
 /* 上下两个半块，各自裁切数字的一半 */
 .card-half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden}
-.card-half.top{top:0;border-radius:12px 12px 0 0;border:1px solid var(--flip-line);border-bottom:none;
+.card-half.top{top:0;border-radius:12px 12px 0 0;
+  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 1px 0 var(--flip-line);
   background:linear-gradient(180deg,rgba(255,255,255,.075),var(--flip))}
-.card-half.bottom{bottom:0;border-radius:0 0 12px 12px;border:1px solid var(--flip-line);border-top:none;
+.card-half.bottom{bottom:0;border-radius:0 0 12px 12px;
+  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 -1px 0 var(--flip-line);
   background:linear-gradient(180deg,rgba(255,255,255,.012),var(--flip))}
-.card-half span{position:absolute;left:0;width:100%;height:calc(var(--cw)*1.46);line-height:calc(var(--cw)*1.46);text-align:center;color:var(--txt)}
+.card-half span{position:absolute;left:0;width:100%;height:var(--ch);line-height:var(--ch);text-align:center;color:var(--txt)}
 .card-half.top span{top:0}
 .card-half.bottom span{bottom:0}
 /* 中缝 */
@@ -98,7 +101,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .flip.go .flip-leaf.down{animation:flipIn .3s .3s ease-out forwards}
 @keyframes flipOut{from{transform:rotateX(0)}to{transform:rotateX(-90deg)}}
 @keyframes flipIn{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
-.colon{font-family:var(--digit-font);font-size:calc(var(--cw)*.6);font-weight:700;color:var(--accent);height:calc(var(--cw)*1.46);line-height:calc(var(--cw)*1.46);opacity:.75}
+.colon{font-family:var(--digit-font);font-size:calc(var(--cw)*.6);font-weight:700;color:var(--accent);height:var(--ch);line-height:var(--ch);opacity:.75}
 .glabel{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
 
 /* digital (non-flip) mode */
@@ -409,7 +412,7 @@ function makeFlip(container){
     ld.textContent=v;    // 翻入的下半 = 新值
     digit.classList.remove('go');void digit.offsetWidth;digit.classList.add('go');
     // 动画结束后静止下半同步为新值,并将 go 状态复位
-    timer=setTimeout(()=>{bot.textContent=v;digit.classList.remove('go')},640);
+    timer=setTimeout(()=>{bot.textContent=v;lu.textContent=v;digit.classList.remove('go')},640);
   };
 }
 let setters={};
