@@ -70,38 +70,45 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .flipclock{
   --cw:min(84px,calc((100vw - 90px)/7.15));
   --ch:calc(var(--cw)*1.46);
-  display:flex;gap:clamp(4px,1vw,12px);align-items:flex-start;perspective:1200px
+  --gap:clamp(3px,.6vw,6px);
+  display:flex;gap:clamp(4px,1vw,12px);align-items:center;perspective:1600px
 }
-.flipgroup{display:flex;flex-direction:column;align-items:center;gap:8px}
-.digits{display:flex;gap:clamp(3px,.6vw,6px)}
+.flipgroup{display:flex;flex-direction:column;align-items:center;gap:10px}
+.digits{display:flex;gap:var(--gap)}
 .flip{
   position:relative;width:var(--cw);height:var(--ch);
-  font-family:var(--digit-font);font-size:calc(var(--cw)*.86);font-weight:700;
-  perspective:calc(var(--cw)*5);transform-style:preserve-3d;
-  border-radius:12px;box-shadow:0 10px 28px var(--shadow);
+  font-family:var(--digit-font);font-size:calc(var(--cw)*.84);font-weight:700;
+  transform-style:preserve-3d;border-radius:12px;box-shadow:0 12px 32px var(--shadow);
 }
-/* 上下两个半块，各自裁切数字的一半 */
-.card-half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden}
-.card-half.top{top:0;border-radius:12px 12px 0 0;
-  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 1px 0 var(--flip-line);
-  background:linear-gradient(180deg,rgba(255,255,255,.075),var(--flip))}
-.card-half.bottom{bottom:0;border-radius:0 0 12px 12px;
-  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 -1px 0 var(--flip-line);
-  background:linear-gradient(180deg,rgba(255,255,255,.012),var(--flip))}
-.card-half span{position:absolute;left:0;width:100%;height:var(--ch);line-height:var(--ch);text-align:center;color:var(--txt)}
-.card-half.top span{top:0}
-.card-half.bottom span{bottom:0}
-/* 中缝 */
-.flip::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--flip-line);z-index:6;transform:translateY(-.5px);pointer-events:none}
-/* 翻页动画层：轴心落在中线 */
-.flip-leaf{z-index:5}
-.flip-leaf.up{transform-origin:center bottom}
-.flip-leaf.down{transform-origin:center top;transform:rotateX(90deg)}
-.flip.go .flip-leaf.up{animation:flipOut .3s ease-in forwards}
-.flip.go .flip-leaf.down{animation:flipIn .3s .3s ease-out forwards}
-@keyframes flipOut{from{transform:rotateX(0)}to{transform:rotateX(-90deg)}}
-@keyframes flipIn{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
-.colon{font-family:var(--digit-font);font-size:calc(var(--cw)*.6);font-weight:700;color:var(--accent);height:var(--ch);line-height:var(--ch);opacity:.75}
+/* 四片结构：上/下 × 静止/翻页。数字 .inn 高度=整卡，靠半块裁切各显示一半 */
+.half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.half.top{top:0;border-radius:12px 12px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.085),var(--flip));
+  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 1px 0 var(--flip-line)}
+.half.bottom{bottom:0;border-radius:0 0 12px 12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.018),var(--flip));
+  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 -1px 0 var(--flip-line)}
+.half .inn{position:absolute;left:0;width:100%;height:200%;display:flex;align-items:center;justify-content:center;color:var(--txt)}
+.half.top .inn{top:0}
+.half.bottom .inn{bottom:0}
+/* 中缝：真实分隔线 */
+.flip::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--bg);box-shadow:0 1px 0 var(--flip-line);z-index:8;transform:translateY(-1px);pointer-events:none}
+/* 翻页片：静止时隐藏，翻页时上半绕中缝向下翻走、下半从 90° 落回 */
+.half.leaf{z-index:5;visibility:hidden}
+.half.leaf.top{transform-origin:50% 100%}
+.half.leaf.bottom{transform-origin:50% 0;transform:rotateX(90deg)}
+.half.leaf .shadow{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.flip.go .half.leaf{visibility:visible}
+.flip.go .half.leaf.top{animation:flipTop .3s ease-in forwards}
+.flip.go .half.leaf.bottom{animation:flipBot .3s .3s ease-out forwards}
+.flip.go .half.leaf.top .shadow{animation:shTop .3s ease-in forwards}
+.flip.go .half.leaf.bottom .shadow{animation:shBot .3s .3s ease-out forwards}
+@keyframes flipTop{from{transform:rotateX(0)}to{transform:rotateX(-90deg)}}
+@keyframes flipBot{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
+@keyframes shTop{from{opacity:0}to{opacity:.72}}
+@keyframes shBot{from{opacity:.72}to{opacity:0}}
+.colon{height:var(--ch);display:flex;flex-direction:column;justify-content:center;gap:calc(var(--cw)*.24);padding:0 1px}
+.colon i{width:calc(var(--cw)*.085);height:calc(var(--cw)*.085);border-radius:50%;background:var(--accent);display:block;box-shadow:0 0 calc(var(--cw)*.12) var(--accent)}
 .glabel{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
 
 /* digital (non-flip) mode */
@@ -263,12 +270,12 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
           <div class="digits" id="hDig"></div>
           <div class="glabel">时</div>
         </div>
-        <div class="colon">:</div>
+        <div class="colon"><i></i><i></i></div>
         <div class="flipgroup">
           <div class="digits" id="mDig"></div>
           <div class="glabel">分</div>
         </div>
-        <div class="colon">:</div>
+        <div class="colon"><i></i><i></i></div>
         <div class="flipgroup">
           <div class="digits" id="sDig"></div>
           <div class="glabel">秒</div>
@@ -387,32 +394,34 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 
 /* ================= FLIP DIGITS ================= */
 function makeFlip(container){
-  const digit=document.createElement('div');digit.className='flip';
-  digit.innerHTML=`
-    <div class="card-half top"><span>0</span></div>
-    <div class="card-half bottom"><span>0</span></div>
-    <div class="card-half top flip-leaf up"><span>0</span></div>
-    <div class="card-half bottom flip-leaf down"><span>0</span></div>`;
-  container.appendChild(digit);
-  // 静止层：上半显示新值、下半显示旧值；动画层：上半翻走旧值、下半翻入新值
-  const top=digit.querySelector('.card-half.top:not(.flip-leaf) span');
-  const bot=digit.querySelector('.card-half.bottom:not(.flip-leaf) span');
-  const lu=digit.querySelector('.flip-leaf.up span'), ld=digit.querySelector('.flip-leaf.down span');
+  const flip=document.createElement('div');flip.className='flip';
+  // 四片：静止上/下 + 翻页上/下，数字层 .inn 高 200% 由半块裁切
+  flip.innerHTML=`
+    <div class="half top static"><div class="inn">0</div></div>
+    <div class="half bottom static"><div class="inn">0</div></div>
+    <div class="half top leaf"><div class="inn">0</div><div class="shadow"></div></div>
+    <div class="half bottom leaf"><div class="inn">0</div><div class="shadow"></div></div>`;
+  container.appendChild(flip);
+  const sTop=flip.querySelector('.static.top .inn');
+  const sBot=flip.querySelector('.static.bottom .inn');
+  const lTop=flip.querySelector('.leaf.top .inn');
+  const lBot=flip.querySelector('.leaf.bottom .inn');
   let cur='0',timer=null;
   return function set(v){
     v=String(v);
     if(v===cur)return;
     const old=cur;cur=v;
     clearTimeout(timer);
-    // 静止上半立刻换成新值（被翻走的上半叶遮住 0.3s 后才露出）
-    top.textContent=v;
-    // 静止下半保持旧值,直到新下半叶翻下来盖住
-    bot.textContent=old;
-    lu.textContent=old;  // 翻走的上半 = 旧值
-    ld.textContent=v;    // 翻入的下半 = 新值
-    digit.classList.remove('go');void digit.offsetWidth;digit.classList.add('go');
-    // 动画结束后静止下半同步为新值,并将 go 状态复位
-    timer=setTimeout(()=>{bot.textContent=v;lu.textContent=v;digit.classList.remove('go')},640);
+    // 翻走的上半 = 旧值；翻入的下半 = 新值（各带阴影渐变）
+    lTop.textContent=old;
+    lBot.textContent=v;
+    // 静止上半立刻换成新值（被翻走的上半盖住，0.3s 后露出）
+    sTop.textContent=v;
+    // 静止下半保持旧值，直到新下半翻下来盖住
+    sBot.textContent=old;
+    flip.classList.remove('go');void flip.offsetWidth;flip.classList.add('go');
+    // 动画结束：静止下半同步新值，翻页片复位隐藏
+    timer=setTimeout(()=>{sBot.textContent=v;flip.classList.remove('go')},640);
   };
 }
 let setters={};
