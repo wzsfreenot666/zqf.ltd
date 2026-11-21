@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#090b0d">
+<meta name="google" content="notranslate">
 <title>CHRONO · 精密时钟</title>
 <style>
 :root{
@@ -62,21 +63,26 @@ main{flex:1;display:flex;flex-direction:column}
 .clock-date .wd{font-weight:500}
 .clock-date .tz{font:10px var(--mono);color:var(--muted);border-left:1px solid var(--line);padding-left:14px}
 .clock-code{font:10px var(--mono);color:var(--dim);letter-spacing:.1em;text-align:right;line-height:1.8}
-/* 四位一体的机械翻页：静止上下层 + 运动上下层，所有数字共用同一坐标系 */
+/* 翻页层：静止上下半 + 两片机械翻页 + 两张整卡运动面；数字始终在阴影之上 */
 .flipclock{--cw:min(116px,calc((100vw - 134px)/6.55));--ch:calc(var(--cw)*1.38);--gap:calc(var(--cw)*.055);display:flex;gap:clamp(5px,1vw,14px);align-items:center;perspective:1400px;perspective-origin:50% 50%}
 .flipgroup{display:flex;flex-direction:column;align-items:center;gap:16px}
 .digits{display:flex;gap:var(--gap)}
 .flip{position:relative;width:var(--cw);height:var(--ch);font-family:var(--digit-font);font-size:calc(var(--cw)*.9);font-weight:var(--digit-weight,600);line-height:1;transform-style:preserve-3d;border-radius:4px;filter:drop-shadow(0 12px 12px rgba(0,0,0,.18))}
+.flip.clipped{overflow:hidden}
 .half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border-left:1px solid var(--line);border-right:1px solid var(--line)}
 .half.top{top:0;border-top:1px solid var(--line);border-radius:4px 4px 0 0;background:var(--card-top)}
 .half.bottom{bottom:0;border-bottom:1px solid var(--line);border-radius:0 0 4px 4px;background:var(--card-bottom)}
-.half .inn{position:absolute;left:0;width:100%;height:200%;display:flex;align-items:center;justify-content:center;color:var(--txt);font-variant-numeric:tabular-nums;transform:translateZ(0)}
+.half .inn{position:absolute;z-index:1;left:0;width:100%;height:200%;display:flex;align-items:center;justify-content:center;color:var(--txt);font-variant-numeric:tabular-nums;transform:translateZ(0)}
 .half.top .inn{top:0}
 .half.bottom .inn{bottom:0}
 .half.leaf{z-index:3;visibility:hidden;will-change:transform}
 .half.leaf.top{transform-origin:50% 100%}
 .half.leaf.bottom{transform-origin:50% 0;transform:rotateX(90deg)}
-.half .shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.half .shade{position:absolute;inset:0;z-index:2;opacity:0;pointer-events:none}
+.half.top .shade{background:linear-gradient(to bottom,rgba(0,0,0,.22),transparent)}
+.half.bottom .shade{background:linear-gradient(to top,rgba(0,0,0,.18),transparent)}
+.face{position:absolute;z-index:4;inset:0;visibility:hidden;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:4px;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;will-change:transform,opacity,clip-path}
+.face .inn{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--txt);font-variant-numeric:tabular-nums;transform:translateZ(0)}
 .flip::before{content:"";position:absolute;z-index:6;left:0;right:0;top:50%;height:1px;background:#050608;pointer-events:none}
 .flip::after{content:"";position:absolute;z-index:7;left:-2px;right:-2px;top:50%;height:5px;transform:translateY(-50%);border-left:2px solid var(--dim);border-right:2px solid var(--dim);pointer-events:none}
 .colon{height:var(--ch);display:flex;flex-direction:column;justify-content:center;gap:calc(var(--cw)*.24);padding:0 2px}
@@ -121,6 +127,7 @@ main{flex:1;display:flex;flex-direction:column}
 .drawer.open{transform:none}.drawer h3{font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center}.drawer .close{cursor:pointer;color:var(--muted);font:24px var(--mono);background:none;border:0}
 .sec{margin-top:30px}.sec>.lbl{font:10px var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
 .opts{display:flex;flex-wrap:wrap;gap:7px}.opt{padding:8px 13px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:12px}.opt.active{border-color:var(--accent);color:var(--accent)}
+.preview-btn{width:100%;margin-top:10px;min-width:0}
 .swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.sw{height:42px;border-radius:2px;cursor:pointer;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px}.sw::before{content:"";width:7px;height:7px;background:var(--swatch)}.sw.active{border-color:var(--accent);color:var(--txt)}
 .row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-soft);font-size:13px}.toggle{width:36px;height:20px;border:1px solid var(--line);background:transparent;position:relative;cursor:pointer;flex-shrink:0}.toggle::after{content:"";position:absolute;width:12px;height:12px;background:var(--muted);top:3px;left:3px;transition:transform .18s,background .18s}.toggle.on{border-color:var(--accent)}.toggle.on::after{transform:translateX(16px);background:var(--accent)}
 .stepper{display:flex;align-items:center;gap:8px}.stepper button{width:28px;height:28px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--txt);cursor:pointer}.stepper span{font:13px var(--mono);min-width:36px;text-align:center}
@@ -138,14 +145,15 @@ footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--acce
 @media(prefers-reduced-motion:reduce){.panel.active{animation:none}.drawer,.toggle::after{transition:none}}
 </style>
 </head>
-<body data-theme="nebula" data-font="mono">
+<body data-theme="nebula" data-font="mono" translate="no">
 <div class="overlay" id="overlay"></div>
 <aside class="drawer" id="drawer" aria-label="时钟设置">
   <h3><span>显示与计时设置</span><button class="close" id="dClose" aria-label="关闭设置">×</button></h3>
   <div class="sec"><div class="lbl">01 / 强调色</div><div class="swatches" id="themes"></div></div>
   <div class="sec"><div class="lbl">02 / 数字字体</div><div class="opts" id="fonts"><button class="opt active" data-font="mono">等宽</button><button class="opt" data-font="sans">无衬线</button><button class="opt" data-font="serif">衬线</button><button class="opt" data-font="thin">纤细</button></div></div>
-  <div class="sec"><div class="lbl">03 / 时钟显示</div><div class="row"><span>机械翻页模式</span><button class="toggle on" id="tFlip" aria-label="切换翻页模式"></button></div><div class="row"><span>24 小时制</span><button class="toggle on" id="t24" aria-label="切换 24 小时制"></button></div><div class="row"><span>显示日期与时区</span><button class="toggle on" id="tDate" aria-label="切换日期显示"></button></div></div>
-  <div class="sec"><div class="lbl">04 / 番茄钟时长（分钟）</div><div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div><div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div><div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div><div class="row"><span>自动开始下一轮</span><button class="toggle" id="tAuto" aria-label="自动开始下一轮"></button></div><div class="row"><span>结束提示音</span><button class="toggle on" id="tSound" aria-label="结束提示音"></button></div></div>
+  <div class="sec"><div class="lbl">03 / 翻页动效</div><div class="opts" id="effects"><button class="opt active" data-effect="split">经典翻页</button><button class="opt" data-effect="card">整卡 3D</button><button class="opt" data-effect="roll">数字滚动</button><button class="opt" data-effect="side">横向翻页</button><button class="opt" data-effect="scan">扫描揭示</button><button class="opt" data-effect="fade">柔和淡入</button></div><button class="btn preview-btn" id="previewFlip">立即预览动效</button></div>
+  <div class="sec"><div class="lbl">04 / 时钟显示</div><div class="row"><span>机械翻页模式</span><button class="toggle on" id="tFlip" aria-label="切换翻页模式"></button></div><div class="row"><span>24 小时制</span><button class="toggle on" id="t24" aria-label="切换 24 小时制"></button></div><div class="row"><span>显示日期与时区</span><button class="toggle on" id="tDate" aria-label="切换日期显示"></button></div></div>
+  <div class="sec"><div class="lbl">05 / 番茄钟时长（分钟）</div><div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div><div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div><div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div><div class="row"><span>自动开始下一轮</span><button class="toggle" id="tAuto" aria-label="自动开始下一轮"></button></div><div class="row"><span>结束提示音</span><button class="toggle on" id="tSound" aria-label="结束提示音"></button></div></div>
 </aside>
 <div class="wrap">
   <header>
@@ -155,67 +163,131 @@ footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--acce
   <div class="navrow"><nav class="tabs" aria-label="功能切换"><button class="tab active" data-panel="clock"><span class="idx">01</span>时钟</button><button class="tab" data-panel="stopwatch"><span class="idx">02</span>秒表</button><button class="tab" data-panel="pomo"><span class="idx">03</span>番茄钟</button></nav><span class="local-badge">LOCAL / NO CLOUD</span></div>
   <main>
     <section class="panel active" id="clock">
-      <div class="clock-head" id="dateLine"><div><div class="eyebrow">Current local time</div><div class="clock-date"><span class="wd" id="weekday">星期一</span><span id="fullDate">2026.01.01</span><span class="tz" id="tz">UTC+8</span></div></div><div class="clock-code">SYS.CLOCK / 01<br>TIME SOURCE · DEVICE</div></div>
+      <div class="clock-head" id="dateLine"><div><div class="eyebrow">Current local time</div><div class="clock-date"><span class="wd" id="weekday">星期一</span><span id="fullDate">2026.01.01</span><span class="tz" id="tz">UTC+8</span></div></div><div class="clock-code" id="effectCode">SYS.CLOCK / 01<br>TIME SOURCE · DEVICE</div></div>
       <div id="flipWrap" class="flipclock"><div class="flipgroup"><div class="digits" id="hDig"></div><div class="glabel">HOURS</div></div><div class="colon"><i></i><i></i></div><div class="flipgroup"><div class="digits" id="mDig"></div><div class="glabel">MINUTES</div></div><div class="colon"><i></i><i></i></div><div class="flipgroup"><div class="digits" id="sDig"></div><div class="glabel">SECONDS</div></div><span class="ampm-flip" id="flipAmpm"></span></div>
       <div id="digitalWrap" class="digital" style="display:none"><span id="digitalTime">00:00:00</span><span class="ampm" id="ampm"></span></div>
-      <div class="hint">读取本机系统时间 · 无需网络校准<br><kbd>F</kbd> 显示模式　<kbd>SPACE</kbd> 暂停走时</div>
+      <div class="hint">读取本机系统时间 · 无需网络校准<br><kbd>F</kbd> 显示模式　<kbd>E</kbd> 切换动效　<kbd>SPACE</kbd> 暂停走时</div>
     </section>
     <section class="panel" id="stopwatch"><div class="sw-wrap"><div class="sw-meta"><span>STOPWATCH / 1⁄100 SEC</span><span id="swState">STANDBY</span></div><div class="sw-main"><div class="sw-time"><span id="swTime">00:00</span><span class="cs" id="swCs">.00</span></div></div><div class="controls"><button class="btn primary" id="swStart">开始</button><button class="btn" id="swLap" disabled>计次</button><button class="btn" id="swReset" disabled>重置</button></div><div class="laps" id="laps"></div><div class="hint"><kbd>SPACE</kbd> 开始 / 暂停　<kbd>L</kbd> 计次　<kbd>R</kbd> 重置</div></div></section>
     <section class="panel" id="pomo"><div class="pomo-wrap"><div class="pomo-modes"><button class="pmode active" data-mode="work">专注</button><button class="pmode" data-mode="short">短休息</button><button class="pmode" data-mode="long">长休息</button></div><div class="ring"><svg viewBox="0 0 300 300"><circle class="track" cx="150" cy="150" r="136"/><circle class="prog" id="pomoProg" cx="150" cy="150" r="136"/></svg><div class="ring-inner"><div class="eyebrow">Focus session</div><div class="ring-time" id="pomoTime">25:00</div><div class="ring-label" id="pomoLabel">专注时间</div><div class="ring-rounds" id="rounds"></div></div></div><div class="controls"><button class="btn primary" id="pomoStart">开始专注</button><button class="btn" id="pomoReset">重置</button></div><div class="hint">完成 4 次专注后进入长休息 · <kbd>SPACE</kbd> 开始 / 暂停</div></div></section>
   </main>
-  <footer><span>ZQF.LTD / CHRONO 02.0</span><a href="../index.html">返回首页 ↗</a></footer>
+  <footer><span>ZQF.LTD / CHRONO 02.1</span><a href="../index.html">返回首页 ↗</a></footer>
 </div>
 <script>
 const LS='chrono_v1';
-let S={theme:'nebula',font:'mono',flip:true,h24:true,showDate:true,work:25,short:5,long:15,auto:false,sound:true};
+let S={theme:'nebula',font:'mono',effect:'split',flip:true,h24:true,showDate:true,work:25,short:5,long:15,auto:false,sound:true};
 try{const s=localStorage.getItem(LS);if(s)Object.assign(S,JSON.parse(s))}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id);
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
+const effectNames={split:'经典翻页',card:'整卡 3D',roll:'数字滚动',side:'横向翻页',scan:'扫描揭示',fade:'柔和淡入'};
+if(!effectNames[S.effect])S.effect='split';
 const applyState=()=>{
   document.body.dataset.theme=S.theme;document.body.dataset.font=S.font;
   $('tFlip').classList.toggle('on',S.flip);$('t24').classList.toggle('on',S.h24);$('tDate').classList.toggle('on',S.showDate);$('tAuto').classList.toggle('on',S.auto);$('tSound').classList.toggle('on',S.sound);
   $('workVal').textContent=S.work;$('shortVal').textContent=S.short;$('longVal').textContent=S.long;
-  document.querySelectorAll('#fonts .opt').forEach(o=>o.classList.toggle('active',o.dataset.font===S.font));document.querySelectorAll('#themes .sw').forEach(o=>o.classList.toggle('active',o.dataset.theme===S.theme));
+  document.querySelectorAll('#fonts .opt').forEach(o=>o.classList.toggle('active',o.dataset.font===S.font));document.querySelectorAll('#themes .sw').forEach(o=>o.classList.toggle('active',o.dataset.theme===S.theme));document.querySelectorAll('#effects .opt').forEach(o=>o.classList.toggle('active',o.dataset.effect===S.effect));
+  $('effectCode').innerHTML=`SYS.CLOCK / 01<br>EFFECT · ${effectNames[S.effect]}`;
   $('flipWrap').style.display=S.flip?'flex':'none';$('digitalWrap').style.display=S.flip?'none':'block';$('dateLine').style.visibility=S.showDate?'visible':'hidden';
 };
 const themeMap={nebula:['#67d7e5','青蓝'],aurora:['#76d7ae','青绿'],sunset:['#e7ad72','琥珀'],ocean:['#82aef0','钢蓝'],mono:['#d6dcdf','单色'],paper:['#176a78','浅色']};
 $('themes').innerHTML=Object.entries(themeMap).map(([k,v])=>`<button class="sw ${k===S.theme?'active':''}" data-theme="${k}" style="--swatch:${v[0]}">${v[1]}</button>`).join('');
 $('themes').addEventListener('click',e=>{const sw=e.target.closest('.sw');if(!sw)return;S.theme=sw.dataset.theme;save();applyState()});
 $('fonts').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o)return;S.font=o.dataset.font;save();applyState()});
+$('effects').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o)return;S.effect=o.dataset.effect;save();applyState()});
+$('previewFlip').addEventListener('click',()=>{closeDrawer();previewFlip()});
 const bindToggle=(id,key)=>$(id).addEventListener('click',()=>{S[key]=!S[key];save();applyState()});
 bindToggle('tFlip','flip');bindToggle('t24','h24');bindToggle('tDate','showDate');bindToggle('tAuto','auto');bindToggle('tSound','sound');
 document.querySelectorAll('[data-pomo]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.pomo,d=+b.dataset.d;S[k]=Math.max(1,Math.min(120,S[k]+d));save();applyState();if(!pomo.running){pomo.mode=k;resetPomo();document.querySelectorAll('.pmode').forEach(x=>x.classList.toggle('active',x.dataset.mode===k))}}));
 const drawer=$('drawer'),overlay=$('overlay');const openDrawer=()=>{drawer.classList.add('open');overlay.classList.add('show')};const closeDrawer=()=>{drawer.classList.remove('open');overlay.classList.remove('show')};
 $('setBtn').addEventListener('click',openDrawer);$('dClose').addEventListener('click',closeDrawer);overlay.addEventListener('click',closeDrawer);$('fsBtn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()});
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));t.classList.add('active');$(t.dataset.panel).classList.add('active')}));
-/* 翻页由 Web Animations API 驱动，取消与完成都同步静止层，避免跳数和残影。 */
+/* 翻页引擎：6 种动效共用同一套静止层；数字永远在阴影之上，结束统一同步 */
 function makeFlip(container){
   const flip=document.createElement('div');flip.className='flip';
-  flip.innerHTML='<div class="half top static"><div class="inn">0</div></div><div class="half bottom static"><div class="inn">0</div></div><div class="half top leaf"><div class="inn">0</div><div class="shade"></div></div><div class="half bottom leaf"><div class="inn">0</div><div class="shade"></div></div>';
+  flip.innerHTML=`
+    <div class="half top static"><div class="inn">0</div></div>
+    <div class="half bottom static"><div class="inn">0</div></div>
+    <div class="half top leaf"><div class="inn">0</div><div class="shade"></div></div>
+    <div class="half bottom leaf"><div class="inn">0</div><div class="shade"></div></div>
+    <div class="face old"><div class="inn">0</div></div>
+    <div class="face new"><div class="inn">0</div></div>`;
   container.appendChild(flip);
-  const sTop=flip.querySelector('.static.top .inn'),sBot=flip.querySelector('.static.bottom .inn'),lTop=flip.querySelector('.leaf.top'),lBot=flip.querySelector('.leaf.bottom'),lTopText=lTop.querySelector('.inn'),lBotText=lBot.querySelector('.inn'),topShade=lTop.querySelector('.shade'),botShade=lBot.querySelector('.shade');
+  const q=s=>flip.querySelector(s);
+  const sTop=q('.static.top .inn'),sBot=q('.static.bottom .inn');
+  const lTop=q('.leaf.top'),lBot=q('.leaf.bottom'),lTopText=q('.leaf.top .inn'),lBotText=q('.leaf.bottom .inn');
+  const topShade=q('.leaf.top .shade'),botShade=q('.leaf.bottom .shade');
+  const oldFace=q('.face.old'),newFace=q('.face.new'),oldText=q('.face.old .inn'),newText=q('.face.new .inn');
+  const layers=[lTop,lBot,oldFace,newFace];
   let cur='0',run=0,animations=[];
-  const stop=()=>{animations.forEach(a=>a.cancel());animations=[];lTop.style.visibility='hidden';lBot.style.visibility='hidden'};
-  const settle=()=>{sTop.textContent=cur;sBot.textContent=cur;stop()};
-  return function set(v){
-    v=String(v);if(v===cur)return;
-    stop();const old=cur;cur=v;
-    if(reduceMotion.matches){settle();return}
-    const token=++run;sTop.textContent=v;sBot.textContent=old;lTopText.textContent=old;lBotText.textContent=v;
-    lTop.style.visibility='visible';lBot.style.visibility='visible';topShade.style.opacity='0';botShade.style.opacity='.7';
-    const top=lTop.animate([{transform:'rotateX(0deg)'},{transform:'rotateX(-90deg)'}],{duration:260,easing:'cubic-bezier(.55,0,.85,.45)',fill:'forwards'});
-    const shadeTop=topShade.animate([{opacity:0},{opacity:.72}],{duration:260,easing:'ease-in',fill:'forwards'});animations=[top,shadeTop];
-    top.onfinish=()=>{if(token!==run)return;lTop.style.visibility='hidden';sBot.textContent=v;
-      const bottom=lBot.animate([{transform:'rotateX(90deg)'},{transform:'rotateX(0deg)'}],{duration:300,easing:'cubic-bezier(.15,.55,.35,1)',fill:'forwards'});
-      const shadeBot=botShade.animate([{opacity:.72},{opacity:0}],{duration:300,easing:'ease-out',fill:'forwards'});animations=[bottom,shadeBot];
-      bottom.onfinish=()=>{if(token!==run)return;stop();sBot.textContent=v};
-    };
+  const cancel=()=>{animations.forEach(a=>{try{a.cancel()}catch(e){}});animations=[]};
+  const hide=()=>{layers.forEach(el=>{el.style.visibility='hidden';el.style.transform='';el.style.opacity='';el.style.clipPath='';el.style.transformOrigin=''});topShade.style.opacity='';botShade.style.opacity='';flip.classList.remove('clipped')};
+  const stop=()=>{run++;cancel();hide()};
+  const settle=value=>{sTop.textContent=value;sBot.textContent=value;cancel();hide()};
+  const show=el=>{el.style.visibility='visible'};
+  const anim=(el,frames,opts)=>{const a=el.animate(frames,{fill:'forwards',...opts});animations.push(a);return a};
+  const finish=list=>Promise.all(list.map(a=>a.finished.catch(()=>{})));
+  const effects={
+    async split(token,old,next){
+      sTop.textContent=next;sBot.textContent=old;lTopText.textContent=old;lBotText.textContent=next;show(lTop);show(lBot);
+      const a=anim(lTop,[{transform:'rotateX(0deg)'},{transform:'rotateX(-90deg)'}],{duration:230,easing:'cubic-bezier(.55,0,.85,.45)'});
+      const sh=anim(topShade,[{opacity:0},{opacity:1}],{duration:230,easing:'ease-in'});
+      await finish([a,sh]);if(token!==run)return;
+      lTop.style.visibility='hidden';sBot.textContent=next;
+      const b=anim(lBot,[{transform:'rotateX(90deg)'},{transform:'rotateX(0deg)'}],{duration:290,easing:'cubic-bezier(.15,.55,.35,1)'});
+      const sh2=anim(botShade,[{opacity:1},{opacity:0}],{duration:290,easing:'ease-out'});
+      await finish([b,sh2]);
+    },
+    async card(token,old,next){
+      sTop.textContent=next;sBot.textContent=next;oldText.textContent=old;newText.textContent=next;show(oldFace);
+      const a=anim(oldFace,[{transform:'rotateX(0deg)',opacity:1},{transform:'rotateX(-90deg)',opacity:.4}],{duration:240,easing:'cubic-bezier(.55,0,.85,.45)'});
+      await finish([a]);if(token!==run)return;
+      oldFace.style.visibility='hidden';show(newFace);
+      const b=anim(newFace,[{transform:'rotateX(90deg)',opacity:.4},{transform:'rotateX(0deg)',opacity:1}],{duration:280,easing:'cubic-bezier(.15,.55,.35,1)'});
+      await finish([b]);
+    },
+    async roll(token,old,next){
+      sTop.textContent=next;sBot.textContent=next;oldText.textContent=old;newText.textContent=next;flip.classList.add('clipped');show(oldFace);show(newFace);
+      const a=anim(oldFace,[{transform:'translateY(0%)'},{transform:'translateY(-100%)'}],{duration:430,easing:'cubic-bezier(.55,.05,.25,1)'});
+      const b=anim(newFace,[{transform:'translateY(100%)'},{transform:'translateY(0%)'}],{duration:430,easing:'cubic-bezier(.55,.05,.25,1)'});
+      await finish([a,b]);
+    },
+    async side(token,old,next){
+      sTop.textContent=next;sBot.textContent=next;oldText.textContent=old;newText.textContent=next;show(oldFace);
+      oldFace.style.transformOrigin='left center';newFace.style.transformOrigin='right center';
+      const a=anim(oldFace,[{transform:'rotateY(0deg)',opacity:1},{transform:'rotateY(-90deg)',opacity:.4}],{duration:240,easing:'cubic-bezier(.55,0,.85,.45)'});
+      await finish([a]);if(token!==run)return;
+      oldFace.style.visibility='hidden';show(newFace);
+      const b=anim(newFace,[{transform:'rotateY(90deg)',opacity:.4},{transform:'rotateY(0deg)',opacity:1}],{duration:280,easing:'cubic-bezier(.15,.55,.35,1)'});
+      await finish([b]);
+    },
+    async scan(token,old,next){
+      sTop.textContent=old;sBot.textContent=old;oldText.textContent=old;newText.textContent=next;flip.classList.add('clipped');show(oldFace);show(newFace);
+      const a=anim(newFace,[{clipPath:'inset(0 0 100% 0)'},{clipPath:'inset(0 0 0% 0)'}],{duration:400,easing:'cubic-bezier(.4,0,.2,1)'});
+      const b=anim(oldFace,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.96)'}],{duration:400,easing:'ease-out'});
+      await finish([a,b]);
+    },
+    async fade(token,old,next){
+      sTop.textContent=old;sBot.textContent=old;oldText.textContent=old;newText.textContent=next;show(oldFace);show(newFace);
+      const a=anim(oldFace,[{opacity:1,transform:'scale(1)'},{opacity:0,transform:'scale(.94)'}],{duration:390,easing:'ease-out'});
+      const b=anim(newFace,[{opacity:0,transform:'scale(1.06)'},{opacity:1,transform:'scale(1)'}],{duration:390,easing:'ease-out'});
+      await finish([a,b]);
+    }
   };
+  function set(v,preview=false){
+    v=String(v);if(v===cur&&!preview)return;
+    stop();settle(cur);
+    const old=cur;
+    if(reduceMotion.matches){cur=v;settle(v);return}
+    const token=++run;
+    (effects[S.effect]||effects.split)(token,old,v).then(()=>{if(token===run){cur=v;settle(v)}});
+  }
+  return {set,preview:()=>set(String((Number(cur)+1)%10),true)};
 }
 let setters={};function buildDigits(){$('hDig').innerHTML='';$('mDig').innerHTML='';$('sDig').innerHTML='';setters.h=[makeFlip($('hDig')),makeFlip($('hDig'))];setters.m=[makeFlip($('mDig')),makeFlip($('mDig'))];setters.s=[makeFlip($('sDig')),makeFlip($('sDig'))]}buildDigits();
-const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];let clockPaused=false;
-function updateClock(){if(!clockPaused){const now=new Date();let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f(hh[i]));setters.m.forEach((f,i)=>f(mm[i]));setters.s.forEach((f,i)=>f(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
+const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];let clockPaused=false,previewTimer=null;
+function previewFlip(){clearTimeout(previewTimer);const wasPaused=clockPaused;clockPaused=true;[...setters.h,...setters.m,...setters.s].forEach((f,i)=>setTimeout(()=>f.preview(),i*28));previewTimer=setTimeout(()=>{clockPaused=wasPaused},1150)}
+function updateClock(){if(!clockPaused){const now=new Date();let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f.set(hh[i]));setters.m.forEach((f,i)=>f.set(mm[i]));setters.s.forEach((f,i)=>f.set(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
 /* stopwatch */
 const sw={running:false,elapsed:0,start:0,laps:[],last:0};
 function fmt(t){const m=Math.floor(t/60000).toString().padStart(2,'0'),s=Math.floor(t/1000%60).toString().padStart(2,'0'),c=Math.floor(t/10%100).toString().padStart(2,'0');return{m,s,c}}
@@ -235,7 +307,7 @@ function chime(){if(!S.sound)return;try{const ac=new(window.AudioContext||window
 function pomoDone(){pomo.running=false;chime();if(pomo.mode==='work'){pomo.round++;renderRounds();pomo.mode=pomo.round%4===0?'long':'short';$('pomoStart').textContent='开始休息'}else{pomo.mode='work';$('pomoStart').textContent='开始专注'}document.querySelectorAll('.pmode').forEach(b=>b.classList.toggle('active',b.dataset.mode===pomo.mode));resetPomo();if(S.auto)startPomo()}
 function startPomo(){if(pomo.running){pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').textContent='继续';return}pomo.running=true;pomo.end=Date.now()+pomo.remain*1000;pomo.raf=requestAnimationFrame(tickPomo);$('pomoStart').textContent='暂停'}
 $('pomoStart').addEventListener('click',startPomo);$('pomoReset').addEventListener('click',()=>{pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').textContent=pomo.mode==='work'?'开始专注':'开始休息';resetPomo()});document.querySelectorAll('.pmode').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.pmode').forEach(x=>x.classList.remove('active'));b.classList.add('active');pomo.mode=b.dataset.mode;pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').textContent='开始'+(pomo.mode==='work'?'专注':'休息');resetPomo()}));
-document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||e.target.tagName==='BUTTON'&&e.code==='Space')return;const active=document.querySelector('.panel.active')?.id;if(e.code==='Space'){e.preventDefault();if(active==='stopwatch')$('swStart').click();else if(active==='pomo')startPomo();else clockPaused=!clockPaused}if(active==='stopwatch'){if(e.key.toLowerCase()==='l')$('swLap').click();if(e.key.toLowerCase()==='r')$('swReset').click()}if(active==='clock'&&e.key.toLowerCase()==='f'){S.flip=!S.flip;save();applyState()}if(e.key==='Escape')closeDrawer()});
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||e.target.tagName==='BUTTON'&&e.code==='Space')return;const active=document.querySelector('.panel.active')?.id;if(e.code==='Space'){e.preventDefault();if(active==='stopwatch')$('swStart').click();else if(active==='pomo')startPomo();else clockPaused=!clockPaused}if(active==='stopwatch'){if(e.key.toLowerCase()==='l')$('swLap').click();if(e.key.toLowerCase()==='r')$('swReset').click()}if(active==='clock'&&e.key.toLowerCase()==='f'){S.flip=!S.flip;save();applyState()}if(active==='clock'&&e.key.toLowerCase()==='e'){const keys=Object.keys(effectNames);S.effect=keys[(keys.indexOf(S.effect)+1)%keys.length];save();applyState();previewFlip()}if(e.key==='Escape')closeDrawer()});
 applyState();resetPomo();
 </script>
 </body>
