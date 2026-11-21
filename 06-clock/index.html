@@ -219,7 +219,7 @@ function makeFlip(container){
   const topShade=q('.leaf.top .shade'),botShade=q('.leaf.bottom .shade');
   const oldFace=q('.face.old'),newFace=q('.face.new'),oldText=q('.face.old .inn'),newText=q('.face.new .inn');
   const layers=[lTop,lBot,oldFace,newFace];
-  let cur='0',run=0,animations=[];
+  let cur='0',target='0',run=0,animations=[];
   const cancel=()=>{animations.forEach(a=>{try{a.cancel()}catch(e){}});animations=[]};
   const hide=()=>{layers.forEach(el=>{el.style.visibility='hidden';el.style.transform='';el.style.opacity='';el.style.clipPath='';el.style.transformOrigin=''});topShade.style.opacity='';botShade.style.opacity='';flip.classList.remove('clipped')};
   const stop=()=>{run++;cancel();hide()};
@@ -275,19 +275,21 @@ function makeFlip(container){
     }
   };
   function set(v,preview=false){
-    v=String(v);if(v===cur&&!preview)return;
-    stop();settle(cur);
+    v=String(v);
+    if(!preview&&(v===cur||v===target))return;
     const old=cur;
-    if(reduceMotion.matches){cur=v;settle(v);return}
+    stop();settle(cur);
+    if(reduceMotion.matches){cur=v;target=v;settle(v);return}
+    target=v;
     const token=++run;
     (effects[S.effect]||effects.split)(token,old,v).then(()=>{if(token===run){cur=v;settle(v)}});
   }
   return {set,preview:()=>set(String((Number(cur)+1)%10),true)};
 }
 let setters={};function buildDigits(){$('hDig').innerHTML='';$('mDig').innerHTML='';$('sDig').innerHTML='';setters.h=[makeFlip($('hDig')),makeFlip($('hDig'))];setters.m=[makeFlip($('mDig')),makeFlip($('mDig'))];setters.s=[makeFlip($('sDig')),makeFlip($('sDig'))]}buildDigits();
-const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];let clockPaused=false,previewTimer=null;
-function previewFlip(){clearTimeout(previewTimer);const wasPaused=clockPaused;clockPaused=true;[...setters.h,...setters.m,...setters.s].forEach((f,i)=>setTimeout(()=>f.preview(),i*28));previewTimer=setTimeout(()=>{clockPaused=wasPaused},1150)}
-function updateClock(){if(!clockPaused){const now=new Date();let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f.set(hh[i]));setters.m.forEach((f,i)=>f.set(mm[i]));setters.s.forEach((f,i)=>f.set(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
+const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];let clockPaused=false,previewPaused=false,previewTimer=null;
+function previewFlip(){clearTimeout(previewTimer);previewPaused=true;[...setters.h,...setters.m,...setters.s].forEach((f,i)=>setTimeout(()=>f.preview(),i*28));previewTimer=setTimeout(()=>{previewPaused=false},1150)}
+function updateClock(){if(!clockPaused&&!previewPaused){const now=new Date();let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f.set(hh[i]));setters.m.forEach((f,i)=>f.set(mm[i]));setters.s.forEach((f,i)=>f.set(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
 /* stopwatch */
 const sw={running:false,elapsed:0,start:0,laps:[],last:0};
 function fmt(t){const m=Math.floor(t/60000).toString().padStart(2,'0'),s=Math.floor(t/1000%60).toString().padStart(2,'0'),c=Math.floor(t/10%100).toString().padStart(2,'0');return{m,s,c}}
