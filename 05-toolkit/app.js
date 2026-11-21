@@ -433,17 +433,17 @@ add({id:'json',ic:'{ }',name:'JSON 格式化',cat:'效率',desc:'美化 / 压缩
 function render(filter='',cat='全部'){
  const q=filter.trim().toLowerCase();
  const list=tools.filter(t=>(cat==='全部'||t.cat===cat)&&(!q||t.name.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q)||t.cat.includes(q)));
- grid.innerHTML=list.map(t=>`<div class="tool" data-id="${t.id}"><span class="tag">${t.cat}</span><span class="ic">${t.ic}</span><h3>${t.name}</h3><p>${t.desc}</p></div>`).join('');
+ grid.innerHTML=list.map(t=>`<button type="button" class="tool" data-id="${t.id}" style="text-align:left"><span class="tag">${t.cat}</span><span class="ic">T.${String(tools.indexOf(t)+1).padStart(2,'0')}</span><h3>${t.name}</h3><p>${t.desc}</p></button>`).join('');
  $('#empty').style.display=list.length?'none':'block';
  grid.querySelectorAll('.tool').forEach(el=>el.onclick=()=>openTool(el.dataset.id));
 }
-function openTool(id){const t=tools.find(x=>x.id===id);mTitle.textContent=t.name;mIc.textContent=t.ic;mBody.innerHTML='';t.run();modal.classList.add('show')}
+function openTool(id){const t=tools.find(x=>x.id===id);mTitle.textContent=t.name;mIc.textContent='T.'+String(tools.indexOf(t)+1).padStart(2,'0');mBody.innerHTML='';t.run();modal.classList.add('show')}
 function closeTool(){modal.classList.remove('show');if(window.speechSynthesis)speechSynthesis.cancel()}
 $('#mClose').onclick=closeTool;modal.onclick=e=>{if(e.target===modal)closeTool()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTool()});
 
 const catNames=['全部','计算','文本','图片','效率'];
-catsEl.innerHTML=catNames.map((c,i)=>`<div class="cat ${i===0?'on':''}" data-c="${c}">${c}</div>`).join('');
+catsEl.innerHTML=catNames.map((c,i)=>`<button class="cat ${i===0?'on':''}" data-c="${c}">${c}<span class="count">${c==='全部'?tools.length:tools.filter(t=>t.cat===c).length}</span></button>`).join('');
 let curCat='全部';
 catsEl.querySelectorAll('.cat').forEach(el=>el.onclick=()=>{catsEl.querySelectorAll('.cat').forEach(x=>x.classList.remove('on'));el.classList.add('on');curCat=el.dataset.c;render($('#search').value,curCat)});
 $('#search').addEventListener('input',e=>render(e.target.value,curCat));

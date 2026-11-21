@@ -3,603 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b0d">
 <title>CHRONO · 精密时钟</title>
 <style>
 :root{
-  --bg:#070a16;--bg2:#0d1226;--panel:rgba(255,255,255,.045);--line:rgba(255,255,255,.1);
-  --txt:#eef1ff;--muted:#8b91b5;--a:#7c5cff;--b:#ff5ca8;--c:#3ad6ff;
-  --flip:rgba(255,255,255,.055);--flip-line:rgba(255,255,255,.12);--accent:#7c5cff;
-  --shadow:rgba(0,0,0,.5);--font:"SF Mono",ui-monospace,"Segoe UI Mono",Menlo,Consolas,monospace;
-  --digit-font:var(--font);
+  --bg:#090b0d;--surface:#0e1114;--surface-2:#12161a;--line:#242a30;--line-soft:#191e23;
+  --txt:#edf1f3;--muted:#78838c;--dim:#4d5861;--accent:#67d7e5;--accent-ink:#071013;
+  --card:#15191d;--card-top:#191e23;--card-bottom:#13171b;--danger:#ef8c8c;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --digit-font:var(--mono);
 }
-/* ========== THEMES ========== */
-[data-theme="nebula"]{--bg:#070a16;--bg2:#0d1226;--a:#7c5cff;--b:#ff5ca8;--c:#3ad6ff;--accent:#8b6cff;--txt:#eef1ff}
-[data-theme="aurora"]{--bg:#04110f;--bg2:#08201c;--a:#00e5a8;--b:#00b3ff;--c:#7dff9b;--accent:#00e5a8;--txt:#e6fff6}
-[data-theme="sunset"]{--bg:#160a0a;--bg2:#26110f;--a:#ff7a45;--b:#ff3d6e;--c:#ffc04d;--accent:#ff7a45;--txt:#fff0e8}
-[data-theme="ocean"]{--bg:#050c1c;--bg2:#0a1830;--a:#3b82f6;--b:#22d3ee;--c:#60a5fa;--accent:#3b82f6;--txt:#e8f2ff}
-[data-theme="mono"]{--bg:#080808;--bg2:#111;--a:#e8e8e8;--b:#9a9a9a;--c:#fff;--accent:#e8e8e8;--txt:#f5f5f5;--panel:rgba(255,255,255,.03)}
-[data-theme="paper"]{--bg:#f2f0ea;--bg2:#e9e6dd;--a:#2b2b2b;--b:#7a6a55;--c:#a89b82;--accent:#2b2b2b;--txt:#1a1a1a;--muted:#6b6559;--flip:rgba(0,0,0,.045);--flip-line:rgba(0,0,0,.1);--panel:rgba(0,0,0,.03);--line:rgba(0,0,0,.12);--shadow:rgba(0,0,0,.12)}
-/* ========== FONTS ========== */
-[data-font="mono"]{--digit-font:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
-[data-font="sans"]{--digit-font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",sans-serif}
-[data-font="serif"]{--digit-font:"Georgia","Times New Roman",serif}
-[data-font="thin"]{--digit-font:"Helvetica Neue",ultralight,"Segoe UI",sans-serif}
-
+[data-theme="aurora"]{--accent:#76d7ae;--accent-ink:#07130e}
+[data-theme="sunset"]{--accent:#e7ad72;--accent-ink:#171007}
+[data-theme="ocean"]{--accent:#82aef0;--accent-ink:#090e18}
+[data-theme="mono"]{--accent:#d6dcdf;--accent-ink:#101214}
+[data-theme="paper"]{--bg:#e9ebec;--surface:#f3f4f4;--surface-2:#fff;--line:#c8ced1;--line-soft:#dce0e2;--txt:#15191c;--muted:#657078;--dim:#8a9399;--accent:#176a78;--accent-ink:#fff;--card:#f7f8f8;--card-top:#fff;--card-bottom:#eceeff;--danger:#a74343}
+[data-font="sans"]{--digit-font:var(--sans)}
+[data-font="serif"]{--digit-font:Georgia,"Times New Roman",serif}
+[data-font="thin"]{--digit-font:"Helvetica Neue",var(--sans);--digit-weight:300}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%}
-body{
-  background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-  min-height:100vh;overflow-x:hidden;transition:background .5s,color .5s;
-}
-.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:radial-gradient(ellipse at 50% -10%,var(--bg2),var(--bg) 65%)}
-.bg i{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:fl 18s ease-in-out infinite}
-.bg i:nth-child(1){width:620px;height:620px;background:var(--a);top:-220px;left:-180px}
-.bg i:nth-child(2){width:560px;height:560px;background:var(--b);bottom:-200px;right:-160px;animation-delay:-7s}
-.bg i:nth-child(3){width:480px;height:480px;background:var(--c);top:50%;left:50%;opacity:.1;animation-delay:-12s}
-@keyframes fl{0%,100%{transform:translate(0,0)}50%{transform:translate(50px,-40px) scale(1.1)}}
-
-.wrap{max-width:1080px;margin:0 auto;padding:0 24px;min-height:100vh;display:flex;flex-direction:column}
-header{padding:26px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.logo{font-weight:900;font-size:19px;letter-spacing:.06em;display:flex;align-items:center;gap:10px}
-.logo b{background:linear-gradient(100deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
-.logo .ic{width:26px;height:26px}
-.tools{display:flex;gap:8px;align-items:center}
-.iconbtn{
-  width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--txt);
-  display:grid;place-items:center;cursor:pointer;transition:.2s;font-size:17px;backdrop-filter:blur(10px)
-}
-.iconbtn:hover{border-color:var(--accent);transform:translateY(-2px);background:rgba(255,255,255,.09)}
-.iconbtn.active{color:var(--accent);border-color:var(--accent)}
-.iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* TABS */
-.tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:5px;margin:6px auto 30px;width:max-content;backdrop-filter:blur(10px)}
-.tab{padding:10px 22px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);transition:.25s;border:none;background:none;white-space:nowrap}
-.tab:hover{color:var(--txt)}
-.tab.active{background:linear-gradient(135deg,var(--a),var(--b));color:#fff;box-shadow:0 8px 24px rgba(124,92,255,.3)}
-
-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:clamp(12px,7vh,64px) 0 40px}
-.panel{display:none;width:100%;flex-direction:column;align-items:center;animation:fadeIn .5s}
-.panel.active{display:flex}
-@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-
-/* ========== FLIP CLOCK ========== */
-.clock-date{font-size:16px;color:var(--muted);letter-spacing:.05em;margin-bottom:22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
-.clock-date .wd{color:var(--accent);font-weight:700}
-.clock-date .tz{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
-.flipclock{
-  --cw:min(84px,calc((100vw - 90px)/7.15));
-  --ch:calc(var(--cw)*1.46);
-  --gap:clamp(3px,.6vw,6px);
-  display:flex;gap:clamp(4px,1vw,12px);align-items:center;perspective:1600px
-}
-.flipgroup{display:flex;flex-direction:column;align-items:center;gap:10px}
+html{color-scheme:dark;min-height:100%}
+html:has(body[data-theme="paper"]){color-scheme:light}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:48px 48px;opacity:.22;mask-image:linear-gradient(to bottom,black,transparent 72%)}
+button{font:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{width:min(1180px,100%);min-height:100vh;margin:auto;padding:0 32px;display:flex;flex-direction:column}
+header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--txt)}
+.brand-mark{width:30px;height:30px;border:1px solid var(--accent);display:grid;place-items:center;color:var(--accent);font:700 12px var(--mono)}
+.brand-name{font:700 15px var(--mono);letter-spacing:.14em}
+.brand-sub{display:block;font:10px var(--mono);letter-spacing:.16em;color:var(--muted);margin-top:4px}
+.header-right{display:flex;align-items:center;gap:18px}
+.status{font:10px var(--mono);letter-spacing:.12em;color:var(--muted);display:flex;align-items:center;gap:8px}
+.status::before{content:"";width:5px;height:5px;background:var(--accent)}
+.tools{display:flex;gap:8px}
+.iconbtn{height:36px;min-width:36px;padding:0 10px;border:1px solid var(--line);border-radius:3px;background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.iconbtn:hover{color:var(--txt);border-color:var(--muted);background:var(--surface)}
+.iconbtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.navrow{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.tabs{display:flex;align-self:stretch}
+.tab{position:relative;padding:20px 26px;border:0;background:none;color:var(--muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:color .15s}
+.tab:first-child{padding-left:0;padding-right:30px}
+.tab::after{content:"";position:absolute;height:2px;left:26px;right:26px;bottom:-1px;background:transparent}
+.tab:first-child::after{left:0}
+.tab.active{color:var(--txt)}
+.tab.active::after{background:var(--accent)}
+.tab .idx{font:10px var(--mono);color:var(--dim);margin-right:8px}
+.local-badge{font:10px var(--mono);letter-spacing:.12em;color:var(--dim)}
+main{flex:1;display:flex;flex-direction:column}
+.panel{display:none;width:100%;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:54px 0 38px}
+.panel.active{display:flex;animation:enter .22s ease-out}
+@keyframes enter{from{opacity:0}to{opacity:1}}
+.clock-head{width:100%;display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:44px;padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+.eyebrow{font:10px var(--mono);letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.clock-date{display:flex;align-items:baseline;gap:14px;font-size:15px;color:var(--txt)}
+.clock-date .wd{font-weight:500}
+.clock-date .tz{font:10px var(--mono);color:var(--muted);border-left:1px solid var(--line);padding-left:14px}
+.clock-code{font:10px var(--mono);color:var(--dim);letter-spacing:.1em;text-align:right;line-height:1.8}
+/* 四位一体的机械翻页：静止上下层 + 运动上下层，所有数字共用同一坐标系 */
+.flipclock{--cw:min(116px,calc((100vw - 134px)/6.55));--ch:calc(var(--cw)*1.38);--gap:calc(var(--cw)*.055);display:flex;gap:clamp(5px,1vw,14px);align-items:center;perspective:1400px;perspective-origin:50% 50%}
+.flipgroup{display:flex;flex-direction:column;align-items:center;gap:16px}
 .digits{display:flex;gap:var(--gap)}
-.flip{
-  position:relative;width:var(--cw);height:var(--ch);
-  font-family:var(--digit-font);font-size:calc(var(--cw)*.84);font-weight:700;
-  transform-style:preserve-3d;border-radius:12px;box-shadow:0 12px 32px var(--shadow);
-}
-/* 四片结构：上/下 × 静止/翻页。数字 .inn 高度=整卡，靠半块裁切各显示一半 */
-.half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.half.top{top:0;border-radius:12px 12px 0 0;
-  background:linear-gradient(180deg,rgba(255,255,255,.085),var(--flip));
-  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 1px 0 var(--flip-line)}
-.half.bottom{bottom:0;border-radius:0 0 12px 12px;
-  background:linear-gradient(180deg,rgba(255,255,255,.018),var(--flip));
-  box-shadow:inset 1px 0 0 var(--flip-line),inset -1px 0 0 var(--flip-line),inset 0 -1px 0 var(--flip-line)}
-.half .inn{position:absolute;left:0;width:100%;height:200%;display:flex;align-items:center;justify-content:center;color:var(--txt)}
+.flip{position:relative;width:var(--cw);height:var(--ch);font-family:var(--digit-font);font-size:calc(var(--cw)*.9);font-weight:var(--digit-weight,600);line-height:1;transform-style:preserve-3d;border-radius:4px;filter:drop-shadow(0 12px 12px rgba(0,0,0,.18))}
+.half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.half.top{top:0;border-top:1px solid var(--line);border-radius:4px 4px 0 0;background:var(--card-top)}
+.half.bottom{bottom:0;border-bottom:1px solid var(--line);border-radius:0 0 4px 4px;background:var(--card-bottom)}
+.half .inn{position:absolute;left:0;width:100%;height:200%;display:flex;align-items:center;justify-content:center;color:var(--txt);font-variant-numeric:tabular-nums;transform:translateZ(0)}
 .half.top .inn{top:0}
 .half.bottom .inn{bottom:0}
-/* 中缝：真实分隔线 */
-.flip::after{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--bg);box-shadow:0 1px 0 var(--flip-line);z-index:8;transform:translateY(-1px);pointer-events:none}
-/* 翻页片：静止时隐藏，翻页时上半绕中缝向下翻走、下半从 90° 落回 */
-.half.leaf{z-index:5;visibility:hidden}
+.half.leaf{z-index:3;visibility:hidden;will-change:transform}
 .half.leaf.top{transform-origin:50% 100%}
 .half.leaf.bottom{transform-origin:50% 0;transform:rotateX(90deg)}
-.half.leaf .shadow{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
-.flip.go .half.leaf{visibility:visible}
-.flip.go .half.leaf.top{animation:flipTop .3s ease-in forwards}
-.flip.go .half.leaf.bottom{animation:flipBot .3s .3s ease-out forwards}
-.flip.go .half.leaf.top .shadow{animation:shTop .3s ease-in forwards}
-.flip.go .half.leaf.bottom .shadow{animation:shBot .3s .3s ease-out forwards}
-@keyframes flipTop{from{transform:rotateX(0)}to{transform:rotateX(-90deg)}}
-@keyframes flipBot{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
-@keyframes shTop{from{opacity:0}to{opacity:.72}}
-@keyframes shBot{from{opacity:.72}to{opacity:0}}
-.colon{height:var(--ch);display:flex;flex-direction:column;justify-content:center;gap:calc(var(--cw)*.24);padding:0 1px}
-.colon i{width:calc(var(--cw)*.085);height:calc(var(--cw)*.085);border-radius:50%;background:var(--accent);display:block;box-shadow:0 0 calc(var(--cw)*.12) var(--accent)}
-.glabel{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
-
-/* digital (non-flip) mode */
-.digital{font-family:var(--digit-font);font-size:clamp(56px,14vw,148px);font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
-.digital .sec-ms{font-size:.4em;color:var(--b);vertical-align:baseline;margin-left:6px}
-.digital .ampm{font-size:.22em;color:var(--accent);margin-left:10px;letter-spacing:.05em}
-.blink{animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:.25}}
-
-/* ========== STOPWATCH ========== */
-.sw-time{font-family:var(--digit-font);font-size:clamp(58px,15vw,150px);font-weight:700;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.03em}
-.sw-time .cs{font-size:.42em;color:var(--accent)}
-.sw-main{min-height:170px;display:flex;align-items:center;justify-content:center}
-.laps{width:100%;max-width:460px;margin-top:20px;max-height:190px;overflow-y:auto;border-top:1px solid var(--line)}
-.laps::-webkit-scrollbar{width:6px}.laps::-webkit-scrollbar-thumb{background:var(--line);border-radius:9px}
-.lap{display:flex;justify-content:space-between;padding:9px 6px;font-family:var(--digit-font);font-size:14px;color:var(--muted);border-bottom:1px solid var(--line)}
-.lap.fast{color:#4ade80}.lap.slow{color:#fb7185}
-.lap b{color:var(--txt);font-weight:600}
-
-/* ========== POMODORO ========== */
-.pomo-wrap{display:flex;flex-direction:column;align-items:center;gap:26px}
-.pomo-modes{display:flex;gap:8px}
-.pmode{padding:8px 18px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;transition:.25s}
-.pmode:hover{color:var(--txt)}
-.pmode.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
-.ring{position:relative;width:clamp(250px,60vw,330px);height:clamp(250px,60vw,330px)}
+.half .shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.flip::before{content:"";position:absolute;z-index:6;left:0;right:0;top:50%;height:1px;background:#050608;pointer-events:none}
+.flip::after{content:"";position:absolute;z-index:7;left:-2px;right:-2px;top:50%;height:5px;transform:translateY(-50%);border-left:2px solid var(--dim);border-right:2px solid var(--dim);pointer-events:none}
+.colon{height:var(--ch);display:flex;flex-direction:column;justify-content:center;gap:calc(var(--cw)*.24);padding:0 2px}
+.colon i{width:calc(var(--cw)*.055);height:calc(var(--cw)*.055);min-width:3px;min-height:3px;background:var(--dim)}
+.glabel{font:9px var(--mono);letter-spacing:.24em;color:var(--dim);text-transform:uppercase}
+.ampm-flip{display:none;font:12px var(--mono);color:var(--accent);align-self:flex-start;margin-bottom:20px}
+.digital{font-family:var(--digit-font);font-size:clamp(54px,12vw,144px);font-weight:var(--digit-weight,500);letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.digital .ampm{font-size:.18em;color:var(--accent);margin-left:14px;letter-spacing:.05em}
+.hint{font-size:11px;color:var(--dim);margin-top:44px;text-align:center;line-height:1.9}
+.hint kbd{font:10px var(--mono);border:1px solid var(--line);border-radius:2px;padding:2px 6px;color:var(--muted);background:transparent}
+/* stopwatch */
+.sw-wrap{width:min(680px,100%)}
+.sw-meta{display:flex;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--line);font:10px var(--mono);letter-spacing:.14em;color:var(--muted)}
+.sw-main{padding:58px 0 34px;text-align:center}
+.sw-time{font-family:var(--digit-font);font-size:clamp(62px,12vw,126px);font-weight:var(--digit-weight,500);font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.055em}
+.sw-time .cs{font-size:.38em;color:var(--accent);letter-spacing:-.02em}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 24px;min-width:112px;border-radius:3px;border:1px solid var(--line);background:transparent;color:var(--txt);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.btn:hover:not(:disabled){border-color:var(--muted);background:var(--surface-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover:not(:disabled){background:var(--txt);border-color:var(--txt)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.laps{width:100%;margin-top:30px;max-height:190px;overflow-y:auto;border-top:1px solid var(--line)}
+.lap{display:grid;grid-template-columns:1fr 1fr 1fr;padding:12px 4px;font:12px var(--mono);color:var(--muted);border-bottom:1px solid var(--line-soft)}
+.lap span:nth-child(2){text-align:center}.lap b{text-align:right;color:var(--txt);font-weight:500}.lap.fast{color:var(--accent)}.lap.slow{color:var(--danger)}
+/* pomodoro */
+.pomo-wrap{display:flex;flex-direction:column;align-items:center;width:100%}
+.pomo-modes{display:flex;border:1px solid var(--line);margin-bottom:34px}
+.pmode{padding:9px 20px;border:0;border-right:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;font-size:12px}
+.pmode:last-child{border-right:0}.pmode.active{background:var(--surface-2);color:var(--accent)}
+.ring{position:relative;width:min(310px,72vw);aspect-ratio:1}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
-.ring .track{fill:none;stroke:var(--line);stroke-width:9}
-.ring .prog{fill:none;stroke:url(#pg);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset .4s linear;filter:drop-shadow(0 0 8px var(--accent))}
-.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
-.ring-time{font-family:var(--digit-font);font-size:clamp(46px,11vw,68px);font-weight:700;font-variant-numeric:tabular-nums}
-.ring-label{font-size:12px;letter-spacing:.25em;color:var(--muted);text-transform:uppercase}
-.ring-rounds{display:flex;gap:6px;margin-top:10px}
-.ring-rounds i{width:8px;height:8px;border-radius:50%;background:var(--line)}
-.ring-rounds i.done{background:var(--accent);box-shadow:0 0 8px var(--accent)}
-
-/* buttons */
-.controls{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap;justify-content:center}
-.btn{
-  padding:13px 30px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--txt);
-  font-size:14px;font-weight:700;cursor:pointer;transition:.22s;backdrop-filter:blur(10px);min-width:112px
-}
-.btn:hover{transform:translateY(-2px);border-color:var(--accent)}
-.btn.primary{background:linear-gradient(135deg,var(--a),var(--b));color:#fff;border-color:transparent;box-shadow:0 10px 28px rgba(124,92,255,.3)}
-.btn.primary:hover{box-shadow:0 14px 36px rgba(124,92,255,.45)}
-.btn svg{width:15px;height:15px;vertical-align:-2px;margin-right:6px;fill:currentColor}
-.hint{font-size:12px;color:var(--muted);margin-top:22px;text-align:center;line-height:1.8}
-.hint kbd{font-family:var(--font);font-size:11px;border:1px solid var(--line);border-radius:5px;padding:2px 6px;color:var(--txt);background:var(--panel)}
-
-/* settings drawer */
-.drawer{position:fixed;top:0;right:0;width:min(360px,90vw);height:100%;background:var(--bg2);border-left:1px solid var(--line);z-index:50;padding:26px;overflow-y:auto;transform:translateX(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);box-shadow:-20px 0 60px var(--shadow)}
-.drawer.open{transform:none}
-.drawer h3{font-size:16px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
-.drawer .close{cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
-.sec{margin-top:26px}
-.sec>.lbl{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
-.opts{display:flex;flex-wrap:wrap;gap:8px}
-.opt{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;font-size:13px;transition:.2s}
-.opt:hover{color:var(--txt)}
-.opt.active{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
-.swatches{display:flex;flex-wrap:wrap;gap:10px}
-.sw{width:38px;height:38px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.2s;position:relative}
-.sw:hover{transform:scale(1.12)}
-.sw.active{border-color:var(--txt);box-shadow:0 0 0 3px var(--bg2),0 0 0 5px var(--accent)}
-.row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
-.row:last-child{border:none}
-.toggle{width:44px;height:24px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:.25s;flex-shrink:0}
-.toggle.on{background:var(--accent)}
-.toggle::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.3)}
-.toggle.on::after{left:23px}
-.stepper{display:flex;align-items:center;gap:10px}
-.stepper button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--txt);cursor:pointer;font-size:16px}
-.stepper button:hover{border-color:var(--accent)}
-.stepper span{font-family:var(--digit-font);min-width:42px;text-align:center;font-size:15px}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;opacity:0;pointer-events:none;transition:.3s;backdrop-filter:blur(2px)}
-.overlay.show{opacity:1;pointer-events:auto}
-
-.back{margin-top:26px;text-decoration:none;color:var(--muted);font-size:13px;display:inline-flex;gap:8px;align-items:center;transition:.2s}
-.back:hover{color:var(--accent)}
+.ring .track{fill:none;stroke:var(--line);stroke-width:3}
+.ring .prog{fill:none;stroke:var(--accent);stroke-width:3;transition:stroke-dashoffset .25s linear}
+.ring-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-time{font-family:var(--digit-font);font-size:clamp(48px,11vw,68px);font-weight:var(--digit-weight,500);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+.ring-label{font:10px var(--mono);letter-spacing:.2em;color:var(--muted);margin-top:10px}
+.ring-rounds{display:flex;gap:8px;margin-top:20px}.ring-rounds i{width:16px;height:2px;background:var(--line)}.ring-rounds i.done{background:var(--accent)}
+.pomo-wrap .controls{margin-top:26px}
+/* drawer */
+.drawer{position:fixed;top:0;right:0;width:min(380px,92vw);height:100%;background:var(--surface);border-left:1px solid var(--line);z-index:50;padding:28px;overflow-y:auto;transform:translateX(102%);transition:transform .25s ease;box-shadow:-20px 0 50px rgba(0,0,0,.22)}
+.drawer.open{transform:none}.drawer h3{font-size:15px;font-weight:500;display:flex;justify-content:space-between;align-items:center}.drawer .close{cursor:pointer;color:var(--muted);font:24px var(--mono);background:none;border:0}
+.sec{margin-top:30px}.sec>.lbl{font:10px var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+.opts{display:flex;flex-wrap:wrap;gap:7px}.opt{padding:8px 13px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:12px}.opt.active{border-color:var(--accent);color:var(--accent)}
+.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.sw{height:42px;border-radius:2px;cursor:pointer;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px}.sw::before{content:"";width:7px;height:7px;background:var(--swatch)}.sw.active{border-color:var(--accent);color:var(--txt)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-soft);font-size:13px}.toggle{width:36px;height:20px;border:1px solid var(--line);background:transparent;position:relative;cursor:pointer;flex-shrink:0}.toggle::after{content:"";position:absolute;width:12px;height:12px;background:var(--muted);top:3px;left:3px;transition:transform .18s,background .18s}.toggle.on{border-color:var(--accent)}.toggle.on::after{transform:translateX(16px);background:var(--accent)}
+.stepper{display:flex;align-items:center;gap:8px}.stepper button{width:28px;height:28px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--txt);cursor:pointer}.stepper span{font:13px var(--mono);min-width:36px;text-align:center}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.58);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}.overlay.show{opacity:1;pointer-events:auto}
+footer{min-height:64px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px;font:10px var(--mono);letter-spacing:.1em;color:var(--dim)}
+footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--accent)}
 @media(max-width:640px){
-  .controls .btn{padding:12px 20px;min-width:100px}
-  header{padding:18px 0}
-  .clock-date{font-size:14px;gap:8px}
-  .glabel{font-size:10px}
+  .wrap{padding:0 18px}header{height:68px}.brand-sub,.status,.local-badge{display:none}.header-right{gap:8px}
+  .tab{padding:17px 15px;font-size:12px}.tab:first-child{padding-right:15px}.tab::after{left:15px;right:15px}.tab .idx{display:none}
+  .panel{padding:32px 0 28px;justify-content:center}.clock-head{margin-bottom:38px;align-items:flex-start}.clock-code{display:none}.clock-date{font-size:13px;gap:9px;flex-wrap:wrap}.clock-date .tz{padding-left:9px}
+  .flipclock{--cw:calc((100vw - 86px)/6);gap:4px}.flipgroup{gap:12px}.digits{gap:3px}.colon{padding:0}.glabel{font-size:8px;letter-spacing:.18em}
+  .hint{margin-top:36px}.sw-main{padding:48px 0 30px}.pomo-modes{margin-bottom:28px}.pmode{padding:9px 16px}
+  footer{font-size:9px;min-height:58px}.drawer{padding:24px}
 }
+@media(prefers-reduced-motion:reduce){.panel.active{animation:none}.drawer,.toggle::after{transition:none}}
 </style>
 </head>
 <body data-theme="nebula" data-font="mono">
-<div class="bg"><i></i><i></i><i></i></div>
-
 <div class="overlay" id="overlay"></div>
-<aside class="drawer" id="drawer">
-  <h3><span>⚙️ 设置</span><span class="close" id="dClose">×</span></h3>
-
-  <div class="sec">
-    <div class="lbl">主题配色</div>
-    <div class="swatches" id="themes"></div>
-  </div>
-
-  <div class="sec">
-    <div class="lbl">数字字体</div>
-    <div class="opts" id="fonts">
-      <div class="opt active" data-font="mono">等宽</div>
-      <div class="opt" data-font="sans">无衬线</div>
-      <div class="opt" data-font="serif">衬线</div>
-      <div class="opt" data-font="thin">纤细</div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <div class="lbl">时钟显示</div>
-    <div class="row"><span>翻页动画</span><div class="toggle on" id="tFlip"></div></div>
-    <div class="row"><span>24 小时制</span><div class="toggle on" id="t24"></div></div>
-    <div class="row"><span>显示日期/时区</span><div class="toggle on" id="tDate"></div></div>
-  </div>
-
-  <div class="sec">
-    <div class="lbl">番茄钟时长（分钟）</div>
-    <div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div>
-    <div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div>
-    <div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div>
-    <div class="row"><span>自动开始下一轮</span><div class="toggle" id="tAuto"></div></div>
-    <div class="row"><span>结束提示音</span><div class="toggle on" id="tSound"></div></div>
-  </div>
+<aside class="drawer" id="drawer" aria-label="时钟设置">
+  <h3><span>显示与计时设置</span><button class="close" id="dClose" aria-label="关闭设置">×</button></h3>
+  <div class="sec"><div class="lbl">01 / 强调色</div><div class="swatches" id="themes"></div></div>
+  <div class="sec"><div class="lbl">02 / 数字字体</div><div class="opts" id="fonts"><button class="opt active" data-font="mono">等宽</button><button class="opt" data-font="sans">无衬线</button><button class="opt" data-font="serif">衬线</button><button class="opt" data-font="thin">纤细</button></div></div>
+  <div class="sec"><div class="lbl">03 / 时钟显示</div><div class="row"><span>机械翻页模式</span><button class="toggle on" id="tFlip" aria-label="切换翻页模式"></button></div><div class="row"><span>24 小时制</span><button class="toggle on" id="t24" aria-label="切换 24 小时制"></button></div><div class="row"><span>显示日期与时区</span><button class="toggle on" id="tDate" aria-label="切换日期显示"></button></div></div>
+  <div class="sec"><div class="lbl">04 / 番茄钟时长（分钟）</div><div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div><div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div><div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div><div class="row"><span>自动开始下一轮</span><button class="toggle" id="tAuto" aria-label="自动开始下一轮"></button></div><div class="row"><span>结束提示音</span><button class="toggle on" id="tSound" aria-label="结束提示音"></button></div></div>
 </aside>
-
 <div class="wrap">
   <header>
-    <div class="logo">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="url(#lg)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7c5cff"/><stop offset="1" stop-color="#ff5ca8"/></linearGradient></defs></svg>
-      <b>CHRONO</b>
-    </div>
-    <div class="tools">
-      <button class="iconbtn" id="fsBtn" title="全屏">
-        <svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
-      </button>
-      <button class="iconbtn" id="setBtn" title="设置">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-    </div>
+    <a class="brand" href="../index.html" aria-label="返回 zqf.ltd 首页"><span class="brand-mark">Z/</span><span><span class="brand-name">CHRONO</span><span class="brand-sub">PRECISION TIME INSTRUMENT</span></span></a>
+    <div class="header-right"><span class="status">SYSTEM READY</span><div class="tools"><button class="iconbtn" id="fsBtn" title="全屏" aria-label="全屏"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button><button class="iconbtn" id="setBtn" title="设置" aria-label="设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div></div>
   </header>
-
-  <div class="tabs">
-    <button class="tab active" data-panel="clock">🕐 时钟</button>
-    <button class="tab" data-panel="stopwatch">⏱️ 秒表</button>
-    <button class="tab" data-panel="pomo">🍅 番茄钟</button>
-  </div>
-
+  <div class="navrow"><nav class="tabs" aria-label="功能切换"><button class="tab active" data-panel="clock"><span class="idx">01</span>时钟</button><button class="tab" data-panel="stopwatch"><span class="idx">02</span>秒表</button><button class="tab" data-panel="pomo"><span class="idx">03</span>番茄钟</button></nav><span class="local-badge">LOCAL / NO CLOUD</span></div>
   <main>
-    <!-- CLOCK -->
     <section class="panel active" id="clock">
-      <div class="clock-date" id="dateLine">
-        <span class="wd" id="weekday">星期一</span>
-        <span id="fullDate">2026年1月1日</span>
-        <span class="tz" id="tz">UTC+8</span>
-      </div>
-      <div id="flipWrap" class="flipclock">
-        <div class="flipgroup">
-          <div class="digits" id="hDig"></div>
-          <div class="glabel">时</div>
-        </div>
-        <div class="colon"><i></i><i></i></div>
-        <div class="flipgroup">
-          <div class="digits" id="mDig"></div>
-          <div class="glabel">分</div>
-        </div>
-        <div class="colon"><i></i><i></i></div>
-        <div class="flipgroup">
-          <div class="digits" id="sDig"></div>
-          <div class="glabel">秒</div>
-        </div>
-      </div>
-      <div id="digitalWrap" class="digital" style="display:none">
-        <span id="digitalTime">00:00:00</span><span class="ampm" id="ampm"></span>
-      </div>
-      <div class="hint">时间实时同步自系统时钟<br>按 <kbd>F</kbd> 切换翻页 / 数字 · <kbd>Space</kbd> 暂停走时</div>
+      <div class="clock-head" id="dateLine"><div><div class="eyebrow">Current local time</div><div class="clock-date"><span class="wd" id="weekday">星期一</span><span id="fullDate">2026.01.01</span><span class="tz" id="tz">UTC+8</span></div></div><div class="clock-code">SYS.CLOCK / 01<br>TIME SOURCE · DEVICE</div></div>
+      <div id="flipWrap" class="flipclock"><div class="flipgroup"><div class="digits" id="hDig"></div><div class="glabel">HOURS</div></div><div class="colon"><i></i><i></i></div><div class="flipgroup"><div class="digits" id="mDig"></div><div class="glabel">MINUTES</div></div><div class="colon"><i></i><i></i></div><div class="flipgroup"><div class="digits" id="sDig"></div><div class="glabel">SECONDS</div></div><span class="ampm-flip" id="flipAmpm"></span></div>
+      <div id="digitalWrap" class="digital" style="display:none"><span id="digitalTime">00:00:00</span><span class="ampm" id="ampm"></span></div>
+      <div class="hint">读取本机系统时间 · 无需网络校准<br><kbd>F</kbd> 显示模式　<kbd>SPACE</kbd> 暂停走时</div>
     </section>
-
-    <!-- STOPWATCH -->
-    <section class="panel" id="stopwatch">
-      <div class="sw-main"><div class="sw-time"><span id="swTime">00:00</span><span class="cs" id="swCs">.00</span></div></div>
-      <div class="controls">
-        <button class="btn primary" id="swStart"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始</button>
-        <button class="btn" id="swLap" disabled><svg viewBox="0 0 24 24"><path d="M6 5h12v14H6z"/></svg>计次</button>
-        <button class="btn" id="swReset" disabled><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>重置</button>
-      </div>
-      <div class="laps" id="laps"></div>
-      <div class="hint">精确到 1/100 秒 · <kbd>Space</kbd> 开始/暂停 · <kbd>L</kbd> 计次 · <kbd>R</kbd> 重置</div>
-    </section>
-
-    <!-- POMODORO -->
-    <section class="panel" id="pomo">
-      <div class="pomo-wrap">
-        <div class="pomo-modes">
-          <button class="pmode active" data-mode="work">专注</button>
-          <button class="pmode" data-mode="short">短休息</button>
-          <button class="pmode" data-mode="long">长休息</button>
-        </div>
-        <div class="ring">
-          <svg viewBox="0 0 300 300">
-            <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--a)"/><stop offset="1" stop-color="var(--b)"/></linearGradient></defs>
-            <circle class="track" cx="150" cy="150" r="136"/>
-            <circle class="prog" id="pomoProg" cx="150" cy="150" r="136"/>
-          </svg>
-          <div class="ring-inner">
-            <div class="ring-time" id="pomoTime">25:00</div>
-            <div class="ring-label" id="pomoLabel">专注时间</div>
-            <div class="ring-rounds" id="rounds"></div>
-          </div>
-        </div>
-        <div class="controls">
-          <button class="btn primary" id="pomoStart"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始专注</button>
-          <button class="btn" id="pomoReset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8m0-5v5h5"/></svg>重置</button>
-        </div>
-        <div class="hint">每完成 4 个专注自动进入长休息 · <kbd>Space</kbd> 开始/暂停</div>
-      </div>
-    </section>
+    <section class="panel" id="stopwatch"><div class="sw-wrap"><div class="sw-meta"><span>STOPWATCH / 1⁄100 SEC</span><span id="swState">STANDBY</span></div><div class="sw-main"><div class="sw-time"><span id="swTime">00:00</span><span class="cs" id="swCs">.00</span></div></div><div class="controls"><button class="btn primary" id="swStart">开始</button><button class="btn" id="swLap" disabled>计次</button><button class="btn" id="swReset" disabled>重置</button></div><div class="laps" id="laps"></div><div class="hint"><kbd>SPACE</kbd> 开始 / 暂停　<kbd>L</kbd> 计次　<kbd>R</kbd> 重置</div></div></section>
+    <section class="panel" id="pomo"><div class="pomo-wrap"><div class="pomo-modes"><button class="pmode active" data-mode="work">专注</button><button class="pmode" data-mode="short">短休息</button><button class="pmode" data-mode="long">长休息</button></div><div class="ring"><svg viewBox="0 0 300 300"><circle class="track" cx="150" cy="150" r="136"/><circle class="prog" id="pomoProg" cx="150" cy="150" r="136"/></svg><div class="ring-inner"><div class="eyebrow">Focus session</div><div class="ring-time" id="pomoTime">25:00</div><div class="ring-label" id="pomoLabel">专注时间</div><div class="ring-rounds" id="rounds"></div></div></div><div class="controls"><button class="btn primary" id="pomoStart">开始专注</button><button class="btn" id="pomoReset">重置</button></div><div class="hint">完成 4 次专注后进入长休息 · <kbd>SPACE</kbd> 开始 / 暂停</div></div></section>
   </main>
-
-  <a class="back" href="../index.html">← 返回作品集</a>
+  <footer><span>ZQF.LTD / CHRONO 02.0</span><a href="../index.html">返回首页 ↗</a></footer>
 </div>
-
 <script>
-/* ================= STATE ================= */
 const LS='chrono_v1';
-let S={
-  theme:'nebula',font:'mono',flip:true,h24:true,showDate:true,
-  work:25,short:5,long:15,auto:false,sound:true
-};
+let S={theme:'nebula',font:'mono',flip:true,h24:true,showDate:true,work:25,short:5,long:15,auto:false,sound:true};
 try{const s=localStorage.getItem(LS);if(s)Object.assign(S,JSON.parse(s))}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id);
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 const applyState=()=>{
-  document.body.dataset.theme=S.theme;
-  document.body.dataset.font=S.font;
-  $('tFlip').classList.toggle('on',S.flip);
-  $('t24').classList.toggle('on',S.h24);
-  $('tDate').classList.toggle('on',S.showDate);
-  $('tAuto').classList.toggle('on',S.auto);
-  $('tSound').classList.toggle('on',S.sound);
+  document.body.dataset.theme=S.theme;document.body.dataset.font=S.font;
+  $('tFlip').classList.toggle('on',S.flip);$('t24').classList.toggle('on',S.h24);$('tDate').classList.toggle('on',S.showDate);$('tAuto').classList.toggle('on',S.auto);$('tSound').classList.toggle('on',S.sound);
   $('workVal').textContent=S.work;$('shortVal').textContent=S.short;$('longVal').textContent=S.long;
-  document.querySelectorAll('#fonts .opt').forEach(o=>o.classList.toggle('active',o.dataset.font===S.font));
-  document.querySelectorAll('#themes .sw').forEach(o=>o.classList.toggle('active',o.dataset.theme===S.theme));
-  $('flipWrap').style.display=S.flip?'flex':'none';
-  $('digitalWrap').style.display=S.flip?'none':'block';
-  $('dateLine').style.display=S.showDate?'flex':'none';
+  document.querySelectorAll('#fonts .opt').forEach(o=>o.classList.toggle('active',o.dataset.font===S.font));document.querySelectorAll('#themes .sw').forEach(o=>o.classList.toggle('active',o.dataset.theme===S.theme));
+  $('flipWrap').style.display=S.flip?'flex':'none';$('digitalWrap').style.display=S.flip?'none':'block';$('dateLine').style.visibility=S.showDate?'visible':'hidden';
 };
-
-/* ================= THEME SWATCHES ================= */
-const themeMap={nebula:['#7c5cff','#ff5ca8'],aurora:['#00e5a8','#00b3ff'],sunset:['#ff7a45','#ff3d6e'],ocean:['#3b82f6','#22d3ee'],mono:['#e8e8e8','#9a9a9a'],paper:['#2b2b2b','#a89b82']};
-const themeNames={nebula:'星云',aurora:'极光',sunset:'落日',ocean:'深海',mono:'黑白',paper:'纸张'};
-$('themes').innerHTML=Object.keys(themeMap).map(k=>
-  `<div class="sw ${k===S.theme?'active':''}" data-theme="${k}" title="${themeNames[k]}" style="background:linear-gradient(135deg,${themeMap[k][0]},${themeMap[k][1]})"></div>`
-).join('');
+const themeMap={nebula:['#67d7e5','青蓝'],aurora:['#76d7ae','青绿'],sunset:['#e7ad72','琥珀'],ocean:['#82aef0','钢蓝'],mono:['#d6dcdf','单色'],paper:['#176a78','浅色']};
+$('themes').innerHTML=Object.entries(themeMap).map(([k,v])=>`<button class="sw ${k===S.theme?'active':''}" data-theme="${k}" style="--swatch:${v[0]}">${v[1]}</button>`).join('');
 $('themes').addEventListener('click',e=>{const sw=e.target.closest('.sw');if(!sw)return;S.theme=sw.dataset.theme;save();applyState()});
 $('fonts').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o)return;S.font=o.dataset.font;save();applyState()});
-
-/* toggles */
-const bindToggle=(id,key,after)=>$(id).addEventListener('click',()=>{S[key]=!S[key];save();applyState();after&&after()});
-bindToggle('tFlip','flip');bindToggle('t24','h24');
-bindToggle('tDate','showDate');bindToggle('tAuto','auto');bindToggle('tSound','sound');
-document.querySelectorAll('[data-pomo]').forEach(b=>b.addEventListener('click',()=>{
-  const k=b.dataset.pomo,d=+b.dataset.d;
-  S[k]=Math.max(1,Math.min(120,S[k]+d));save();applyState();
-  if(!pomo.running){pomo.mode=k==='work'?'work':k;resetPomo();}
-}));
-
-/* drawer */
-const drawer=$('drawer'),overlay=$('overlay');
-const openDrawer=()=>{drawer.classList.add('open');overlay.classList.add('show')};
-const closeDrawer=()=>{drawer.classList.remove('open');overlay.classList.remove('show')};
-$('setBtn').addEventListener('click',openDrawer);
-$('dClose').addEventListener('click',closeDrawer);
-overlay.addEventListener('click',closeDrawer);
-$('fsBtn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()});
-
-/* ================= TABS ================= */
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');$(t.dataset.panel).classList.add('active');
-}));
-
-/* ================= FLIP DIGITS ================= */
+const bindToggle=(id,key)=>$(id).addEventListener('click',()=>{S[key]=!S[key];save();applyState()});
+bindToggle('tFlip','flip');bindToggle('t24','h24');bindToggle('tDate','showDate');bindToggle('tAuto','auto');bindToggle('tSound','sound');
+document.querySelectorAll('[data-pomo]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.pomo,d=+b.dataset.d;S[k]=Math.max(1,Math.min(120,S[k]+d));save();applyState();if(!pomo.running){pomo.mode=k;resetPomo();document.querySelectorAll('.pmode').forEach(x=>x.classList.toggle('active',x.dataset.mode===k))}}));
+const drawer=$('drawer'),overlay=$('overlay');const openDrawer=()=>{drawer.classList.add('open');overlay.classList.add('show')};const closeDrawer=()=>{drawer.classList.remove('open');overlay.classList.remove('show')};
+$('setBtn').addEventListener('click',openDrawer);$('dClose').addEventListener('click',closeDrawer);overlay.addEventListener('click',closeDrawer);$('fsBtn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()});
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));t.classList.add('active');$(t.dataset.panel).classList.add('active')}));
+/* 翻页由 Web Animations API 驱动，取消与完成都同步静止层，避免跳数和残影。 */
 function makeFlip(container){
   const flip=document.createElement('div');flip.className='flip';
-  // 四片：静止上/下 + 翻页上/下，数字层 .inn 高 200% 由半块裁切
-  flip.innerHTML=`
-    <div class="half top static"><div class="inn">0</div></div>
-    <div class="half bottom static"><div class="inn">0</div></div>
-    <div class="half top leaf"><div class="inn">0</div><div class="shadow"></div></div>
-    <div class="half bottom leaf"><div class="inn">0</div><div class="shadow"></div></div>`;
+  flip.innerHTML='<div class="half top static"><div class="inn">0</div></div><div class="half bottom static"><div class="inn">0</div></div><div class="half top leaf"><div class="inn">0</div><div class="shade"></div></div><div class="half bottom leaf"><div class="inn">0</div><div class="shade"></div></div>';
   container.appendChild(flip);
-  const sTop=flip.querySelector('.static.top .inn');
-  const sBot=flip.querySelector('.static.bottom .inn');
-  const lTop=flip.querySelector('.leaf.top .inn');
-  const lBot=flip.querySelector('.leaf.bottom .inn');
-  let cur='0',timer=null;
+  const sTop=flip.querySelector('.static.top .inn'),sBot=flip.querySelector('.static.bottom .inn'),lTop=flip.querySelector('.leaf.top'),lBot=flip.querySelector('.leaf.bottom'),lTopText=lTop.querySelector('.inn'),lBotText=lBot.querySelector('.inn'),topShade=lTop.querySelector('.shade'),botShade=lBot.querySelector('.shade');
+  let cur='0',run=0,animations=[];
+  const stop=()=>{animations.forEach(a=>a.cancel());animations=[];lTop.style.visibility='hidden';lBot.style.visibility='hidden'};
+  const settle=()=>{sTop.textContent=cur;sBot.textContent=cur;stop()};
   return function set(v){
-    v=String(v);
-    if(v===cur)return;
-    const old=cur;cur=v;
-    clearTimeout(timer);
-    // 翻走的上半 = 旧值；翻入的下半 = 新值（各带阴影渐变）
-    lTop.textContent=old;
-    lBot.textContent=v;
-    // 静止上半立刻换成新值（被翻走的上半盖住，0.3s 后露出）
-    sTop.textContent=v;
-    // 静止下半保持旧值，直到新下半翻下来盖住
-    sBot.textContent=old;
-    flip.classList.remove('go');void flip.offsetWidth;flip.classList.add('go');
-    // 动画结束：静止下半同步新值，翻页片复位隐藏
-    timer=setTimeout(()=>{sBot.textContent=v;flip.classList.remove('go')},640);
+    v=String(v);if(v===cur)return;
+    stop();const old=cur;cur=v;
+    if(reduceMotion.matches){settle();return}
+    const token=++run;sTop.textContent=v;sBot.textContent=old;lTopText.textContent=old;lBotText.textContent=v;
+    lTop.style.visibility='visible';lBot.style.visibility='visible';topShade.style.opacity='0';botShade.style.opacity='.7';
+    const top=lTop.animate([{transform:'rotateX(0deg)'},{transform:'rotateX(-90deg)'}],{duration:260,easing:'cubic-bezier(.55,0,.85,.45)',fill:'forwards'});
+    const shadeTop=topShade.animate([{opacity:0},{opacity:.72}],{duration:260,easing:'ease-in',fill:'forwards'});animations=[top,shadeTop];
+    top.onfinish=()=>{if(token!==run)return;lTop.style.visibility='hidden';sBot.textContent=v;
+      const bottom=lBot.animate([{transform:'rotateX(90deg)'},{transform:'rotateX(0deg)'}],{duration:300,easing:'cubic-bezier(.15,.55,.35,1)',fill:'forwards'});
+      const shadeBot=botShade.animate([{opacity:.72},{opacity:0}],{duration:300,easing:'ease-out',fill:'forwards'});animations=[bottom,shadeBot];
+      bottom.onfinish=()=>{if(token!==run)return;stop();sBot.textContent=v};
+    };
   };
 }
-let setters={};
-function buildDigits(){
-  $('hDig').innerHTML='';$('mDig').innerHTML='';$('sDig').innerHTML='';
-  setters.h=[makeFlip($('hDig')),makeFlip($('hDig'))];
-  setters.m=[makeFlip($('mDig')),makeFlip($('mDig'))];
-  setters.s=[makeFlip($('sDig')),makeFlip($('sDig'))];
-}
-buildDigits();
-
-const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-let clockPaused=false,clockOffset=0;
-function updateClock(){
-  if(!clockPaused){
-    const now=new Date();
-    let h=now.getHours();
-    const ampm=h>=12?'PM':'AM';
-    if(!S.h24)h=h%12||12;
-    const hh=String(h).padStart(2,'0');
-    const mm=String(now.getMinutes()).padStart(2,'0');
-    const ss=String(now.getSeconds()).padStart(2,'0');
-    if(S.flip){
-      setters.h.forEach((f,i)=>f(hh[i]));
-      setters.m.forEach((f,i)=>f(mm[i]));
-      setters.s.forEach((f,i)=>f(ss[i]));
-    }else{
-      const base=`${hh}:${mm}:${ss}`;
-      $('digitalTime').textContent=base;
-      $('ampm').textContent=S.h24?'':ampm;
-    }
-    $('weekday').textContent=WDS[now.getDay()];
-    $('fullDate').textContent=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-    const tz=-now.getTimezoneOffset()/60;
-    $('tz').textContent='UTC'+(tz>=0?'+':'')+tz;
-    const secs=$('sDig');if(secs)secs.style.opacity=1;
-  }
-  requestAnimationFrame(updateClock);
-}
-requestAnimationFrame(updateClock);
-
-/* ================= STOPWATCH ================= */
+let setters={};function buildDigits(){$('hDig').innerHTML='';$('mDig').innerHTML='';$('sDig').innerHTML='';setters.h=[makeFlip($('hDig')),makeFlip($('hDig'))];setters.m=[makeFlip($('mDig')),makeFlip($('mDig'))];setters.s=[makeFlip($('sDig')),makeFlip($('sDig'))]}buildDigits();
+const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];let clockPaused=false;
+function updateClock(){if(!clockPaused){const now=new Date();let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f(hh[i]));setters.m.forEach((f,i)=>f(mm[i]));setters.s.forEach((f,i)=>f(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
+/* stopwatch */
 const sw={running:false,elapsed:0,start:0,laps:[],last:0};
-function fmt(t,cs=true){
-  const m=Math.floor(t/60000).toString().padStart(2,'0');
-  const s=Math.floor(t/1000%60).toString().padStart(2,'0');
-  if(cs){const c=Math.floor(t/10%100).toString().padStart(2,'0');return {m,s,sub:c}}
-  const ms=Math.floor(t%1000).toString().padStart(3,'0');return {m,s,sub:ms};
-}
-function renderSw(){
-  const f=fmt(sw.elapsed,true);
-  $('swTime').textContent=f.m+':'+f.s;
-  $('swCs').textContent='.'+f.sub;
-}
-function tickSw(ts){
-  if(sw.running){sw.elapsed=sw.last+(ts-sw.start);renderSw()}
-  requestAnimationFrame(tickSw);
-}
-requestAnimationFrame(tickSw);
-$('swStart').addEventListener('click',()=>{
-  sw.running=!sw.running;
-  if(sw.running){sw.start=performance.now();sw.last=sw.elapsed;$('swStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>暂停'}
-  else{$('swStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>继续'}
-  $('swLap').disabled=!sw.running;
-  $('swReset').disabled=sw.elapsed===0&&!sw.running;
-});
-$('swLap').addEventListener('click',()=>{
-  if(!sw.running)return;
-  const f=fmt(sw.elapsed,true);const str=f.m+':'+f.s+'.'+f.sub;
-  const prev=sw.laps.length?sw.laps[sw.laps.length-1].t:0;
-  const diff=sw.elapsed-prev;
-  sw.laps.unshift({n:sw.laps.length+1,t:sw.elapsed,str,diff});
-  renderLaps();
-});
-function renderLaps(){
-  const fastest=sw.laps.length>1?Math.min(...sw.laps.map(l=>l.diff)):null;
-  const slowest=sw.laps.length>1?Math.max(...sw.laps.map(l=>l.diff)):null;
-  $('laps').innerHTML=sw.laps.map(l=>{
-    const cls=l.diff===fastest?'fast':l.diff===slowest?'slow':'';
-    const d=fmt(l.diff,true);const ds=d.m+':'+d.s+'.'+d.sub;
-    return `<div class="lap ${cls}"><span>计次 ${String(l.n).padStart(2,'0')}</span><span>${ds}</span><b>${l.str}</b></div>`;
-  }).join('');
-}
-$('swReset').addEventListener('click',()=>{
-  sw.running=false;sw.elapsed=0;sw.laps=[];sw.start=0;sw.last=0;
-  $('swStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始';
-  $('swLap').disabled=true;$('swReset').disabled=true;renderSw();renderLaps();
-});
-
-/* ================= POMODORO ================= */
-const pomo={mode:'work',running:false,remain:S.work*60,total:S.work*60,round:0,ts:0,raf:null};
-const CIRC=2*Math.PI*136;
-$('pomoProg').style.strokeDasharray=CIRC;
-const modeCfg={work:{label:'专注时间',key:'work'},short:{label:'短休息',key:'short'},long:{label:'长休息',key:'long'}};
-function resetPomo(){
-  pomo.total=S[pomo.mode]*60;pomo.remain=pomo.total;
-  renderPomo();renderRounds();
-}
-function renderPomo(){
-  const m=Math.floor(pomo.remain/60).toString().padStart(2,'0');
-  const s=Math.ceil(pomo.remain%60).toString().padStart(2,'0');
-  $('pomoTime').textContent=m+':'+s;
-  $('pomoLabel').textContent=modeCfg[pomo.mode].label;
-  const ratio=pomo.total?pomo.remain/pomo.total:1;
-  $('pomoProg').style.strokeDashoffset=CIRC*(1-ratio);
-}
-function renderRounds(){
-  $('rounds').innerHTML=Array.from({length:4},(_,i)=>`<i class="${i<pomo.round%4?'done':''}"></i>`).join('');
-}
-function tickPomo(){
-  if(!pomo.running)return;
-  const now=performance.now();
-  pomo.remain-=(now-pomo.ts)/1000;pomo.ts=now;
-  if(pomo.remain<=0){pomo.remain=0;renderPomo();pomoDone();return}
-  renderPomo();pomo.raf=requestAnimationFrame(tickPomo);
-}
-function chime(){
-  if(!S.sound)return;
-  try{
-    const ac=new (window.AudioContext||window.webkitAudioContext)();
-    [0,.18,.36].forEach((d,i)=>{
-      const o=ac.createOscillator(),g=ac.createGain();
-      o.connect(g);g.connect(ac.destination);
-      o.frequency.value=[523.25,659.25,783.99][i];o.type='sine';
-      g.gain.setValueAtTime(0,ac.currentTime+d);
-      g.gain.linearRampToValueAtTime(.3,ac.currentTime+d+.02);
-      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d+.5);
-      o.start(ac.currentTime+d);o.stop(ac.currentTime+d+.55);
-    });
-  }catch(e){}
-}
-function pomoDone(){
-  pomo.running=false;chime();
-  if(pomo.mode==='work'){
-    pomo.round++;renderRounds();
-    pomo.mode=pomo.round%4===0?'long':'short';
-    $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始休息';
-  }else{
-    pomo.mode='work';
-    $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始专注';
-  }
-  document.querySelectorAll('.pmode').forEach(b=>b.classList.toggle('active',b.dataset.mode===pomo.mode));
-  resetPomo();
-  if(S.auto)startPomo();
-}
-function startPomo(){
-  if(pomo.running){pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>继续';return}
-  pomo.running=true;pomo.ts=performance.now();pomo.raf=requestAnimationFrame(tickPomo);
-  $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>暂停';
-}
-$('pomoStart').addEventListener('click',startPomo);
-$('pomoReset').addEventListener('click',()=>{pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始专注';resetPomo()});
-document.querySelectorAll('.pmode').forEach(b=>b.addEventListener('click',()=>{
-  document.querySelectorAll('.pmode').forEach(x=>x.classList.remove('active'));
-  b.classList.add('active');pomo.mode=b.dataset.mode;pomo.running=false;
-  cancelAnimationFrame(pomo.raf);
-  $('pomoStart').innerHTML='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>开始'+(pomo.mode==='work'?'专注':'休息');
-  resetPomo();
-}));
-
-/* ================= KEYBOARD ================= */
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT')return;
-  const active=document.querySelector('.panel.active')?.id;
-  if(e.code==='Space'){e.preventDefault();
-    if(active==='stopwatch')$('swStart').click();
-    else if(active==='pomo')startPomo();
-    else clockPaused=!clockPaused;
-  }
-  if(active==='stopwatch'){
-    if(e.key.toLowerCase()==='l')$('swLap').click();
-    if(e.key.toLowerCase()==='r')$('swReset').click();
-  }
-  if(active==='clock'&&e.key.toLowerCase()==='f'){S.flip=!S.flip;save();applyState()}
-  if(e.key==='Escape')closeDrawer();
-});
-
-/* init */
+function fmt(t){const m=Math.floor(t/60000).toString().padStart(2,'0'),s=Math.floor(t/1000%60).toString().padStart(2,'0'),c=Math.floor(t/10%100).toString().padStart(2,'0');return{m,s,c}}
+function renderSw(){const f=fmt(sw.elapsed);$('swTime').textContent=f.m+':'+f.s;$('swCs').textContent='.'+f.c}
+function tickSw(ts){if(sw.running){sw.elapsed=sw.last+(ts-sw.start);renderSw()}requestAnimationFrame(tickSw)}requestAnimationFrame(tickSw);
+$('swStart').addEventListener('click',()=>{sw.running=!sw.running;if(sw.running){sw.start=performance.now();sw.last=sw.elapsed;$('swStart').textContent='暂停'}else $('swStart').textContent='继续';$('swState').textContent=sw.running?'RUNNING':'PAUSED';$('swLap').disabled=!sw.running;$('swReset').disabled=sw.elapsed===0&&!sw.running});
+$('swLap').addEventListener('click',()=>{if(!sw.running)return;const f=fmt(sw.elapsed),str=f.m+':'+f.s+'.'+f.c,prev=sw.laps.length?sw.laps[sw.laps.length-1].t:0,diff=sw.elapsed-prev;sw.laps.unshift({n:sw.laps.length+1,t:sw.elapsed,str,diff});renderLaps()});
+function renderLaps(){const fastest=sw.laps.length>1?Math.min(...sw.laps.map(l=>l.diff)):null,slowest=sw.laps.length>1?Math.max(...sw.laps.map(l=>l.diff)):null;$('laps').innerHTML=sw.laps.map(l=>{const cls=l.diff===fastest?'fast':l.diff===slowest?'slow':'',d=fmt(l.diff),ds=d.m+':'+d.s+'.'+d.c;return `<div class="lap ${cls}"><span>LAP ${String(l.n).padStart(2,'0')}</span><span>+ ${ds}</span><b>${l.str}</b></div>`}).join('')}
+$('swReset').addEventListener('click',()=>{sw.running=false;sw.elapsed=0;sw.laps=[];sw.start=0;sw.last=0;$('swStart').textContent='开始';$('swState').textContent='STANDBY';$('swLap').disabled=true;$('swReset').disabled=true;renderSw();renderLaps()});
+/* pomodoro */
+const pomo={mode:'work',running:false,remain:S.work*60,total:S.work*60,round:0,end:0,raf:null};const CIRC=2*Math.PI*136;$('pomoProg').style.strokeDasharray=CIRC;const modeCfg={work:'专注时间',short:'短休息',long:'长休息'};
+function resetPomo(){pomo.total=S[pomo.mode]*60;pomo.remain=pomo.total;renderPomo();renderRounds()}
+function renderPomo(){const m=Math.floor(pomo.remain/60).toString().padStart(2,'0'),s=Math.ceil(pomo.remain%60).toString().padStart(2,'0');$('pomoTime').textContent=m+':'+s;$('pomoLabel').textContent=modeCfg[pomo.mode];$('pomoProg').style.strokeDashoffset=CIRC*(1-(pomo.total?pomo.remain/pomo.total:1))}
+function renderRounds(){$('rounds').innerHTML=Array.from({length:4},(_,i)=>`<i class="${i<pomo.round%4?'done':''}"></i>`).join('')}
+function tickPomo(){if(!pomo.running)return;pomo.remain=Math.max(0,(pomo.end-Date.now())/1000);if(pomo.remain<=0){renderPomo();pomoDone();return}renderPomo();pomo.raf=requestAnimationFrame(tickPomo)}
+function chime(){if(!S.sound)return;try{const ac=new(window.AudioContext||window.webkitAudioContext)();[0,.18,.36].forEach((d,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=[523.25,659.25,783.99][i];o.type='sine';g.gain.setValueAtTime(0,ac.currentTime+d);g.gain.linearRampToValueAtTime(.25,ac.currentTime+d+.02);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d+.5);o.start(ac.currentTime+d);o.stop(ac.currentTime+d+.55)})}catch(e){}}
+function pomoDone(){pomo.running=false;chime();if(pomo.mode==='work'){pomo.round++;renderRounds();pomo.mode=pomo.round%4===0?'long':'short';$('pomoStart').textContent='开始休息'}else{pomo.mode='work';$('pomoStart').textContent='开始专注'}document.querySelectorAll('.pmode').forEach(b=>b.classList.toggle('active',b.dataset.mode===pomo.mode));resetPomo();if(S.auto)startPomo()}
+function startPomo(){if(pomo.running){pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').textContent='继续';return}pomo.running=true;pomo.end=Date.now()+pomo.remain*1000;pomo.raf=requestAnimationFrame(tickPomo);$('pomoStart').textContent='暂停'}
+$('pomoStart').addEventListener('click',startPomo);$('pomoReset').addEventListener('click',()=>{pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').textContent=pomo.mode==='work'?'开始专注':'开始休息';resetPomo()});document.querySelectorAll('.pmode').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.pmode').forEach(x=>x.classList.remove('active'));b.classList.add('active');pomo.mode=b.dataset.mode;pomo.running=false;cancelAnimationFrame(pomo.raf);$('pomoStart').textContent='开始'+(pomo.mode==='work'?'专注':'休息');resetPomo()}));
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||e.target.tagName==='BUTTON'&&e.code==='Space')return;const active=document.querySelector('.panel.active')?.id;if(e.code==='Space'){e.preventDefault();if(active==='stopwatch')$('swStart').click();else if(active==='pomo')startPomo();else clockPaused=!clockPaused}if(active==='stopwatch'){if(e.key.toLowerCase()==='l')$('swLap').click();if(e.key.toLowerCase()==='r')$('swReset').click()}if(active==='clock'&&e.key.toLowerCase()==='f'){S.flip=!S.flip;save();applyState()}if(e.key==='Escape')closeDrawer()});
 applyState();resetPomo();
 </script>
 </body>

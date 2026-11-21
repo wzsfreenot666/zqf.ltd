@@ -3,116 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b0d">
 <title>zqf.ltd · 在线工具</title>
 <style>
-:root{--bg:#05060f;--a:#7c5cff;--b:#ff5ca8;--c:#3ad6ff;--txt:#eef0ff;--muted:#8b8fae;--font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow-x:hidden}
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-.bg i{position:absolute;border-radius:50%;filter:blur(100px);opacity:.25;animation:fl 16s ease-in-out infinite}
-.bg i:nth-child(1){width:600px;height:600px;background:var(--a);top:-200px;left:-150px}
-.bg i:nth-child(2){width:500px;height:500px;background:var(--b);bottom:-180px;right:-120px;animation-delay:-6s}
-.bg i:nth-child(3){width:420px;height:420px;background:var(--c);top:45%;left:55%;opacity:.13;animation-delay:-11s}
-@keyframes fl{0%,100%{transform:translate(0,0)}50%{transform:translate(45px,-35px)}}
-
-.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-header{padding:34px 0;display:flex;align-items:center;justify-content:space-between}
-.logo{font-weight:900;font-size:20px;letter-spacing:.05em}
-.logo b{background:linear-gradient(100deg,var(--a),var(--b),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
-.live{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
-.live i{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80;animation:bl 2s infinite}
-@keyframes bl{50%{opacity:.3}}
-
-.hero{text-align:center;padding:70px 0 40px}
-.hero .kick{display:inline-block;font-size:12px;letter-spacing:.3em;color:var(--c);border:1px solid rgba(58,214,255,.25);border-radius:999px;padding:7px 18px;margin-bottom:26px}
-.hero h1{font-size:clamp(46px,8vw,86px);font-weight:900;line-height:1.05;letter-spacing:-.03em}
-.hero h1 span{background:linear-gradient(110deg,var(--a),var(--b) 50%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p{color:var(--muted);font-size:17px;line-height:1.8;max-width:600px;margin:24px auto 0}
-.hero .note{margin-top:20px;font-size:12px;color:#5f6280}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;padding:30px 0 50px}
-.card{
-  position:relative;border-radius:24px;padding:32px;min-height:330px;overflow:hidden;
-  border:1px solid rgba(255,255,255,.1);text-decoration:none;color:inherit;
-  display:flex;flex-direction:column;transition:transform .35s,border-color .35s,box-shadow .35s;
-}
-.card::before{content:"";position:absolute;inset:0;opacity:.55;transition:opacity .35s;z-index:0}
-.card:hover{transform:translateY(-8px);border-color:rgba(255,255,255,.3);box-shadow:0 24px 60px rgba(0,0,0,.4)}
-.card:hover::before{opacity:.8}
-.card.c1{background:linear-gradient(145deg,#1a1145,#0d0a24)}
-.card.c1::before{background:radial-gradient(circle at 80% 15%,rgba(124,92,255,.5),transparent 55%)}
-.card.c2{background:linear-gradient(145deg,#3d1030,#160a1c)}
-.card.c2::before{background:radial-gradient(circle at 80% 15%,rgba(255,92,168,.45),transparent 55%)}
-.card.c3{background:linear-gradient(145deg,#0a2f3a,#07161f)}
-.card.c3::before{background:radial-gradient(circle at 80% 15%,rgba(58,214,255,.4),transparent 55%)}
-.card.c4{background:linear-gradient(145deg,#1a1038,#0b0a20)}
-.card.c4::before{background:radial-gradient(circle at 80% 15%,rgba(124,92,255,.45),transparent 55%)}
-.card > *{position:relative;z-index:1}
-.card .num{font-size:13px;font-weight:800;letter-spacing:.2em;opacity:.7}
-.card .emoji{font-size:52px;margin:26px 0 18px;filter:drop-shadow(0 8px 20px rgba(0,0,0,.4))}
-.card h2{font-size:27px;font-weight:900;margin-bottom:6px}
-.card .en{font-size:11px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase}
-.card p{font-size:14px;line-height:1.7;color:#c9cbe0;margin-top:18px}
-.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}
-.tags span{font-size:11px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
-.card .go{margin-top:auto;padding-top:22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700}
-.card .go .ar{transition:transform .3s}
-.card:hover .go .ar{transform:translateX(6px)}
-
-.chip-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:10px 0 40px}
-.chip-row a{text-decoration:none;color:var(--muted);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:8px 16px;transition:.25s}
-.chip-row a:hover{color:#fff;border-color:var(--a)}
-
-footer{text-align:center;color:var(--muted);font-size:12px;padding:40px 24px 70px;border-top:1px solid rgba(255,255,255,.07);line-height:1.9}
-footer b{color:var(--txt)}
-@media(max-width:640px){.hero{padding-top:40px}.card{min-height:auto}.live{display:none}}
+:root{--bg:#090b0d;--surface:#0e1114;--surface-2:#12161a;--line:#242a30;--line-soft:#191e23;--txt:#edf1f3;--muted:#7b868f;--dim:#4d5861;--accent:#67d7e5;--mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh}body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:48px 48px;opacity:.22;mask-image:linear-gradient(to bottom,black,transparent 75%)}a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.wrap{width:min(1120px,100%);margin:auto;padding:0 32px}header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px;font:700 16px var(--mono);letter-spacing:.08em}.brand-mark{width:30px;height:30px;border:1px solid var(--accent);display:grid;place-items:center;color:var(--accent);font-size:12px}.status{display:flex;align-items:center;gap:9px;color:var(--muted);font:10px var(--mono);letter-spacing:.12em}.status i{width:5px;height:5px;background:var(--accent)}
+.hero{display:grid;grid-template-columns:1fr 260px;gap:40px;padding:76px 0 64px;border-bottom:1px solid var(--line)}.eyebrow{font:10px var(--mono);letter-spacing:.18em;color:var(--accent);margin-bottom:20px}.hero h1{font-size:clamp(38px,6vw,68px);font-weight:600;line-height:1.12;letter-spacing:-.045em}.hero h1 span{color:var(--muted)}.hero p{color:var(--muted);font-size:14px;line-height:1.8;max-width:530px;margin-top:24px}.hero-meta{align-self:end;border-left:1px solid var(--line);padding-left:24px}.metric{padding:12px 0}.metric b{display:block;font:500 25px var(--mono);margin-bottom:6px}.metric span{font:10px var(--mono);letter-spacing:.1em;color:var(--dim)}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:24px 0 18px;font:10px var(--mono);letter-spacing:.14em;color:var(--muted)}.section-head span:last-child{color:var(--dim)}
+.grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line)}.card{position:relative;min-height:320px;padding:30px;color:inherit;text-decoration:none;display:flex;flex-direction:column;background:rgba(9,11,13,.72);transition:background .18s}.card+.card{border-left:1px solid var(--line)}.card:hover{background:var(--surface)}.card-top{display:flex;justify-content:space-between;align-items:flex-start}.num{font:10px var(--mono);letter-spacing:.12em;color:var(--dim)}.glyph{width:62px;height:62px;color:var(--muted);transition:color .18s}.glyph svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1}.card:hover .glyph{color:var(--accent)}.card h2{font:600 25px var(--mono);letter-spacing:.04em;margin-top:30px}.card .cn{font-size:13px;color:var(--txt);margin-top:8px}.card p{font-size:13px;line-height:1.75;color:var(--muted);margin-top:18px;max-width:390px}.tags{display:flex;gap:16px;flex-wrap:wrap;margin-top:22px}.tags span{font:10px var(--mono);color:var(--dim)}.tags span::before{content:"/";color:var(--accent);margin-right:6px}.go{margin-top:auto;padding-top:28px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}.go .ar{font:18px var(--mono);color:var(--accent);transition:transform .18s}.card:hover .ar{transform:translate(3px,-3px)}
+footer{display:flex;justify-content:space-between;gap:20px;color:var(--dim);font:10px var(--mono);letter-spacing:.08em;line-height:1.8;padding:30px 0 42px}footer b{font-weight:400;color:var(--muted)}
+@media(max-width:700px){.wrap{padding:0 18px}header{height:68px}.hero{grid-template-columns:1fr;padding:48px 0 40px;gap:28px}.hero-meta{display:flex;border-left:0;border-top:1px solid var(--line-soft);padding:16px 0 0;gap:34px}.metric{padding:0}.metric b{font-size:20px}.grid{grid-template-columns:1fr}.card{min-height:290px;padding:24px}.card+.card{border-left:0;border-top:1px solid var(--line)}.glyph{width:52px;height:52px}.status{font-size:9px}footer{flex-direction:column;gap:8px}}
 </style>
 </head>
 <body>
-<div class="bg"><i></i><i></i><i></i></div>
 <div class="wrap">
-  <header>
-    <div class="logo"><b>zqf.ltd</b></div>
-    <div class="live"><i></i> 两个工具 · 已上线</div>
-  </header>
-
-  <div class="hero">
-    <span class="kick">ONLINE TOOLS · 2026</span>
-    <h1>两个真正<br><span>用得上的工具</span></h1>
-    <p>24 合 1 在线工具箱与精密时钟，全部在浏览器本地运行——不上传数据、不用注册，打开就能用。</p>
-    <div class="note">所有数据只在你的浏览器里处理</div>
-  </div>
-
-  <div class="grid">
-    <a class="card c3" href="./05-toolkit/index.html">
-      <div class="num">TOOL 01</div>
-      <div class="emoji">🧰</div>
-      <h2>TOOLKIT</h2>
-      <div class="en">全能在线工具箱</div>
-      <p>24 个常用工具集于一身：JSON、哈希、正则、二维码、图片压缩、人民币大写……全部本地运行，不上传数据。</p>
-      <div class="tags"><span>24 个工具</span><span>本地计算</span><span>即开即用</span></div>
-      <div class="go">打开工具箱 <span class="ar">→</span></div>
-    </a>
-
-    <a class="card c4" href="./06-clock/index.html">
-      <div class="num">TOOL 02</div>
-      <div class="emoji">🕐</div>
-      <h2>CHRONO</h2>
-      <div class="en">精密时钟 · 计时 · 番茄钟</div>
-      <p>翻页时钟配多主题与字体切换；秒表精确计次，番茄钟带进度环、提示音与自动循环。</p>
-      <div class="tags"><span>翻页时钟</span><span>秒表计次</span><span>番茄钟</span></div>
-      <div class="go">打开时钟 <span class="ar">→</span></div>
-    </a>
-  </div>
-
-  <div class="chip-row">
-    <a href="./zqf-website-ideas.html">📋 更多项目创意（参考）</a>
-  </div>
-
-  <footer>
-    为 <b>zqf.ltd</b> 构建<br>
-    所有工具在浏览器本地运行，不上传任何数据 · 无需注册登录
-  </footer>
+  <header><div class="brand"><span class="brand-mark">Z/</span>zqf.ltd</div><div class="status"><i></i>2 TOOLS / ONLINE</div></header>
+  <section class="hero"><div><div class="eyebrow">LOCAL-FIRST WEB UTILITIES</div><h1>简单、可靠，<br><span>打开就能用。</span></h1><p>常用计算、文本与图片处理，以及精确的时间工具。没有账号、没有上传，所有数据只在你的浏览器中处理。</p></div><div class="hero-meta"><div class="metric"><b>24 + 3</b><span>AVAILABLE FUNCTIONS</span></div><div class="metric"><b>0</b><span>DATA UPLOADS</span></div><div class="metric"><b>100%</b><span>LOCAL PROCESSING</span></div></div></section>
+  <div class="section-head"><span>SELECT A TOOL</span><span>01 — 02</span></div>
+  <main class="grid">
+    <a class="card" href="./05-toolkit/index.html"><div class="card-top"><span class="num">01 / TOOLKIT</span><span class="glyph"><svg viewBox="0 0 64 64"><rect x="9" y="12" width="46" height="40"/><path d="M9 24h46M24 12v40M32 32h16M32 40h10"/><circle cx="17" cy="18" r="1"/></svg></span></div><h2>TOOLKIT</h2><div class="cn">实用工具箱</div><p>24 个常用工具，覆盖计算、文本、图片与效率。房贷、个税、二维码、图片压缩等，无需安装。</p><div class="tags"><span>24 个工具</span><span>本地计算</span><span>即开即用</span></div><div class="go"><span>打开工具箱</span><span class="ar">↗</span></div></a>
+    <a class="card" href="./06-clock/index.html"><div class="card-top"><span class="num">02 / CHRONO</span><span class="glyph"><svg viewBox="0 0 64 64"><rect x="8" y="12" width="48" height="40"/><path d="M8 32h48M32 12v40M16 20h8M40 44h8"/><path d="M4 30v4M60 30v4"/></svg></span></div><h2>CHRONO</h2><div class="cn">精密时钟与计时器</div><p>机械翻页时钟、百分之一秒秒表与番茄钟。支持计次、自动循环、提示音与全屏显示。</p><div class="tags"><span>翻页时钟</span><span>秒表计次</span><span>番茄钟</span></div><div class="go"><span>打开时钟</span><span class="ar">↗</span></div></a>
+  </main>
+  <footer><span><b>ZQF.LTD</b> / BROWSER-BASED UTILITIES</span><span>NO ACCOUNT · NO TRACKING · NO UPLOAD</span></footer>
 </div>
 </body>
 </html>
