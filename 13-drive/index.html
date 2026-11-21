@@ -30,14 +30,14 @@ footer{display:flex;justify-content:space-between;gap:20px;color:var(--dim);font
   </header>
 
   <div id="app" style="display:none">
-    <section class="hero"><div class="eyebrow">CROSS-DEVICE FILE DRIVE</div><h1>文件放这里，<br>走到哪都能取。</h1><p>上传一次，在手机、电脑或任何设备打开同一个链接即可下载。每个文件生成一个独立分享码，把链接发给自己或别人都能直接取用。文件保存在云端 R2 存储，管理需要密码。</p></section>
+    <section class="hero"><div class="eyebrow">CROSS-DEVICE FILE DRIVE</div><h1>文件放这里，<br>走到哪都能取。</h1><p>上传一次，在手机、电脑或任何设备打开同一个链接即可下载。每个文件生成一个独立分享码，把链接发给自己或别人都能直接取用。文件保存在云端加密存储，管理需要密码。</p></section>
 
     <div class="panel">
       <div class="panel-head"><span class="lbl"><b>01</b> / 上传文件</span><span class="lbl" id="maxHint"></span></div>
       <div id="drop">
         <svg class="drop-ic" viewBox="0 0 48 48"><path d="M24 32V8m0 0l-8 8m8-8l8 8M8 30v6a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4v-6"/></svg>
         <div class="drop-t">把文件拖到这里，或点击选择</div>
-        <div class="drop-d">支持多文件 · 单个上限 90MB</div>
+        <div class="drop-d">支持多文件 · 单个上限 20MB</div>
       </div>
       <input type="file" id="fileInput" multiple>
       <div class="queue" id="queue"></div>
@@ -59,11 +59,11 @@ footer{display:flex;justify-content:space-between;gap:20px;color:var(--dim);font
     <div class="hint" id="gateHint"></div>
   </div>
 
-  <footer><span><b>ZQF.LTD</b> / CLOUD FILE DRIVE</span><span>POWERED BY CLOUDFLARE R2 · RANDOM SHARE CODE</span></footer>
+  <footer><span><b>ZQF.LTD</b> / CLOUD FILE DRIVE</span><span>POWERED BY CLOUDFLARE WORKERS · RANDOM SHARE CODE</span></footer>
 </div>
 
 <script>
-const API = '/api/drive';
+const API = 'https://api.zqf.ltd/';
 const $ = id => document.getElementById(id);
 let token = localStorage.getItem('zf_drive_token') || '';
 let expired = Number(localStorage.getItem('zf_drive_exp') || 0);

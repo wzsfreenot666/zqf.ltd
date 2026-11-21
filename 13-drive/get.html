@@ -17,10 +17,10 @@
 <div class="card">
   <div class="top"><div class="brand"><span class="bm">Z/</span>ZQF.DRIVE</div><div class="tag">SHARED FILE</div></div>
   <div class="body" id="body"><div class="spin"></div><div class="loading">正在读取文件信息…</div></div>
-  <div class="foot"><span>POWERED BY CLOUDFLARE R2</span><a href="./index.html">管理文件 ↗</a></div>
+  <div class="foot"><span>POWERED BY CLOUDFLARE WORKERS</span><a href="./index.html">管理文件 ↗</a></div>
 </div>
 <script>
-const API='/api/drive';
+const API='https://api.zqf.ltd/';
 const $=id=>document.getElementById(id);
 const code=new URLSearchParams(location.search).get('code')||'';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
