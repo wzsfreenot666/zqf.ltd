@@ -1,0 +1,1 @@
+CHRONO network time probe. The Date response header from the edge is used for calibration.

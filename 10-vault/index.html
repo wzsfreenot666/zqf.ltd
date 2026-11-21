@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b0d">
+<title>VAULT · 文件加密保险箱</title>
+<style>
+:root{--bg:#090b0d;--surface:#0e1114;--surface-2:#12161a;--line:#242a30;--line-soft:#191e23;--txt:#edf1f3;--muted:#78838c;--dim:#4d5861;--accent:#67d7e5;--accent-ink:#071013;--danger:#ef8c8c;--ok:#76d7ae;--mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}button,input{font:inherit}
+html{color-scheme:dark}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:48px 48px;opacity:.22;mask-image:linear-gradient(to bottom,black,transparent 72%)}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{width:min(1080px,100%);min-height:100vh;margin:auto;padding:0 32px;display:flex;flex-direction:column}
+header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--txt)}
+.brand-mark{width:30px;height:30px;border:1px solid var(--accent);display:grid;place-items:center;color:var(--accent);font:700 12px var(--mono)}
+.brand-name{font:700 15px var(--mono);letter-spacing:.14em}.brand-sub{display:block;font:10px var(--mono);letter-spacing:.16em;color:var(--muted);margin-top:4px}
+.status{font:10px var(--mono);letter-spacing:.12em;color:var(--muted);display:flex;align-items:center;gap:8px}.status::before{content:"";width:5px;height:5px;background:var(--accent)}
+main{flex:1;padding:44px 0 56px}
+.intro{margin-bottom:34px}.eyebrow{font:10px var(--mono);letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+.intro h1{font-size:clamp(28px,5vw,42px);font-weight:600;letter-spacing:-.03em;line-height:1.15}
+.intro p{color:var(--muted);font-size:13px;line-height:1.85;margin-top:16px;max-width:660px}
+.security{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.security span{font:10px var(--mono);letter-spacing:.06em;color:var(--dim);border:1px solid var(--line);padding:6px 11px;border-radius:2px}.security span::before{content:"✓ ";color:var(--ok)}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:30px}
+.tab{position:relative;padding:16px 24px;border:0;background:none;color:var(--muted);font-size:13px;cursor:pointer;letter-spacing:.04em}
+.tab:first-child{padding-left:0}.tab::after{content:"";position:absolute;height:2px;left:24px;right:24px;bottom:-1px;background:transparent}.tab:first-child::after{left:0}
+.tab.active{color:var(--txt)}.tab.active::after{background:var(--accent)}.tab .idx{font:10px var(--mono);color:var(--dim);margin-right:9px}
+.panel{display:none}.panel.active{display:block;animation:enter .2s ease-out}@keyframes enter{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.box{border:1px solid var(--line);background:var(--surface);padding:26px}
+.box .lbl{font:10px var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:16px}
+.drop{border:1px dashed var(--line);border-radius:3px;padding:38px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:rgba(103,215,229,.04)}
+.drop svg{width:38px;height:38px;stroke:var(--dim);fill:none;stroke-width:1.2;margin-bottom:14px}.drop.over svg,.drop:hover svg{stroke:var(--accent)}
+.drop b{display:block;font-size:13px;font-weight:500}.drop small{display:block;color:var(--dim);font-size:11px;margin-top:8px}
+.fileinfo{margin-top:16px;font:12px var(--mono);color:var(--muted);display:none;word-break:break-all}.fileinfo.show{display:block}
+.fileinfo b{color:var(--txt);font-weight:500}
+.field{margin-top:18px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:8px}
+.input{width:100%;height:42px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--txt);padding:0 13px;font:13px var(--mono)}
+.input::placeholder{color:var(--dim)}
+.pwrow{position:relative}.pwrow .togglepw{position:absolute;right:8px;top:5px;height:32px;padding:0 10px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:2px;cursor:pointer;font:11px var(--mono)}
+.strength{height:3px;background:var(--line-soft);margin-top:8px;border-radius:2px;overflow:hidden}.strength i{display:block;height:100%;width:0;transition:width .2s,background .2s}
+.hint{font-size:11px;color:var(--dim);margin-top:7px;line-height:1.6}
+.actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.btn{padding:11px 22px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--txt);font-size:13px;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover:not(:disabled){border-color:var(--muted);background:var(--surface-2)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.btn.primary:hover:not(:disabled){background:var(--txt);border-color:var(--txt)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.msg{margin-top:18px;padding:13px 15px;border:1px solid var(--line);font:12px/1.7 var(--mono);display:none;border-radius:2px}.msg.show{display:block}
+.msg.ok{border-color:rgba(118,215,174,.4);color:var(--ok)}.msg.err{border-color:rgba(239,140,140,.4);color:var(--danger)}
+.result{margin-top:20px;border:1px solid var(--accent);padding:18px;display:none;border-radius:2px}.result.show{display:block}
+.result .rt{font:10px var(--mono);letter-spacing:.14em;color:var(--accent);margin-bottom:10px}
+.result .rn{font:13px var(--mono);color:var(--txt);word-break:break-all;margin-bottom:6px}
+.result .rm{font:11px var(--mono);color:var(--muted)}
+.steps{margin-top:30px;border-top:1px solid var(--line);padding-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step .sn{font:10px var(--mono);color:var(--accent);letter-spacing:.1em}.step h4{font-size:12px;font-weight:500;margin:8px 0 6px}.step p{font-size:11px;color:var(--muted);line-height:1.7}
+footer{min-height:64px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px;font:10px var(--mono);letter-spacing:.1em;color:var(--dim)}
+footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--accent)}
+@media(max-width:720px){
+  .wrap{padding:0 18px}header{height:68px}.brand-sub,.status{display:none}
+  main{padding:32px 0 40px}.grid{grid-template-columns:1fr;gap:18px}.box{padding:20px}
+  .tab{padding:15px 16px}.tab .idx{display:none}.steps{grid-template-columns:1fr;gap:16px}
+  footer{font-size:9px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="../index.html" aria-label="返回首页"><span class="brand-mark">Z/</span><span><span class="brand-name">VAULT</span><span class="brand-sub">PRIVATE FILE ENCRYPTION</span></span></a>
+    <span class="status">LOCAL · AES-256-GCM</span>
+  </header>
+  <main>
+    <div class="intro">
+      <div class="eyebrow">Encrypt / Decrypt in your browser</div>
+      <h1>文件加密保险箱</h1>
+      <p>用密码把任意文件加密成一个 <b>.zqf</b> 文件，只有知道密码的人才能解开。加密与解密全程在你的浏览器里完成，文件不会上传到任何服务器。忘记密码将无法恢复，请务必记牢。</p>
+      <div class="security"><span>AES-256-GCM</span><span>PBKDF2 · 25 万次迭代</span><span>随机盐与 IV</span><span>数据不出浏览器</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-panel="enc"><span class="idx">01</span>加密文件</button>
+      <button class="tab" data-panel="dec"><span class="idx">02</span>解密文件</button>
+    </div>
+
+    <section class="panel active" id="enc">
+      <div class="grid">
+        <div class="box">
+          <div class="lbl">01 / 选择文件</div>
+          <div class="drop" id="encDrop" tabindex="0" role="button" aria-label="选择要加密的文件">
+            <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            <b>拖放文件到这里，或点击选择</b>
+            <small>支持任意类型文件 · 最大 200 MB</small>
+          </div>
+          <input type="file" id="encFile" hidden>
+          <div class="fileinfo" id="encInfo"></div>
+        </div>
+        <div class="box">
+          <div class="lbl">02 / 设置密码</div>
+          <div class="field"><label for="encPw">加密密码</label><div class="pwrow"><input class="input" type="password" id="encPw" placeholder="输入密码" autocomplete="new-password"><button class="togglepw" id="encPwT">显示</button></div><div class="strength"><i id="encStrength"></i></div><div class="hint" id="encPwHint">建议使用 12 位以上、含字母数字的组合</div></div>
+          <div class="field"><label for="encPw2">再次确认密码</label><input class="input" type="password" id="encPw2" placeholder="再次输入密码" autocomplete="new-password"></div>
+          <div class="actions"><button class="btn primary" id="encBtn" disabled>加密并生成文件</button><button class="btn" id="encClear">清空</button></div>
+          <div class="msg" id="encMsg"></div>
+          <div class="result" id="encResult"><div class="rt">ENCRYPTED · 已生成加密文件</div><div class="rn" id="encResultName"></div><div class="rm" id="encResultMeta"></div><div class="actions"><button class="btn primary" id="encDownload">下载加密文件</button></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="dec">
+      <div class="grid">
+        <div class="box">
+          <div class="lbl">01 / 选择加密文件</div>
+          <div class="drop" id="decDrop" tabindex="0" role="button" aria-label="选择加密文件">
+            <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            <b>拖放 .zqf 加密文件，或点击选择</b>
+            <small>由本保险箱生成的加密文件</small>
+          </div>
+          <input type="file" id="decFile" accept=".zqf" hidden>
+          <div class="fileinfo" id="decInfo"></div>
+        </div>
+        <div class="box">
+          <div class="lbl">02 / 输入密码</div>
+          <div class="field"><label for="decPw">解密密码</label><div class="pwrow"><input class="input" type="password" id="decPw" placeholder="输入加密时使用的密码" autocomplete="off"><button class="togglepw" id="decPwT">显示</button></div></div>
+          <div class="actions"><button class="btn primary" id="decBtn" disabled>解密并还原文件</button><button class="btn" id="decClear">清空</button></div>
+          <div class="msg" id="decMsg"></div>
+          <div class="result" id="decResult"><div class="rt">DECRYPTED · 已还原原文件</div><div class="rn" id="decResultName"></div><div class="rm" id="decResultMeta"></div><div class="actions"><button class="btn primary" id="decDownload">下载原文件</button></div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="steps">
+      <div class="step"><div class="sn">01 / KEY</div><h4>密码派生密钥</h4><p>你的密码经过 PBKDF2-SHA256、25 万次迭代派生为 256 位密钥，并加入随机盐，抵御暴力破解。</p></div>
+      <div class="step"><div class="sn">02 / CIPHER</div><h4>AES-GCM 加密</h4><p>文件用 AES-256-GCM 加密，自带完整性校验。任何篡改都会导致解密失败，保证文件未被改动。</p></div>
+      <div class="step"><div class="sn">03 / SHARE</div><h4>安全传递</h4><p>把生成的 .zqf 文件通过任意渠道发给对方，对方用同一密码即可解开。密码请单独告知。</p></div>
+    </div>
+  </main>
+  <footer><span>ZQF.LTD / VAULT 01.0</span><a href="../index.html">返回首页 ↗</a></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const enc=new TextEncoder(),dec=new TextDecoder();
+const MAGIC=[0x5a,0x51,0x46,0x31]; // ZQF1
+const ITER=250000;
+const MAX=200*1024*1024;
+const toB64=b=>{let s='';const a=new Uint8Array(b);for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s)};
+const fromB64=s=>{const b=atob(s);const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a};
+const fmtSize=n=>n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(2)+' MB';
+const escapeHtml=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* tabs */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');$(t.dataset.panel).classList.add('active');
+}));
+
+/* password visibility + strength */
+const bindPw=(pwId,btnId)=>{
+  $(btnId).addEventListener('click',()=>{const p=$(pwId);const show=p.type==='password';p.type=show?'text':'password';$(btnId).textContent=show?'隐藏':'显示'});
+};
+bindPw('encPw','encPwT');bindPw('decPw','decPwT');
+const scorePw=p=>{
+  let s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(/[a-z]/.test(p)&&/[A-Z]/.test(p))s++;if(/\d/.test(p))s++;if(/[^A-Za-z0-9]/.test(p))s++;
+  return Math.min(4,s);
+};
+$('encPw').addEventListener('input',()=>{
+  const p=$('encPw').value,s=scorePw(p);
+  const colors=['#4d5861','#ef8c8c','#e7ad72','#82aef0','#76d7ae'];
+  $('encStrength').style.width=(p?s*25:0)+'%';$('encStrength').style.background=colors[s];
+  $('encPwHint').textContent=['太短，建议至少 8 位','强度较弱','强度一般','强度较好','强度很高'][s];
+});
+const validateEnc=()=>{$('encBtn').disabled=!encFile||!$('encPw').value||$('encPw').value!==$('encPw2').value};
+$('encPw').addEventListener('input',validateEnc);$('encPw2').addEventListener('input',validateEnc);
+$('decPw').addEventListener('input',()=>{$('decBtn').disabled=!decFile||!$('decPw').value});
+const showMsg=(el,text,type)=>{el.textContent=text;el.className='msg show '+type};
+
+/* derive key */
+async function deriveKey(password,salt){
+  const km=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:ITER,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+
+/* file picking */
+let encFile=null,decFile=null;
+const bindDrop=(dropId,inputId,onFile)=>{
+  const d=$(dropId),f=$(inputId);
+  d.addEventListener('click',()=>f.click());
+  d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f.click()}});
+  d.addEventListener('dragover',e=>{e.preventDefault();d.classList.add('over')});
+  d.addEventListener('dragleave',()=>d.classList.remove('over'));
+  d.addEventListener('drop',e=>{e.preventDefault();d.classList.remove('over');if(e.dataTransfer.files[0])onFile(e.dataTransfer.files[0])});
+  f.addEventListener('change',()=>{if(f.files[0])onFile(f.files[0])});
+};
+bindDrop('encDrop','encFile',file=>{
+  if(file.size>MAX){showMsg($('encMsg'),'文件超过 200 MB 上限','err');return}
+  encFile=file;$('encInfo').innerHTML='已选择：<b>'+escapeHtml(file.name)+'</b> · '+fmtSize(file.size);$('encInfo').classList.add('show');
+  $('encResult').classList.remove('show');$('encMsg').className='msg';validateEnc();
+});
+bindDrop('decDrop','decFile',file=>{
+  decFile=file;$('decInfo').innerHTML='已选择：<b>'+escapeHtml(file.name)+'</b> · '+fmtSize(file.size);$('decInfo').classList.add('show');
+  $('decResult').classList.remove('show');$('decMsg').className='msg';$('decBtn').disabled=!$('decPw').value;
+});
+
+/* encrypt */
+let encryptedBlob=null;
+$('encBtn').addEventListener('click',async()=>{
+  if(!encFile)return;
+  const pw=$('encPw').value;
+  if(pw!==$('encPw2').value){showMsg($('encMsg'),'两次输入的密码不一致','err');return}
+  $('encBtn').disabled=true;$('encMsg').className='msg';
+  try{
+    const salt=crypto.getRandomValues(new Uint8Array(16));
+    const iv=crypto.getRandomValues(new Uint8Array(12));
+    const key=await deriveKey(pw,salt);
+    const data=new Uint8Array(await encFile.arrayBuffer());
+    const cipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,data));
+    const nameBytes=enc.encode(encFile.name);
+    const head=new Uint8Array(4+1+16+12+4+2+nameBytes.length);
+    let o=0;
+    head.set(MAGIC,o);o+=4;head[o++]=1;head.set(salt,o);o+=16;head.set(iv,o);o+=12;
+    head[o++]=ITER>>24&255;head[o++]=ITER>>16&255;head[o++]=ITER>>8&255;head[o++]=ITER&255;
+    head[o++]=(nameBytes.length>>8)&255;head[o++]=nameBytes.length&255;
+    head.set(nameBytes,o);
+    const out=new Uint8Array(head.length+cipher.length);out.set(head);out.set(cipher,head.length);
+    encryptedBlob=new Blob([out],{type:'application/octet-stream'});
+    $('encResultName').textContent=encFile.name+'.zqf';
+    $('encResultMeta').textContent='原文件 '+fmtSize(encFile.size)+' → 加密后 '+fmtSize(out.length);
+    $('encResult').classList.add('show');
+    showMsg($('encMsg'),'加密完成，文件仅在本地生成，未上传','ok');
+  }catch(e){showMsg($('encMsg'),'加密失败：'+e.message,'err')}
+  finally{$('encBtn').disabled=false}
+});
+$('encDownload').addEventListener('click',()=>{
+  if(!encryptedBlob)return;const url=URL.createObjectURL(encryptedBlob);const a=document.createElement('a');
+  a.href=url;a.download=encFile.name+'.zqf';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$('encClear').addEventListener('click',()=>{
+  encFile=null;encryptedBlob=null;$('encFile').value='';$('encPw').value='';$('encPw2').value='';
+  $('encInfo').classList.remove('show');$('encResult').classList.remove('show');$('encMsg').className='msg';
+  $('encStrength').style.width='0';$('encPwHint').textContent='建议使用 12 位以上、含字母数字的组合';validateEnc();
+});
+
+/* decrypt */
+let decryptedBlob=null,decryptedName='';
+$('decBtn').addEventListener('click',async()=>{
+  if(!decFile)return;
+  $('decBtn').disabled=true;$('decMsg').className='msg';
+  try{
+    const buf=new Uint8Array(await decFile.arrayBuffer());
+    let o=0;
+    if(buf.length<40||buf[o++]!==MAGIC[0]||buf[o++]!==MAGIC[1]||buf[o++]!==MAGIC[2]||buf[o++]!==MAGIC[3])throw new Error('不是有效的 .zqf 加密文件');
+    o++; // version
+    const salt=buf.slice(o,o+16);o+=16;
+    const iv=buf.slice(o,o+12);o+=12;
+    const iter=(buf[o++]<<24)|(buf[o++]<<16)|(buf[o++]<<8)|buf[o++];
+    const nameLen=(buf[o++]<<8)|buf[o++];
+    const name=dec.decode(buf.slice(o,o+nameLen));o+=nameLen;
+    const cipher=buf.slice(o);
+    const km=await crypto.subtle.importKey('raw',enc.encode($('decPw').value),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:iter,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+    const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,cipher);
+    decryptedBlob=new Blob([plain],{type:'application/octet-stream'});decryptedName=name||'decrypted.bin';
+    $('decResultName').textContent=decryptedName;
+    $('decResultMeta').textContent='原文件 '+fmtSize(plain.byteLength)+' · 校验通过';
+    $('decResult').classList.add('show');
+    showMsg($('decMsg'),'解密成功，完整性校验通过','ok');
+  }catch(e){showMsg($('decMsg'),'解密失败：密码错误或文件已损坏','err')}
+  finally{$('decBtn').disabled=false}
+});
+$('decDownload').addEventListener('click',()=>{
+  if(!decryptedBlob)return;const url=URL.createObjectURL(decryptedBlob);const a=document.createElement('a');
+  a.href=url;a.download=decryptedName;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$('decClear').addEventListener('click',()=>{
+  decFile=null;decryptedBlob=null;$('decFile').value='';$('decPw').value='';
+  $('decInfo').classList.remove('show');$('decResult').classList.remove('show');$('decMsg').className='msg';$('decBtn').disabled=true;
+});
+</script>
+</body>
+</html>

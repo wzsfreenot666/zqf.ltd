@@ -128,6 +128,12 @@ main{flex:1;display:flex;flex-direction:column}
 .sec{margin-top:30px}.sec>.lbl{font:10px var(--mono);letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
 .opts{display:flex;flex-wrap:wrap;gap:7px}.opt{padding:8px 13px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:12px}.opt.active{border-color:var(--accent);color:var(--accent)}
 .preview-btn{width:100%;margin-top:10px;min-width:0}
+.sync-box{margin-top:10px;border:1px solid var(--line);padding:13px 14px;font:11px/1.9 var(--mono);color:var(--muted)}
+.sync-box .kv{display:flex;justify-content:space-between;gap:12px}
+.sync-box .kv b{font-weight:400;color:var(--txt)}
+.sync-box .st{color:var(--accent)}
+.sync-box .st.err{color:var(--danger)}
+.sync-box .st.wait{color:var(--muted)}
 .swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.sw{height:42px;border-radius:2px;cursor:pointer;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px}.sw::before{content:"";width:7px;height:7px;background:var(--swatch)}.sw.active{border-color:var(--accent);color:var(--txt)}
 .row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid var(--line-soft);font-size:13px}.toggle{width:36px;height:20px;border:1px solid var(--line);background:transparent;position:relative;cursor:pointer;flex-shrink:0}.toggle::after{content:"";position:absolute;width:12px;height:12px;background:var(--muted);top:3px;left:3px;transition:transform .18s,background .18s}.toggle.on{border-color:var(--accent)}.toggle.on::after{transform:translateX(16px);background:var(--accent)}
 .stepper{display:flex;align-items:center;gap:8px}.stepper button{width:28px;height:28px;border-radius:2px;border:1px solid var(--line);background:transparent;color:var(--txt);cursor:pointer}.stepper span{font:13px var(--mono);min-width:36px;text-align:center}
@@ -152,8 +158,9 @@ footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--acce
   <div class="sec"><div class="lbl">01 / 强调色</div><div class="swatches" id="themes"></div></div>
   <div class="sec"><div class="lbl">02 / 数字字体</div><div class="opts" id="fonts"><button class="opt active" data-font="mono">等宽</button><button class="opt" data-font="sans">无衬线</button><button class="opt" data-font="serif">衬线</button><button class="opt" data-font="thin">纤细</button></div></div>
   <div class="sec"><div class="lbl">03 / 翻页动效</div><div class="opts" id="effects"><button class="opt active" data-effect="split">经典翻页</button><button class="opt" data-effect="card">整卡 3D</button><button class="opt" data-effect="roll">数字滚动</button><button class="opt" data-effect="side">横向翻页</button><button class="opt" data-effect="scan">扫描揭示</button><button class="opt" data-effect="fade">柔和淡入</button></div><button class="btn preview-btn" id="previewFlip">立即预览动效</button></div>
-  <div class="sec"><div class="lbl">04 / 时钟显示</div><div class="row"><span>机械翻页模式</span><button class="toggle on" id="tFlip" aria-label="切换翻页模式"></button></div><div class="row"><span>24 小时制</span><button class="toggle on" id="t24" aria-label="切换 24 小时制"></button></div><div class="row"><span>显示日期与时区</span><button class="toggle on" id="tDate" aria-label="切换日期显示"></button></div></div>
-  <div class="sec"><div class="lbl">05 / 番茄钟时长（分钟）</div><div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div><div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div><div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div><div class="row"><span>自动开始下一轮</span><button class="toggle" id="tAuto" aria-label="自动开始下一轮"></button></div><div class="row"><span>结束提示音</span><button class="toggle on" id="tSound" aria-label="结束提示音"></button></div></div>
+  <div class="sec"><div class="lbl">04 / 网络时间校准</div><div class="sync-box"><div class="kv"><span>状态</span><b class="st" id="syncState">未校准</b></div><div class="kv"><span>时间源</span><b id="syncSource">—</b></div><div class="kv"><span>时间偏差</span><b id="syncOffset">—</b></div><div class="kv"><span>上次校准</span><b id="syncTime">—</b></div></div><button class="btn preview-btn" id="syncBtn">立即校准网络时间</button><div class="row"><span>启动时自动校准</span><button class="toggle on" id="tAutoSync" aria-label="启动时自动校准"></button></div></div>
+  <div class="sec"><div class="lbl">05 / 时钟显示</div><div class="row"><span>机械翻页模式</span><button class="toggle on" id="tFlip" aria-label="切换翻页模式"></button></div><div class="row"><span>24 小时制</span><button class="toggle on" id="t24" aria-label="切换 24 小时制"></button></div><div class="row"><span>显示日期与时区</span><button class="toggle on" id="tDate" aria-label="切换日期显示"></button></div></div>
+  <div class="sec"><div class="lbl">06 / 番茄钟时长（分钟）</div><div class="row"><span>专注</span><div class="stepper"><button data-pomo="work" data-d="-1">−</button><span id="workVal">25</span><button data-pomo="work" data-d="1">+</button></div></div><div class="row"><span>短休息</span><div class="stepper"><button data-pomo="short" data-d="-1">−</button><span id="shortVal">5</span><button data-pomo="short" data-d="1">+</button></div></div><div class="row"><span>长休息</span><div class="stepper"><button data-pomo="long" data-d="-1">−</button><span id="longVal">15</span><button data-pomo="long" data-d="1">+</button></div></div><div class="row"><span>自动开始下一轮</span><button class="toggle" id="tAuto" aria-label="自动开始下一轮"></button></div><div class="row"><span>结束提示音</span><button class="toggle on" id="tSound" aria-label="结束提示音"></button></div></div>
 </aside>
 <div class="wrap">
   <header>
@@ -175,7 +182,7 @@ footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--acce
 </div>
 <script>
 const LS='chrono_v1';
-let S={theme:'nebula',font:'mono',effect:'split',flip:true,h24:true,showDate:true,work:25,short:5,long:15,auto:false,sound:true};
+let S={theme:'nebula',font:'mono',effect:'split',flip:true,h24:true,showDate:true,work:25,short:5,long:15,auto:false,sound:true,autoSync:true};
 try{const s=localStorage.getItem(LS);if(s)Object.assign(S,JSON.parse(s))}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id);
@@ -184,7 +191,7 @@ const effectNames={split:'经典翻页',card:'整卡 3D',roll:'数字滚动',sid
 if(!effectNames[S.effect])S.effect='split';
 const applyState=()=>{
   document.body.dataset.theme=S.theme;document.body.dataset.font=S.font;
-  $('tFlip').classList.toggle('on',S.flip);$('t24').classList.toggle('on',S.h24);$('tDate').classList.toggle('on',S.showDate);$('tAuto').classList.toggle('on',S.auto);$('tSound').classList.toggle('on',S.sound);
+  $('tFlip').classList.toggle('on',S.flip);$('t24').classList.toggle('on',S.h24);$('tDate').classList.toggle('on',S.showDate);$('tAuto').classList.toggle('on',S.auto);$('tSound').classList.toggle('on',S.sound);$('tAutoSync').classList.toggle('on',S.autoSync);
   $('workVal').textContent=S.work;$('shortVal').textContent=S.short;$('longVal').textContent=S.long;
   document.querySelectorAll('#fonts .opt').forEach(o=>o.classList.toggle('active',o.dataset.font===S.font));document.querySelectorAll('#themes .sw').forEach(o=>o.classList.toggle('active',o.dataset.theme===S.theme));document.querySelectorAll('#effects .opt').forEach(o=>o.classList.toggle('active',o.dataset.effect===S.effect));
   $('effectCode').innerHTML=`SYS.CLOCK / 01<br>EFFECT · ${effectNames[S.effect]}`;
@@ -287,9 +294,56 @@ function makeFlip(container){
   return {set,preview:()=>set(String((Number(cur)+1)%10),true)};
 }
 let setters={};function buildDigits(){$('hDig').innerHTML='';$('mDig').innerHTML='';$('sDig').innerHTML='';setters.h=[makeFlip($('hDig')),makeFlip($('hDig'))];setters.m=[makeFlip($('mDig')),makeFlip($('mDig'))];setters.s=[makeFlip($('sDig')),makeFlip($('sDig'))]}buildDigits();
+/* 网络时间校准：多源回退 + 往返延迟补偿，失败则退回本地时间 */
+const clockOffset={ms:0,source:'',at:0};
+const setSyncUI=(state,source,offset,at)=>{
+  const st=$('syncState');st.textContent=state;st.className='st'+(state==='已校准'?'':state==='校准失败'?' err':' wait');
+  $('syncSource').textContent=source||'—';
+  $('syncOffset').textContent=offset==null?'—':(offset===0?'±0 ms':(offset>0?'+':'')+offset+' ms');
+  $('syncTime').textContent=at?new Date(at).toLocaleTimeString('zh-CN',{hour12:false}):'—';
+};
+const fetchServerTime=async(url,signal)=>{
+  const t0=performance.now();
+  const r=await fetch(url,{cache:'no-store',signal,headers:{'Cache-Control':'no-cache'}});
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  const d=r.headers.get('Date');
+  let serverMs;
+  const ct=(r.headers.get('Content-Type')||'');
+  if(ct.includes('json')){
+    const j=await r.json();
+    serverMs=j.unixtime?j.unixtime*1000:(j.datetime?Date.parse(j.datetime):(j.utc_datetime?Date.parse(j.utc_datetime):NaN));
+  }
+  if(!isFinite(serverMs)&&d)serverMs=Date.parse(d);
+  if(!isFinite(serverMs))throw new Error('no time');
+  const t1=performance.now();
+  return {serverMs,rtt:t1-t0};
+};
+const syncClock=async()=>{
+  setSyncUI('校准中…','','',clockOffset.at);
+  const sources=[
+    ['站点边缘',()=>fetchServerTime(location.origin+'/chrono-time.txt?t='+Date.now(),null)],
+    ['timeapi.io',()=>fetchServerTime('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Shanghai&t='+Date.now(),null)],
+    ['worldtimeapi',()=>fetchServerTime('https://worldtimeapi.org/api/timezone/Asia/Shanghai?t='+Date.now(),null)]
+  ];
+  for(const [name,fn] of sources){
+    try{
+      const {serverMs,rtt}=await fn();
+      clockOffset.ms=Math.round(serverMs+rtt/2-Date.now());
+      clockOffset.source=name;clockOffset.at=Date.now();
+      setSyncUI('已校准',name,clockOffset.ms,clockOffset.at);
+      $('dateLine').classList.add('synced');
+      return true;
+    }catch(e){}
+  }
+  setSyncUI('校准失败','','',clockOffset.at);
+  return false;
+};
+$('syncBtn').addEventListener('click',()=>{$('syncBtn').disabled=true;syncClock().finally(()=>$('syncBtn').disabled=false)});
+bindToggle('tAutoSync','autoSync');
+if(S.autoSync)setTimeout(syncClock,600);
 const WDS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];let clockPaused=false,previewPaused=false,previewTimer=null;
 function previewFlip(){clearTimeout(previewTimer);previewPaused=true;[...setters.h,...setters.m,...setters.s].forEach((f,i)=>setTimeout(()=>f.preview(),i*28));previewTimer=setTimeout(()=>{previewPaused=false},1150)}
-function updateClock(){if(!clockPaused&&!previewPaused){const now=new Date();let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f.set(hh[i]));setters.m.forEach((f,i)=>f.set(mm[i]));setters.s.forEach((f,i)=>f.set(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
+function updateClock(){if(!clockPaused&&!previewPaused){const now=new Date(Date.now()+clockOffset.ms);let h=now.getHours();const ap=h>=12?'PM':'AM';if(!S.h24)h=h%12||12;const hh=String(h).padStart(2,'0'),mm=String(now.getMinutes()).padStart(2,'0'),ss=String(now.getSeconds()).padStart(2,'0');if(S.flip){setters.h.forEach((f,i)=>f.set(hh[i]));setters.m.forEach((f,i)=>f.set(mm[i]));setters.s.forEach((f,i)=>f.set(ss[i]));$('flipAmpm').textContent=S.h24?'':ap;$('flipAmpm').style.display=S.h24?'none':'block'}else{$('digitalTime').textContent=`${hh}:${mm}:${ss}`;$('ampm').textContent=S.h24?'':ap}$('weekday').textContent=WDS[now.getDay()];$('fullDate').textContent=`${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;const tz=-now.getTimezoneOffset()/60;$('tz').textContent='UTC'+(tz>=0?'+':'')+tz}requestAnimationFrame(updateClock)}requestAnimationFrame(updateClock);
 /* stopwatch */
 const sw={running:false,elapsed:0,start:0,laps:[],last:0};
 function fmt(t){const m=Math.floor(t/60000).toString().padStart(2,'0'),s=Math.floor(t/1000%60).toString().padStart(2,'0'),c=Math.floor(t/10%100).toString().padStart(2,'0');return{m,s,c}}

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b0d">
+<title>NOTES · 作品与手记</title>
+<script src="./lib/marked.min.js"></script>
+<style>
+:root{--bg:#090b0d;--surface:#0e1114;--surface-2:#12161a;--line:#242a30;--line-soft:#191e23;--txt:#edf1f3;--muted:#78838c;--dim:#4d5861;--accent:#67d7e5;--accent-ink:#071013;--mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}button,input{font:inherit}
+html{color-scheme:dark;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:48px 48px;opacity:.18;mask-image:linear-gradient(to bottom,black,transparent 72%)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#progress{position:fixed;top:0;left:0;height:2px;background:var(--accent);width:0;z-index:100;transition:width .1s}
+.wrap{width:min(1000px,100%);min-height:100vh;margin:auto;padding:0 32px;display:flex;flex-direction:column}
+header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--txt)}
+.brand-mark{width:30px;height:30px;border:1px solid var(--accent);display:grid;place-items:center;color:var(--accent);font:700 12px var(--mono)}
+.brand-name{font:700 15px var(--mono);letter-spacing:.14em}.brand-sub{display:block;font:10px var(--mono);letter-spacing:.16em;color:var(--muted);margin-top:4px}
+.hero{padding:64px 0 44px;border-bottom:1px solid var(--line)}
+.eyebrow{font:10px var(--mono);letter-spacing:.18em;color:var(--accent);text-transform:uppercase;margin-bottom:18px}
+.hero h1{font-size:clamp(34px,6vw,54px);font-weight:600;line-height:1.14;letter-spacing:-.04em}
+.hero h1 span{color:var(--dim)}
+.hero p{color:var(--muted);font-size:14px;line-height:1.85;margin-top:22px;max-width:620px}
+.hero-meta{display:flex;gap:34px;margin-top:30px}.hero-meta div{font:11px var(--mono);color:var(--dim)}.hero-meta b{display:block;font-size:22px;color:var(--txt);font-weight:500;margin-bottom:5px}
+.section-title{font:10px var(--mono);letter-spacing:.16em;color:var(--muted);display:flex;align-items:center;gap:14px;padding:34px 0 20px}
+.section-title::after{content:"";flex:1;height:1px;background:var(--line)}
+/* projects */
+.projects{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.proj{border:1px solid var(--line);background:var(--surface);padding:24px;display:flex;flex-direction:column;transition:border-color .18s,transform .18s}
+.proj:hover{border-color:var(--accent);transform:translateY(-2px)}
+.proj-top{display:flex;justify-content:space-between;align-items:flex-start}.proj-num{font:10px var(--mono);color:var(--accent);letter-spacing:.12em}.proj-ic{font:20px var(--mono);color:var(--dim)}
+.proj h3{font:600 18px var(--mono);letter-spacing:.04em;margin-top:18px}.proj .cn{font-size:12px;color:var(--muted);margin-top:5px}
+.proj p{font-size:12px;line-height:1.75;color:var(--muted);margin-top:14px;flex:1}
+.proj .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.proj .tags span{font:10px var(--mono);color:var(--dim);border:1px solid var(--line-soft);padding:4px 9px;border-radius:2px}
+.proj .open{margin-top:18px;font:11px var(--mono);color:var(--accent);text-decoration:none;display:flex;justify-content:space-between;align-items:center}
+/* articles */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.tag-btn{padding:7px 13px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--muted);cursor:pointer;font-size:11px}
+.tag-btn.active{border-color:var(--accent);color:var(--accent)}
+.search{margin-left:auto;position:relative}.search input{width:200px;height:34px;border:1px solid var(--line);border-radius:2px;background:var(--surface);color:var(--txt);padding:0 12px;font-size:12px}.search input::placeholder{color:var(--dim)}
+.list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:64px 1fr auto;gap:18px;padding:22px 4px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;align-items:start}
+.item:hover{background:rgba(255,255,255,.015)}
+.item .date{font:10px var(--mono);color:var(--dim);line-height:1.7;padding-top:2px}
+.item .body h3{font-size:16px;font-weight:500;letter-spacing:-.01em;line-height:1.4}
+.item .body .excerpt{font-size:12px;color:var(--muted);line-height:1.7;margin-top:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .body .tags{display:flex;gap:8px;margin-top:12px}.item .body .tags span{font:10px var(--mono);color:var(--dim)}
+.item .read{font:10px var(--mono);color:var(--dim);white-space:nowrap;padding-top:3px}
+/* article view */
+.view{display:none}.view.active{display:block;animation:enter .2s ease-out}@keyframes enter{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.back{display:inline-flex;align-items:center;gap:8px;font:11px var(--mono);color:var(--muted);cursor:pointer;background:none;border:0;padding:28px 0 0}.back:hover{color:var(--accent)}
+.article{padding:30px 0 60px;max-width:720px}
+.article h1{font-size:clamp(28px,5vw,40px);font-weight:600;letter-spacing:-.03em;line-height:1.25}
+.article .meta{font:11px var(--mono);color:var(--dim);margin:16px 0 34px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.content{font-size:15px;line-height:1.9;color:#c9d1d6}
+.content h2{font-size:21px;font-weight:600;color:var(--txt);margin:38px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--line-soft)}
+.content h3{font-size:17px;font-weight:600;color:var(--txt);margin:28px 0 12px}
+.content p{margin:16px 0}.content ul,.content ol{margin:16px 0;padding-left:24px}.content li{margin:8px 0}
+.content a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(103,215,229,.3)}
+.content code{font:13px var(--mono);background:var(--surface-2);border:1px solid var(--line-soft);padding:2px 6px;border-radius:2px;color:#9fe3ec}
+.content pre{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:16px;overflow-x:auto;margin:20px 0}
+.content pre code{background:none;border:0;padding:0;color:#b9c6cd;font-size:12px;line-height:1.7}
+.content blockquote{border-left:2px solid var(--accent);padding:4px 0 4px 18px;margin:20px 0;color:var(--muted);font-style:italic}
+.content strong{color:var(--txt);font-weight:600}
+.related{margin-top:50px;padding-top:24px;border-top:1px solid var(--line)}
+.related h3{font:10px var(--mono);letter-spacing:.16em;color:var(--muted);margin-bottom:14px}
+.related a{display:block;padding:12px 0;border-bottom:1px solid var(--line-soft);color:var(--txt);text-decoration:none;font-size:13px}.related a:hover{color:var(--accent)}
+.related a span{font:10px var(--mono);color:var(--dim);margin-left:10px}
+.empty{padding:50px;text-align:center;color:var(--dim);font-size:13px}
+footer{min-height:64px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px;font:10px var(--mono);letter-spacing:.1em;color:var(--dim);margin-top:auto}
+footer a{color:var(--muted);text-decoration:none}footer a:hover{color:var(--accent)}
+@media(max-width:640px){
+  .wrap{padding:0 18px}header{height:68px}.brand-sub{display:none}
+  .hero{padding:44px 0 34px}.hero-meta{gap:24px;flex-wrap:wrap}.projects{grid-template-columns:1fr}
+  .item{grid-template-columns:1fr;gap:8px;padding:18px 2px}.item .date,.item .read{display:inline;font-size:10px}
+  .filters{flex-wrap:wrap}.search{margin-left:0;width:100%}.search input{width:100%}
+  .article{padding:24px 0 44px}.content{font-size:14px}footer{font-size:9px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="wrap">
+  <header>
+    <a class="brand" href="../index.html" aria-label="返回首页"><span class="brand-mark">Z/</span><span><span class="brand-name">NOTES</span><span class="brand-sub">WORKS &amp; WRITING</span></span></a>
+    <span style="font:10px var(--mono);color:var(--muted);letter-spacing:.12em">EST. 2026</span>
+  </header>
+
+  <div id="home" class="view active">
+    <section class="hero">
+      <div class="eyebrow">Things I build &amp; things I learn</div>
+      <h1>作品与手记<span>.</span></h1>
+      <p>这里放着我把想法做成的项目，以及一些认真写下的技术笔记。不追热点，只记录真正用得上、想明白了的东西。</p>
+      <div class="hero-meta"><div><b id="statProjects">0</b>PROJECTS</div><div><b id="statNotes">0</b>NOTES</div><div><b id="statWords">0</b>WORDS WRITTEN</div></div>
+    </section>
+
+    <div class="section-title">SELECTED WORKS</div>
+    <div class="projects" id="projects"></div>
+
+    <div class="section-title">WRITING</div>
+    <div class="filters" id="filters"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div id="articleView" class="view">
+    <button class="back" id="backBtn">← 返回列表</button>
+    <article class="article">
+      <h1 id="aTitle"></h1>
+      <div class="meta" id="aMeta"></div>
+      <div class="content" id="aContent"></div>
+      <div class="related" id="aRelated"></div>
+    </article>
+  </div>
+
+  <footer><span>ZQF.LTD / NOTES 01.0</span><a href="../index.html">返回首页 ↗</a></footer>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const projects=[
+  {num:'01',ic:'◇',name:'TOOLKIT',cn:'实用工具箱',desc:'24 个覆盖计算、文本、图片与效率的日常工具。房贷、个税、二维码、图片压缩等，全部本地计算。',tags:['24 TOOLS','LOCAL','NO UPLOAD'],url:'../05-toolkit/index.html'},
+  {num:'02',ic:'◷',name:'CHRONO',cn:'精密时钟与计时器',desc:'机械翻页时钟、百分之一秒秒表与番茄钟，支持 6 种翻页动效、多主题与网络时间校准。',tags:['FLIP CLOCK','POMODORO','SYNC'],url:'../06-clock/index.html'},
+  {num:'03',ic:'⌁',name:'VAULT',cn:'文件加密保险箱',desc:'用密码在浏览器里加密任意文件为 .zqf，AES-256-GCM 加密，文件不上传，密码只有你知道。',tags:['AES-256-GCM','PBKDF2','PRIVATE'],url:'../10-vault/index.html'},
+  {num:'04',ic:'⊞',name:'NAVI',cn:'个人网址导航',desc:'分类、搜索、点击统计与书签导入导出，常用网址一点即开，数据只存在自己的浏览器里。',tags:['BOOKMARKS','LOCAL','SEARCH'],url:'../11-nav/index.html'}
+];
+const notes=[
+  {
+    id:'local-first',
+    title:'为什么我把网站做成"本地优先"',
+    date:'2026-11-20',
+    tags:['架构','隐私'],
+    excerpt:'数据不上传、计算在浏览器完成，听起来像少了很多功能，但换来的是速度、隐私和零成本——这笔账其实很好算。',
+    body:`
+## 一个被忽略的选择
+
+做网站时，很多人默认"有数据就要有服务器"。但仔细想想，很多工具根本不需要服务器：计算房贷、统计字数、压缩图片、加密文件——这些事的输入和输出都在用户自己的设备上，服务器既看不到也帮不上忙。
+
+既然如此，把计算放到浏览器里，反而是一连串连锁优势的起点。
+
+## 三个实实在在的好处
+
+**第一是快。** 没有网络往返，点一下立刻出结果。我在自己的站点上实测过，从北京访问 Cloudflare 免费版会绕到欧洲节点，延迟约 205ms。任何需要请求后端的交互都要付这笔"过路费"，而纯本地计算把这笔钱直接省掉了。
+
+**第二是隐私。** 你输入的工资、上传的图片、加密文件的密码，全程不离开浏览器。这不是一句营销话术——打开开发者工具的 Network 面板，你会看到页面加载完之后几乎没有任何请求。对使用者来说，这是能验证的安心。
+
+**第三是成本。** 静态托管几乎免费，没有数据库、没有带宽账单、没有服务器要维护。一个人维护的小站，这件事的长期价值比短期炫技高得多。
+
+## 边界在哪里
+
+当然不是所有东西都适合本地化。需要多端同步、需要多人协作、需要持久化分享的内容（比如留言墙），还是得有后端。我的判断标准很简单：
+
+- 数据的产生和消费是否在同一个人、同一台设备上？是 → 本地。
+- 是否需要跨设备、跨用户？是 → 才考虑云。
+
+把这条线划清楚，能省掉大量不必要的复杂度。
+
+> 最好的架构，往往是能不做就不做。`
+
+  },
+  {
+    id:'flip-animation',
+    title:'把翻页时钟做到"不跳"的那些细节',
+    date:'2026-11-18',
+    tags:['动画','前端'],
+    excerpt:'一个看起来简单的翻页数字，背后要处理状态提交、动画中断、连续快速变化。踩过坑之后，我总结了几条经验。',
+    body:`
+## 翻页数字为什么难做
+
+翻页时钟的每一位数，静止时是上下两半拼成的完整数字，变化时上半片翻下去、下半片跟上来。视觉上很自然，但实现里有几个非常容易踩的坑。
+
+## 坑一：状态什么时候提交
+
+一开始我让动画结束时才把"当前数字"更新为新值。问题来了：主循环每帧都会问"要不要翻页"，而动画还没结束、状态还是旧值，于是每帧都触发一次新的翻页。结果就是**动画被无限重启，数字卡在原地不动**。
+
+解决办法是引入一个独立的"目标值"：一旦开始翻向某个数字，就把目标记下来。之后只要目标没变，重复的请求直接忽略。这个小状态解决了大半的诡异问题。
+
+## 坑二：动画中断要收尾
+
+快速连续翻页时（比如测试时手动连点），前一段动画会被取消。如果只是 \`cancel()\` 而不清理，页面会残留一层半透明的翻页片，看起来像残影。
+
+我的做法是：每次动画开始前，先把所有运动层隐藏、复位 transform、清掉旧的动画引用。无论动画是自然结束还是被打断，最终状态都收敛到"静止层显示正确数字、运动层全部隐藏"。
+
+## 坑三：阴影别盖住数字
+
+有一版里，翻页片的阴影层是不透明的黑色，结果翻到一半时新数字被整块盖住，像蒙了一块黑板，动画结束才"啪"地跳出来。
+
+正确的是让数字层始终在阴影之上，阴影只在中缝附近做一点轻微渐变。这样既有立体感，又不会遮挡内容。
+
+## 一点体会
+
+动画的细节，八成不在"怎么让它动"，而在"怎么让它停下来的时候是对的"。把中断、连续触发、结束状态都处理干净，动效才真正可靠。`
+
+  },
+  {
+    id:'encryption',
+    title:'在浏览器里加密文件，到底安全不安全',
+    date:'2026-11-21',
+    tags:['安全','加密'],
+    excerpt:'把文件加密做进纯前端页面，常有人担心"代码都在浏览器里，是不是能被动手脚"。这篇文章聊聊它到底安不安全、又有哪些真实的边界。',
+    body:`
+## 先说结论
+
+只要实现正确，浏览器端加密可以做到**文件不离开设备、服务端无从得知内容**。但"安全"不是一个开关，而是一串细节的总和。
+
+## 密钥从哪来
+
+加密用 AES-256-GCM，这是一种带完整性校验的现代对称加密。密钥不能直接用密码——密码太短、太有规律。所以要经过 PBKDF2 这类密钥派生函数，配合随机盐和足够多的迭代次数（我用了 25 万次），把弱密码"拉伸"成难以暴力破解的密钥。
+
+盐和 IV 是随机的，但要和密文一起保存。它们不是秘密，作用只是保证同样的密码、同样的文件，每次加密出来的结果都不同。
+
+## GCM 的完整性校验很关键
+
+AES-GCM 不只会加密，还会附带一个认证标签。解密时如果密码错了、或者文件被改过一个字节，校验就会失败，直接报错。**这意味着别人即便截获了加密文件，也无法悄悄篡改内容而不被发现。**
+
+## 那条常被担心的边界
+
+"前端代码都能看到，是不是能改成不加密直接上传？"——理论上，如果服务器是恶意的，确实可以在你面前表演一套加密动画，背地里把明文传走。所以浏览器端加密的信任前提是：**你信任这份代码来自谁**。
+
+对于我这个站点，代码是静态文件、没有后端、页面加载完几乎不再发请求——你可以亲自验证它没有上传行为。这也是我坚持"本地优先"的原因之一：可验证，比口头承诺更可靠。
+
+## 忘记密码意味着什么
+
+没有后门、没有"找回密码"。密码丢了，文件就真的打不开了。这不是缺陷，恰恰是加密有意义的证明——如果谁能帮你找回，那谁就能帮别人打开。
+
+> 加密的价值，在于让"没有密码就无法访问"这件事成为事实，而不是约定。`
+
+  },
+  {
+    id:'web-perf',
+    title:'一个静态网站，我做了哪些"看不见"的优化',
+    date:'2026-11-16',
+    tags:['性能','前端'],
+    excerpt:'没有框架、没有打包，一个纯静态站点能快到什么程度？分享几处用户几乎注意不到、但确实有效的细节。',
+    body:`
+## 从一次实测说起
+
+我在自己的站点上做过测量：国内访问命中 Cloudflare 的欧洲节点，延迟约 205ms，首字节时间约 1 秒。这个数字提醒我，对于静态站，真正该抠的是**别再往本就遥远的链路上加请求**。
+
+## 去掉不必要的外部字体
+
+页面里曾有对 Google Fonts 的引用。在国内，这往往意味着一次缓慢甚至失败的往返。我把字体改成本地系统字体栈，等宽用 Consolas / Menlo，正文用系统无衬线。视觉几乎无损，却省掉了一个不稳定依赖。
+
+## 图标不联网也能显示
+
+做网址导航时，站点图标（favicon）如果都走第三方服务，会在首次加载时发出一堆外部图片请求。我的处理是：先渲染一个首字母方块作为底色，图标异步懒加载，成功再覆盖，失败就留着方块。页面结构不受网络影响，永远立刻可读。
+
+## 动画用原生接口
+
+翻页动效没有引入任何动画库，用的是浏览器原生的 Web Animations API。库是有体积的，而原生接口足够完成需求。少一个依赖，就少一次下载、少一份维护成本。
+
+## 该克制的地方
+
+深色网格背景、极细的边框、单一的强调色——这些视觉选择不只是审美，也在减少渲染负担和视觉噪音。**快，很多时候来自"没做什么"，而不是"多做了什么"。**
+
+> 优化到最后，往往是把不必要的东西一个个删掉，剩下的自然就快了。`
+  }
+];
+function wordCount(s){return (s.replace(/[#*>\`\-\[\]()]/g,' ').match(/[\u4e00-\u9fa5]|[a-zA-Z]+/g)||[]).length}
+const totalWords=notes.reduce((a,n)=>a+wordCount(n.body),0);
+$('statProjects').textContent=projects.length;$('statNotes').textContent=notes.length;$('statWords').textContent=totalWords.toLocaleString();
+
+/* projects */
+$('projects').innerHTML=projects.map(p=>`
+  <a class="proj" href="${p.url}"><div class="proj-top"><span class="proj-num">${p.num} / PROJECT</span><span class="proj-ic">${p.ic}</span></div>
+  <h3>${p.name}</h3><div class="cn">${p.cn}</div><p>${p.desc}</p>
+  <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+  <div class="open"><span>打开项目</span><span>↗</span></div></a>`).join('');
+
+/* filters + list */
+let activeTag='全部',keyword='';
+const tags=['全部',...new Set(notes.flatMap(n=>n.tags))];
+$('filters').innerHTML=tags.map(t=>`<button class="tag-btn ${t==='全部'?'active':''}" data-tag="${t}">${t}</button>`).join('')+`<div class="search"><input id="noteSearch" placeholder="搜索文章…" autocomplete="off"></div>`;
+function renderList(){
+  const list=notes.filter(n=>(activeTag==='全部'||n.tags.includes(activeTag))&&(!keyword||(n.title+n.excerpt+n.body).toLowerCase().includes(keyword)));
+  $('list').innerHTML=list.length?list.map(n=>{
+    const mins=Math.max(1,Math.round(wordCount(n.body)/350));
+    return `<div class="item" data-id="${n.id}"><div class="date">${n.date.replace(/-/g,'.')}</div>
+      <div class="body"><h3>${n.title}</h3><div class="excerpt">${n.excerpt}</div><div class="tags">${n.tags.map(t=>`<span># ${t}</span>`).join('')}</div></div>
+      <div class="read">${mins} MIN READ →</div></div>`;
+  }).join(''):'<div class="empty">没有匹配的文章</div>';
+}
+$('filters').addEventListener('click',e=>{const b=e.target.closest('[data-tag]');if(!b)return;activeTag=b.dataset.tag;document.querySelectorAll('.tag-btn').forEach(x=>x.classList.toggle('active',x===b));renderList()});
+$('filters').addEventListener('input',e=>{if(e.target.id==='noteSearch'){keyword=e.target.value.trim().toLowerCase();renderList()}});
+$('list').addEventListener('click',e=>{const it=e.target.closest('[data-id]');if(it)openArticle(it.dataset.id)});
+renderList();
+
+/* article view */
+let currentId=null;
+function openArticle(id){
+  const n=notes.find(x=>x.id===id);if(!n)return;currentId=id;
+  $('aTitle').textContent=n.title;
+  $('aMeta').textContent=`${n.date.replace(/-/g,'.')} · ${n.tags.map(t=>'# '+t).join('  ')} · ${Math.max(1,Math.round(wordCount(n.body)/350))} MIN READ`;
+  $('aContent').innerHTML=(window.marked?marked.parse(n.body):'<p>'+n.body+'</p>');
+  const rel=notes.filter(x=>x.id!==id).slice(0,3);
+  $('aRelated').innerHTML='<h3>KEEP READING</h3>'+rel.map(r=>`<a data-id="${r.id}">${r.title}<span>${r.date.replace(/-/g,'.')}</span></a>`).join('');
+  $('home').classList.remove('active');$('articleView').classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});updateProgress();
+}
+$('backBtn').addEventListener('click',()=>{$('articleView').classList.remove('active');$('home').classList.add('active');window.scrollTo({top:0,behavior:'instant'});currentId=null});
+$('aRelated').addEventListener('click',e=>{const a=e.target.closest('[data-id]');if(a)openArticle(a.dataset.id)});
+function updateProgress(){const h=document.documentElement;const max=h.scrollHeight-innerHeight;$('progress').style.width=(max>0?(scrollY/max*100):0)+'%'}
+addEventListener('scroll',updateProgress,{passive:true});
+</script>
+</body>
+</html>
