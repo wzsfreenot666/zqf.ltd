@@ -67,46 +67,38 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .clock-date{font-size:16px;color:var(--muted);letter-spacing:.05em;margin-bottom:22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
 .clock-date .wd{color:var(--accent);font-weight:700}
 .clock-date .tz{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
-.flipclock{display:flex;gap:12px;align-items:flex-start;perspective:1200px}
+.flipclock{
+  --cw:min(84px,calc((100vw - 90px)/7.15));
+  display:flex;gap:clamp(4px,1vw,12px);align-items:flex-start;perspective:1200px
+}
 .flipgroup{display:flex;flex-direction:column;align-items:center;gap:8px}
-.digits{display:flex;gap:6px}
+.digits{display:flex;gap:clamp(3px,.6vw,6px)}
 .flip{
-  position:relative;width:clamp(52px,10vw,86px);height:clamp(80px,15vw,128px);
-  font-family:var(--digit-font);font-size:clamp(50px,9.5vw,88px);font-weight:700;
-  perspective:600px;transform-style:preserve-3d;
+  position:relative;width:var(--cw);height:calc(var(--cw)*1.46);
+  font-family:var(--digit-font);font-size:calc(var(--cw)*.86);font-weight:700;
+  perspective:calc(var(--cw)*5);transform-style:preserve-3d;
+  border-radius:12px;box-shadow:0 10px 28px var(--shadow),inset 0 1px 0 rgba(255,255,255,.06);
 }
-.flip .digit{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,var(--flip),rgba(255,255,255,.015));
-  border:1px solid var(--flip-line);border-radius:12px;
-  box-shadow:0 8px 24px var(--shadow),inset 0 1px 0 rgba(255,255,255,.06);
-  overflow:hidden;
-}
-.flip .digit::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--flip-line);transform:translateY(-.5px)}
-/* top / bottom halves via clip */
-.dig-top{clip-path:inset(0 0 50% 0)}
-.dig-bot{clip-path:inset(50% 0 0 0)}
-.flip .digit.up{background:linear-gradient(180deg,rgba(255,255,255,.07),var(--flip))}
-.flip .digit.down{background:linear-gradient(180deg,var(--flip),rgba(255,255,255,.01))}
-/* animated leaves */
-.leaf{position:absolute;inset:0;z-index:5;pointer-events:none;backface-visibility:hidden}
-.leaf.up{clip-path:inset(0 0 50% 0);transform-origin:bottom center}
-.leaf.down{clip-path:inset(50% 0 0 0);transform-origin:top center}
-.cell{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,rgba(255,255,255,.07),var(--flip));
-  border:1px solid var(--flip-line);border-radius:12px;color:var(--txt);
-}
-.leaf.down .cell{background:linear-gradient(180deg,var(--flip),rgba(255,255,255,.01))}
-.leaf.anim-up{animation:flipTop .3s ease-in forwards}
-.leaf.anim-down{animation:flipBot .3s .3s ease-out forwards}
-@keyframes flipTop{0%{transform:rotateX(0)}100%{transform:rotateX(-90deg)}}
-@keyframes flipBot{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
-.colon{font-family:var(--digit-font);font-size:clamp(40px,8vw,72px);font-weight:700;color:var(--accent);line-height:clamp(80px,15vw,128px);opacity:.75;padding:0 2px}
-.ms{
-  font-family:var(--digit-font);font-size:clamp(20px,3.5vw,32px);font-weight:700;color:var(--b);
-  align-self:flex-end;margin-bottom:10px;padding-left:6px;min-width:68px;opacity:.9;
-}
+/* 上下两个半块，各自裁切数字的一半 */
+.card-half{position:absolute;left:0;width:100%;height:50%;overflow:hidden;backface-visibility:hidden}
+.card-half.top{top:0;border-radius:12px 12px 0 0;border:1px solid var(--flip-line);border-bottom:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.075),var(--flip))}
+.card-half.bottom{bottom:0;border-radius:0 0 12px 12px;border:1px solid var(--flip-line);border-top:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.012),var(--flip))}
+.card-half span{position:absolute;left:0;width:100%;height:calc(var(--cw)*1.46);line-height:calc(var(--cw)*1.46);text-align:center;color:var(--txt)}
+.card-half.top span{top:0}
+.card-half.bottom span{bottom:0}
+/* 中缝 */
+.flip::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--flip-line);z-index:6;transform:translateY(-.5px);pointer-events:none}
+/* 翻页动画层：轴心落在中线 */
+.flip-leaf{z-index:5}
+.flip-leaf.up{transform-origin:center bottom}
+.flip-leaf.down{transform-origin:center top;transform:rotateX(90deg)}
+.flip.go .flip-leaf.up{animation:flipOut .3s ease-in forwards}
+.flip.go .flip-leaf.down{animation:flipIn .3s .3s ease-out forwards}
+@keyframes flipOut{from{transform:rotateX(0)}to{transform:rotateX(-90deg)}}
+@keyframes flipIn{from{transform:rotateX(90deg)}to{transform:rotateX(0)}}
+.colon{font-family:var(--digit-font);font-size:calc(var(--cw)*.6);font-weight:700;color:var(--accent);height:calc(var(--cw)*1.46);line-height:calc(var(--cw)*1.46);opacity:.75}
 .glabel{font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
 
 /* digital (non-flip) mode */
@@ -187,10 +179,10 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 .back{margin-top:26px;text-decoration:none;color:var(--muted);font-size:13px;display:inline-flex;gap:8px;align-items:center;transition:.2s}
 .back:hover{color:var(--accent)}
 @media(max-width:640px){
-  .flipclock{gap:6px}.digits{gap:4px}.colon{font-size:34px}
   .controls .btn{padding:12px 20px;min-width:100px}
   header{padding:18px 0}
-  .clock-date{font-size:14px}
+  .clock-date{font-size:14px;gap:8px}
+  .glabel{font-size:10px}
 }
 </style>
 </head>
@@ -219,7 +211,6 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
   <div class="sec">
     <div class="lbl">时钟显示</div>
     <div class="row"><span>翻页动画</span><div class="toggle on" id="tFlip"></div></div>
-    <div class="row"><span>显示毫秒</span><div class="toggle on" id="tMs"></div></div>
     <div class="row"><span>24 小时制</span><div class="toggle on" id="t24"></div></div>
     <div class="row"><span>显示日期/时区</span><div class="toggle on" id="tDate"></div></div>
   </div>
@@ -279,15 +270,11 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
           <div class="digits" id="sDig"></div>
           <div class="glabel">秒</div>
         </div>
-        <div class="flipgroup">
-          <div class="ms" id="msVal">.000</div>
-          <div class="glabel">毫秒</div>
-        </div>
       </div>
       <div id="digitalWrap" class="digital" style="display:none">
-        <span id="digitalTime">00:00:00</span><span class="sec-ms" id="digitalMs">.000</span><span class="ampm" id="ampm"></span>
+        <span id="digitalTime">00:00:00</span><span class="ampm" id="ampm"></span>
       </div>
-      <div class="hint">时间实时同步自系统时钟 · 精确到毫秒<br>按 <kbd>F</kbd> 切换翻页 / 数字 · <kbd>Space</kbd> 暂停走时</div>
+      <div class="hint">时间实时同步自系统时钟<br>按 <kbd>F</kbd> 切换翻页 / 数字 · <kbd>Space</kbd> 暂停走时</div>
     </section>
 
     <!-- STOPWATCH -->
@@ -338,7 +325,7 @@ main{flex:1;display:flex;flex-direction:column;align-items:center;justify-conten
 /* ================= STATE ================= */
 const LS='chrono_v1';
 let S={
-  theme:'nebula',font:'mono',flip:true,showMs:true,h24:true,showDate:true,
+  theme:'nebula',font:'mono',flip:true,h24:true,showDate:true,
   work:25,short:5,long:15,auto:false,sound:true
 };
 try{const s=localStorage.getItem(LS);if(s)Object.assign(S,JSON.parse(s))}catch(e){}
@@ -348,7 +335,6 @@ const applyState=()=>{
   document.body.dataset.theme=S.theme;
   document.body.dataset.font=S.font;
   $('tFlip').classList.toggle('on',S.flip);
-  $('tMs').classList.toggle('on',S.showMs);
   $('t24').classList.toggle('on',S.h24);
   $('tDate').classList.toggle('on',S.showDate);
   $('tAuto').classList.toggle('on',S.auto);
@@ -359,8 +345,6 @@ const applyState=()=>{
   $('flipWrap').style.display=S.flip?'flex':'none';
   $('digitalWrap').style.display=S.flip?'none':'block';
   $('dateLine').style.display=S.showDate?'flex':'none';
-  $('msVal').style.display=S.showMs?'flex':'none';
-  $('digitalMs').style.display=S.showMs?'inline':'none';
 };
 
 /* ================= THEME SWATCHES ================= */
@@ -374,7 +358,7 @@ $('fonts').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o)r
 
 /* toggles */
 const bindToggle=(id,key,after)=>$(id).addEventListener('click',()=>{S[key]=!S[key];save();applyState();after&&after()});
-bindToggle('tFlip','flip');bindToggle('tMs','showMs');bindToggle('t24','h24');
+bindToggle('tFlip','flip');bindToggle('t24','h24');
 bindToggle('tDate','showDate');bindToggle('tAuto','auto');bindToggle('tSound','sound');
 document.querySelectorAll('[data-pomo]').forEach(b=>b.addEventListener('click',()=>{
   const k=b.dataset.pomo,d=+b.dataset.d;
@@ -402,23 +386,30 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 function makeFlip(container){
   const digit=document.createElement('div');digit.className='flip';
   digit.innerHTML=`
-    <div class="digit up dig-top"><span>0</span></div>
-    <div class="digit down dig-bot"><span>0</span></div>
-    <div class="leaf up"><div class="cell"><span>0</span></div></div>
-    <div class="leaf down"><div class="cell"><span>0</span></div></div>`;
+    <div class="card-half top"><span>0</span></div>
+    <div class="card-half bottom"><span>0</span></div>
+    <div class="card-half top flip-leaf up"><span>0</span></div>
+    <div class="card-half bottom flip-leaf down"><span>0</span></div>`;
   container.appendChild(digit);
-  const top=digit.querySelector('.up span'),bot=digit.querySelector('.down span');
-  const lu=digit.querySelector('.leaf.up'),ld=digit.querySelector('.leaf.down');
-  const lus=lu.querySelector('span'),lds=ld.querySelector('span');
+  // 静止层：上半显示新值、下半显示旧值；动画层：上半翻走旧值、下半翻入新值
+  const top=digit.querySelector('.card-half.top:not(.flip-leaf) span');
+  const bot=digit.querySelector('.card-half.bottom:not(.flip-leaf) span');
+  const lu=digit.querySelector('.flip-leaf.up span'), ld=digit.querySelector('.flip-leaf.down span');
   let cur='0',timer=null;
   return function set(v){
     v=String(v);
     if(v===cur)return;
     const old=cur;cur=v;
-    top.textContent=v;bot.textContent=v;lus.textContent=old;lds.textContent=v;
-    lu.classList.remove('anim-up');ld.classList.remove('anim-down');
-    void digit.offsetWidth;
-    lu.classList.add('anim-up');ld.classList.add('anim-down');
+    clearTimeout(timer);
+    // 静止上半立刻换成新值（被翻走的上半叶遮住 0.3s 后才露出）
+    top.textContent=v;
+    // 静止下半保持旧值,直到新下半叶翻下来盖住
+    bot.textContent=old;
+    lu.textContent=old;  // 翻走的上半 = 旧值
+    ld.textContent=v;    // 翻入的下半 = 新值
+    digit.classList.remove('go');void digit.offsetWidth;digit.classList.add('go');
+    // 动画结束后静止下半同步为新值,并将 go 状态复位
+    timer=setTimeout(()=>{bot.textContent=v;digit.classList.remove('go')},640);
   };
 }
 let setters={};
@@ -441,16 +432,13 @@ function updateClock(){
     const hh=String(h).padStart(2,'0');
     const mm=String(now.getMinutes()).padStart(2,'0');
     const ss=String(now.getSeconds()).padStart(2,'0');
-    const mss=String(now.getMilliseconds()).padStart(3,'0');
     if(S.flip){
       setters.h.forEach((f,i)=>f(hh[i]));
       setters.m.forEach((f,i)=>f(mm[i]));
       setters.s.forEach((f,i)=>f(ss[i]));
-      $('msVal').textContent='.'+mss;
     }else{
       const base=`${hh}:${mm}:${ss}`;
       $('digitalTime').textContent=base;
-      $('digitalMs').textContent='.'+mss;
       $('ampm').textContent=S.h24?'':ampm;
     }
     $('weekday').textContent=WDS[now.getDay()];
